@@ -1,4 +1,5 @@
 import { apiUser } from "src/services/userServices";
+import axios from "axios";
 
 export const ACT_USER_GET = 'ACT_USER_GET';
 export const ADD_USER = 'ADD_USER';
@@ -30,16 +31,43 @@ export function actUserDelete(id) {
 }
 
 
-export function actUserGetAsync() {
-    return async (dispatch) => {
-        try {
-            const response = await apiUser.get('/users');
-            dispatch(actUserGet(response.data));
-        } catch (error) {
-            console.log(error);
-        }
-    };
-}
+// export function actUserGetAsync() {
+//     return async (dispatch) => {
+//         try {
+//             const response = await apiUser.get('/users');
+//             dispatch(actUserGet(response.data));
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     };
+// }
+export const actUserGetAsync = ({ page, pageSize }) => async (dispatch) => {
+    try {
+        console.log('Fetching data for page:', page, 'and pageSize:', pageSize);
+      const response = await apiUser.get('', {
+        params: {
+          'current-page': page,
+          'page-size': pageSize,
+        },
+      });
+      console.log('Response data:', response.data); 
+  
+      dispatch({
+        type: 'GET_USERS_SUCCESS',
+        payload: {
+          students: response.data.students, // Lấy danh sách sinh viên
+          total: response.data.total,       // Lấy tổng số sinh viên
+          currentPage: response.data['current-page'], // Lấy trang hiện tại
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: 'GET_USERS_ERROR',
+        payload: error,
+      });
+    }
+  };
+  
 
 export function actAddUserAsync(data) {
     return async (dispatch) => {

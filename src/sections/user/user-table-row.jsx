@@ -132,9 +132,8 @@ export default function UserTableRow({
 
         <TableCell>{email}</TableCell>
 
-        <TableCell>{gender}</TableCell>
-
-        <TableCell align='center'>{adminssionyear}</TableCell>
+        <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
+        <TableCell align='center'>{adminssionyear}2024</TableCell>
 
         <TableCell>
           {gold}$ 

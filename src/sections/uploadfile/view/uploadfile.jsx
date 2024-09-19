@@ -122,111 +122,154 @@ export default function UploadFile() {
     setOpen(false);
   };
   // code upload file
-  // const props = {
-  //   name: 'file',
-  //   action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-  //   headers: {
-  //     authorization: 'authorization-text',
-  //   },
-  //   onChange(info) {
-  //     if (info.file.status !== 'uploading') {
-  //       console.log(info.file, info.fileList);
-  //     }
-  //     if (info.file.status === 'done') {
-  //       message.success(`${info.file.name} file uploaded successfully`);
-  //     } else if (info.file.status === 'error') {
-  //       message.error(`${info.file.name} file upload failed.`);
-  //     }
-  //   },
-  // };
+  // const [selectedFile, setSelectedFile] = useState(null);
+
   // const props = {
   //   name: 'file',
   //   beforeUpload(file) {
-  //     const reader = new FileReader();
-
-  //     reader.onload = (e) => {
-  //       const data = new Uint8Array(e.target.result);
-  //       const workbook = XLSX.read(data, { type: 'array' });
-
-  //       // Chuyển đổi file Excel thành JSON
-  //       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-  //       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-  //       console.log('Excel Data in JSON:', jsonData);
-
-  //       // Gửi JSON data tới backend
-  //       fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'authorization': 'authorization-text',
-  //         },
-  //         body: JSON.stringify(jsonData),
-  //       })
-  //         .then((response) => response.json())
-  //         .then((data1) => {
-  //           message.success(`${file.name} file uploaded and converted successfully`);
-  //         })
-  //         .catch((error) => {
-  //           message.error(`${file.name} file upload failed.`);
-  //         });
-  //     };
-
-  //     reader.readAsArrayBuffer(file);
+  //     // Lưu file đã chọn vào state
+  //     setSelectedFile(file);
   //     return false;  // Ngăn chặn upload mặc định của antd
   //   },
   // };
+
+  // const handleUpload = () => {
+  //   if (!selectedFile) {
+  //     message.error('Please select a file first!');
+  //     return;
+  //   }
+
+  //   const reader = new FileReader();
+
+  //   reader.onload = (e) => {
+  //     const data = new Uint8Array(e.target.result);
+  //     const workbook = XLSX.read(data, { type: 'array' });
+
+  //     // Lấy sheet đầu tiên
+  //     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  //     // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
+  //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+  //     // Tách header và rows
+  //     const [headers, ...rows] = jsonData;
+
+  //     // Lọc bỏ các hàng trống
+  //     const filteredRows = rows.filter(row =>
+  //       row.some(cell => cell !== undefined && cell !== null && cell !== '')
+  //     );
+
+  //     // Chuyển đổi các hàng còn lại thành các object dựa trên headers
+  //     const formattedData = filteredRows.map(row => {
+  //       const obj = {};
+  //       headers.forEach((header, index) => {
+  //         obj[header] = row[index];
+  //       });
+  //       return obj;
+  //     });
+
+  //     console.log('Filtered JSON Data:', formattedData);
+
+  //     // Gửi dữ liệu JSON tới backend
+  //     fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'authorization': 'authorization-text',
+  //       },
+  //       body: JSON.stringify(formattedData),
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data1) => {
+  //         message.success(`${selectedFile.name} file uploaded and converted successfully`);
+  //       })
+  //       .catch((error) => {
+  //         message.error(`${selectedFile.name} file upload failed.`);
+  //       });
+  //   };
+
+  //   reader.readAsArrayBuffer(selectedFile);
+  // };
+
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const props = {
-    name: 'file',
-    beforeUpload(file) {
-      // Lưu file đã chọn vào state
-      setSelectedFile(file);
-      return false;  // Ngăn chặn upload mặc định của antd
-    },
-  };
+const props = {
+  name: 'file',
+  beforeUpload(file) {
+    // Lưu file đã chọn vào state
+    setSelectedFile(file);
+    return false;  // Ngăn chặn upload mặc định của antd
+  },
+};
 
-  const handleUpload = () => {
-    if (!selectedFile) {
-      message.error('Please select a file first!');
-      return;
-    }
+const handleUpload = () => {
+  if (!selectedFile) {
+    message.error('Please select a file first!');
+    return;
+  }
 
-    const reader = new FileReader();
+  const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
+  reader.onload = (e) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
 
-      // Chuyển đổi file Excel thành JSON
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      let jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      // Lọc bỏ hàng rỗng
-      jsonData = jsonData.filter(row => row.some(cell => cell !== undefined && cell !== null && cell !== ''));
-      console.log('Excel Data in JSON:', jsonData);
+    // Lấy sheet đầu tiên
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    
+    // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      // Gửi JSON data tới backend
-      fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': 'authorization-text',
-        },
-        body: JSON.stringify(jsonData),
-      })
-        .then((response) => response.json())
-        .then((data1) => {
-          message.success(`${selectedFile.name} file uploaded and converted successfully`);
-        })
-        .catch((error) => {
-          message.error(`${selectedFile.name} file upload failed.`);
-        });
+    // Tách header và rows
+    const [headers, ...rows] = jsonData;
+
+    // Lọc bỏ các hàng trống
+    const filteredRows = rows.filter(row => 
+      row.some(cell => cell !== undefined && cell !== null && cell !== '')
+    );
+
+    // Chuyển đổi các hàng còn lại thành các object dựa trên headers
+    const formattedData = filteredRows.map(row => {
+      const obj = {};
+      headers.forEach((header, index) => {
+        obj[header] = row[index];
+      });
+      return obj;
+    });
+
+
+
+    // Lấy ngày gửi hiện tại
+    const currentDate = new Date().toISOString();  // ISO format (yyyy-mm-ddThh:mm:ss)
+
+    // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
+    const payload = {
+      fileName: selectedFile.name,
+      uploadDate: currentDate,
+      data: formattedData
     };
+    console.log('Filtered JSON Data:', payload);
 
-    reader.readAsArrayBuffer(selectedFile);
+    // Gửi dữ liệu JSON tới backend
+    fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': 'authorization-text',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data1) => {
+        message.success(`${selectedFile.name} file uploaded and converted successfully`);
+      })
+      .catch((error) => {
+        message.error(`${selectedFile.name} file upload failed.`);
+      });
   };
 
+  reader.readAsArrayBuffer(selectedFile);
+};
 
   return (
     <Container>

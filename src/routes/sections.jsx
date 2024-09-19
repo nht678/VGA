@@ -12,6 +12,10 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const Hello = lazy(() => import('src/pages/test'));
 export const UploadFile = lazy(() => import('src/pages/uploadfile'));
 export const CounterComponent = lazy(() => import('src/sections/test'));
+export const Homepage = lazy(() => import('src/pages/homepage'));
+export const Header = lazy(() => import('src/pages/header'));
+export const News = lazy(() => import('src/pages/news'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -32,6 +36,7 @@ export default function Router() {
         { path: 'test', element: <Hello /> },
         {path: 'upload', element: <UploadFile />},
         {path: 'counter', element: <CounterComponent />},
+        // {path: 'homepage', element: <Homepage />},
       ],
     },
     {
@@ -46,6 +51,8 @@ export default function Router() {
       path: '*',
       element: <Navigate to="/404" replace />,
     },
+    {path: 'homepage', element: <Homepage />},
+    {path:'news', element: <News />}
   ]);
 
   return routes;
