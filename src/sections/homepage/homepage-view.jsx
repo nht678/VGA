@@ -36,9 +36,9 @@ function srcset(image, size, rows = 1, cols = 1) {
 
 export default function HomepageView() {
   const contentStyle = {
-    height: '250px',
+    height: '400px',
     color: '#fff',
-    lineHeight: '250px',
+    lineHeight: '400px',
     textAlign: 'center',
     background: '#364d79',
     marginTop: '0px'
@@ -46,63 +46,24 @@ export default function HomepageView() {
 
   const itemData = [
     {
-      img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
+      img: 'assets/images/avatars/Admiss1.png',
       title: 'Breakfast',
       rows: 2,
       cols: 2,
     },
     {
-      img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
+      img: 'assets/images/avatars/Admiss2.png',
       title: 'Burger',
     },
     {
-      img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
+      img: 'assets/images/avatars/Admiss3.png',
       title: 'Camera',
     },
     {
-      img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
+      img: 'assets/images/avatars/Admiss4.png',
       title: 'Coffee',
       cols: 2,
     },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-    //   title: 'Hats',
-    //   cols: 2,
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-    //   title: 'Honey',
-    //   author: '@arwinneil',
-    //   rows: 2,
-    //   cols: 2,
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-    //   title: 'Basketball',
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-    //   title: 'Fern',
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-    //   title: 'Mushrooms',
-    //   rows: 2,
-    //   cols: 2,
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-    //   title: 'Tomato basil',
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-    //   title: 'Sea star',
-    // },
-    // {
-    //   img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-    //   title: 'Bike',
-    //   cols: 2,
-    // },
   ];
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -162,17 +123,42 @@ export default function HomepageView() {
     <Box>
       <Carousel autoplay >
         <div>
-          <h3 style={contentStyle}>1</h3>
+          <h3 style={contentStyle}>
+            <img
+              src="assets/images/avatars/University1.png"
+              alt="img"
+              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+            />
+          </h3>
+
         </div>
         <div>
-          <h3 style={contentStyle}>2</h3>
+          <h3 style={contentStyle}>
+          <img
+              src="assets/images/avatars/University2.png"
+              alt="img"
+              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+            />
+          </h3>
         </div>
         <div>
-          <h3 style={contentStyle}>3</h3>
+          <h3 style={contentStyle}>
+          <img
+              src="assets/images/avatars/University3.png"
+              alt="img"
+              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+            />
+          </h3>
         </div>
         <div>
-          <h3 style={contentStyle}>4</h3>
-        </div>
+          <h3 style={contentStyle}>
+          <img
+              src="assets/images/avatars/University4.png"
+              alt="img"
+              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+            />
+          </h3>
+        </div>  
       </Carousel>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mx: 10 }}>
         <Typography variant="h4" component="h2" gutterBottom>
@@ -187,10 +173,10 @@ export default function HomepageView() {
           <Grid size={5} sx={{ display: { xs: 'none', md: 'block', lg: 'block' } }}>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <ImageList
-                sx={{ width: 400, height: 250 }}
+                sx={{ width: 500, height: 290 }}
                 variant="quilted"
                 cols={4}
-                rowHeight={121}
+                rowHeight={140}
               >
                 {itemData.map((item) => (
                   <ImageListItem key={item.img} cols={item.cols || 1} rows={item.rows || 1}>
@@ -383,7 +369,7 @@ export default function HomepageView() {
                   component="img"
                   alt="green iguana"
                   height="250"
-                  image="/assets/images/avatars/image_1.png"
+                  image="/assets/images/avatars/avatar_1.jpg"
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
@@ -394,10 +380,10 @@ export default function HomepageView() {
                     species, ranging across all continents except Antarctica
                   </Typography>
                 </CardContent>
-                <CardActions>
+                {/* <CardActions>
                   <Button size="small">Share</Button>
                   <Button size="small">Learn More</Button>
-                </CardActions>
+                </CardActions> */}
               </Card>
             </Item>
           </Grid>
@@ -408,7 +394,7 @@ export default function HomepageView() {
                   component="img"
                   alt="green iguana"
                   height="250"
-                  image="/assets/images/avatars/image_1.png"
+                  image="/assets/images/avatars/avatar_2.jpg"
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
@@ -419,36 +405,10 @@ export default function HomepageView() {
                     species, ranging across all continents except Antarctica
                   </Typography>
                 </CardContent>
-                <CardActions>
+                {/* <CardActions>
                   <Button size="small">Share</Button>
                   <Button size="small">Learn More</Button>
-                </CardActions>
-              </Card>
-            </Item>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Item>
-              <Card sx={{ maxWidth: 270 }}>
-                <CardMedia
-                  component="img"
-                  alt="green iguana"
-                  height="250"
-                  image="/assets/images/avatars/image_1.png"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Lizards are a widespread group of squamate reptiles, with over 6,000
-                    species, ranging across all continents except Antarctica
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">Share</Button>
-                  <Button size="small">Learn More</Button>
-                </CardActions>
+                </CardActions> */}
               </Card>
             </Item>
           </Grid>
@@ -460,7 +420,7 @@ export default function HomepageView() {
                   component="img"
                   alt="green iguana"
                   height="250"
-                  image="/assets/images/avatars/image_1.png"
+                  image="/assets/images/avatars/avatar_3.jpg"
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
@@ -471,10 +431,36 @@ export default function HomepageView() {
                     species, ranging across all continents except Antarctica
                   </Typography>
                 </CardContent>
-                <CardActions>
+                {/* <CardActions>
                   <Button size="small">Share</Button>
                   <Button size="small">Learn More</Button>
-                </CardActions>
+                </CardActions> */}
+              </Card>
+            </Item>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Item>
+              <Card sx={{ maxWidth: 270 }}>
+                <CardMedia
+                  component="img"
+                  alt="green iguana"
+                  height="250"
+                  image="/assets/images/avatars/avatar_7.jpg"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    Lizard
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Lizards are a widespread group of squamate reptiles, with over 6,000
+                    species, ranging across all continents except Antarctica
+                  </Typography>
+                </CardContent>
+                {/* <CardActions>
+                  <Button size="small">Share</Button>
+                  <Button size="small">Learn More</Button>
+                </CardActions> */}
               </Card>
             </Item>
           </Grid>
@@ -503,7 +489,7 @@ export default function HomepageView() {
           </Grid>
         </Box>
       </Box>
-      <Box>
+      <Box sx={{mb:10}}>
         <Typography sx={{ textAlign: 'center' }} variant="h4" component="h2" gutterBottom>
           See Our
         </Typography>
@@ -558,9 +544,9 @@ export default function HomepageView() {
         </Box>
       </Box>
 
-      <Box sx={{ height: 200, color: 'primary.main', bgcolor: '#1f1a56' }}>
+      {/* <Box sx={{ height: 200, color: 'primary.main', bgcolor: '#1f1a56' }}>
         abc
-      </Box>
+      </Box> */}
     </Box>
   );
 }

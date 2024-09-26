@@ -15,6 +15,7 @@ export const CounterComponent = lazy(() => import('src/sections/test'));
 export const Homepage = lazy(() => import('src/pages/homepage'));
 export const Header = lazy(() => import('src/pages/header'));
 export const News = lazy(() => import('src/pages/news'));
+export const EventQuiz = lazy(() => import('src/pages/eventquiz'));
 
 // ----------------------------------------------------------------------
 
@@ -34,9 +35,10 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'test', element: <Hello /> },
-        {path: 'upload', element: <UploadFile />},
-        {path: 'counter', element: <CounterComponent />},
+        { path: 'upload', element: <UploadFile /> },
+        { path: 'counter', element: <CounterComponent /> },
         // {path: 'homepage', element: <Homepage />},
+        { path: 'eventquiz', element: <EventQuiz /> },
       ],
     },
     {
@@ -51,8 +53,8 @@ export default function Router() {
       path: '*',
       element: <Navigate to="/404" replace />,
     },
-    {path: 'homepage', element: <Homepage />},
-    {path:'news', element: <News />}
+    { path: 'homepage', element: <Homepage /> },
+    { path: 'news', element: <News /> }
   ]);
 
   return routes;

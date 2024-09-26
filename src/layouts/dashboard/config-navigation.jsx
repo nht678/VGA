@@ -22,6 +22,11 @@ const navConfig = [
     path: '/upload',
     icon: icon('ic_user'),
   },
+  {
+    title: 'event quiz',
+    path: '/eventquiz',
+    icon: icon('ic_user'),
+  },
   // {
   //   title: 'product',
   //   path: '/products',

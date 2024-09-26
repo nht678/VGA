@@ -28,6 +28,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid2';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
+import { Calendar, theme } from 'antd';
+
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -40,6 +42,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+
 
 
 
@@ -59,6 +62,16 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   // write code here
+  const onPanelChange = (value, mode) => {
+    console.log(value.format('YYYY-MM-DD'), mode);
+  };
+  const { token } = theme.useToken();
+  const wrapperStyle = {
+    width: 300,
+    border: `1px solid ${token.colorBorderSecondary}`,
+    borderRadius: token.borderRadiusLG,
+  };
+
   const dispatch = useDispatch();
   // const {  users = [],total=0 } = useSelector((state) => state.usersReducer);
   // useEffect(() => {
@@ -67,11 +80,13 @@ export default function UserPage() {
 
   // const { users = [], totalCount = 0, currentPage = 1 } = useSelector((state) => state.usersReducer);
   const { students, total } = useSelector((state) => state.usersReducer);
-  console.log('Students data:', students); 
+  console.log('Students data:', students);
 
   useEffect(() => {
     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    console.log('Current page:', page + 1);
   }, [dispatch, page, rowsPerPage]);
+
 
   const handleAddUser = () => {
     const newUser = {
@@ -138,7 +153,7 @@ export default function UserPage() {
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
     dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
-  
+
 
   const handleFilterByName = (event) => {
     setPage(0);
@@ -168,7 +183,7 @@ export default function UserPage() {
   const [gold, setGold] = useState('');
   const [adminsstionyear, setAdminsstionyear] = useState('');
   const [gender, setGender] = useState('');
-  // const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('');
   const Year = [
     { label: '2017', year: 2017 },
     { label: '2018', year: 2018 },
@@ -176,13 +191,13 @@ export default function UserPage() {
     { label: '2020', year: 2020 },
     { label: '2021', year: 2021 },
   ];
-  const Item = styled(Paper)(({ theme }) => ({
+  const Item = styled(Paper)(({ theme1 }) => ({
     backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
+    ...theme1.typography.body2,
+    padding: theme1.spacing(1),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
-    ...theme.applyStyles('dark', {
+    color: theme1.palette.text.secondary,
+    ...theme1.applyStyles('dark', {
       backgroundColor: '#1A2027',
     }),
   }));
@@ -237,14 +252,14 @@ export default function UserPage() {
                     setGold(event.target.value);
                   }}
                 />
-                {/* <TextField
+                <TextField
                   id="phone"
                   label="Phone"
                   value={phone}
                   onChange={(event) => {
                     setName(event.target.value);
                   }}
-                /> */}
+                />
 
 
                 <Autocomplete
@@ -258,6 +273,10 @@ export default function UserPage() {
                   }}
                   renderInput={(params) => <TextField {...params} label="Year" />}
                 />
+                <Typography variant="h6">Date Of Birth</Typography>
+                <Box style={wrapperStyle}>
+                  <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+                </Box>
 
                 <FormControl>
                   <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
@@ -272,7 +291,6 @@ export default function UserPage() {
                   >
                     <FormControlLabel value="female" control={<Radio />} label="Female" />
                     <FormControlLabel value="male" control={<Radio />} label="Male" />
-                    <FormControlLabel value="other" control={<Radio />} label="Other" />
                   </RadioGroup>
                 </FormControl>
 
@@ -316,7 +334,7 @@ export default function UserPage() {
                   { id: '' },
                 ]}
               />
-              <TableBody>
+              {/* <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
@@ -340,20 +358,40 @@ export default function UserPage() {
                 />
 
                 {notFound && <TableNoData query={filterName} />}
+              </TableBody> */}
+              <TableBody>
+                {dataFiltered.map((row) => (
+                  <UserTableRow
+                    key={row.id}
+                    name={row.name}
+                    id={row.id}
+                    gender={row.gender}
+                    gold={row["gold-balance"]}
+                    email={row.email}
+                    avatarUrl={row.avatarUrl}
+                    adminssionyear={row.adminssionyear}
+                    selected={selected.indexOf(row.name) !== -1}
+                    handleClick={(event) => handleClick(event, row.name)}
+                  />
+                ))}
+                {/* <TableEmptyRows
+                  height={77}
+                  emptyRows={emptyRows(page, rowsPerPage, students.length)}
+                /> */}
               </TableBody>
             </Table>
           </TableContainer>
         </Scrollbar>
-
         <TablePagination
-          page={page} // Trang hiện tại từ state
           component="div"
-          count={total}  // Tổng số sinh viên từ backend
-          rowsPerPage={rowsPerPage}
+          count={total}
+          page={page}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25]}
         />
+
 
       </Card>
     </Container>

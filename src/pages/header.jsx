@@ -16,7 +16,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import AdbIcon from '@mui/icons-material/Adb';
-import Link from '@mui/material/Link';
+import { Link } from 'react-router-dom';
 import { Image } from 'antd';
 
 const Search = styled('div')(({ theme }) => ({
@@ -171,13 +171,21 @@ export default function Header() {
                             {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
 
                             {/* Đặt Image từ Ant Design với style */}
-                            <Image
+                            {/* <Image
                                 style={{ marginRight: 10 }}
                                 width={30}
                                 height={30}
-                                src="https://your-valid-image-url.com/logo.png" // Đảm bảo đây là một URL hợp lệ
+                                src="/assets/images/avatars/Picture2.png" // Đảm bảo đây là một URL hợp lệ
                                 fallback="https://fallback-image-url.com/fallback.png" // Ảnh fallback nếu không load được
-                            />
+                            /> */}
+                            <Link href='#'>
+                                <img
+                                    style={{ width: 40, height: 40, marginRight: 10 }}
+                                    src="/assets/images/avatars/Logo.png"
+                                    alt="avatar"
+                                />
+                            </Link>
+
 
                             <Typography
                                 variant="h6"
@@ -257,15 +265,18 @@ export default function Header() {
                         }}
                         onClick={preventDefault}
                     >
-                        <Link href="/homepage" color="inherit">
+                        {/* <Link href="/homepage" color="inherit">
                             HomePage
                         </Link>
                         <Link href="/news" color="inherit">
                             News
-                        </Link>
-                        {/* <Link href="#" color="inherit">
-                            {'color="inherit"'}s
                         </Link> */}
+                        <Link to="/homepage" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            HomePage
+                        </Link>
+                        <Link to="/news" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            News
+                        </Link>
                     </Box>
                 </AppBar>
             </Box>

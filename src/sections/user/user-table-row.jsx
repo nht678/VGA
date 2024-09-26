@@ -28,8 +28,7 @@ import { styled } from '@mui/material/styles';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
-import { id, tr } from 'date-fns/locale';
-import { set } from 'lodash';
+import { Calendar, theme } from 'antd';
 
 import { useDispatch } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
@@ -73,6 +72,15 @@ export default function UserTableRow({
     dispatch(actUserDelete(userId));
     handleCloseDialog();
   }
+  const onPanelChange = (value, mode) => {
+    console.log(value.format('YYYY-MM-DD'), mode);
+  };
+  const { token } = theme.useToken();
+  const wrapperStyle = {
+    width: 300,
+    border: `1px solid ${token.colorBorderSecondary}`,
+    borderRadius: token.borderRadiusLG,
+  };
 
 
   const handleOpenMenu = (event) => {
@@ -197,6 +205,10 @@ export default function UserTableRow({
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="Year" />}
               />
+               <Typography variant="h6">Date Of Birth</Typography>
+                <Box style={wrapperStyle}>
+                  <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+                </Box>
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
                 <RadioGroup
@@ -211,7 +223,6 @@ export default function UserTableRow({
                 >
                   <FormControlLabel value="female" control={<Radio />} label="Female" />
                   <FormControlLabel value="male" control={<Radio />} label="Male" />
-                  <FormControlLabel value="other" control={<Radio />} label="Other" />
                 </RadioGroup>
               </FormControl>
             </Box>
