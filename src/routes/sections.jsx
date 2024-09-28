@@ -16,6 +16,9 @@ export const Homepage = lazy(() => import('src/pages/homepage'));
 export const Header = lazy(() => import('src/pages/header'));
 export const News = lazy(() => import('src/pages/news'));
 export const EventQuiz = lazy(() => import('src/pages/eventquiz'));
+export const EditQuiz = lazy(() => import('src/pages/quizdetail'));
+export const MyQuiz = lazy(() => import('src/pages/myquiz'));
+export const NewsDetail = lazy(() => import('src/pages/newsdetail'));
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +42,9 @@ export default function Router() {
         { path: 'counter', element: <CounterComponent /> },
         // {path: 'homepage', element: <Homepage />},
         { path: 'eventquiz', element: <EventQuiz /> },
+        { path: 'editquiz', element: <EditQuiz /> },
+        { path: 'myquiz', element: <MyQuiz /> },
+        { path: 'newsdetail', element: <NewsDetail /> },
       ],
     },
     {
@@ -54,7 +60,9 @@ export default function Router() {
       element: <Navigate to="/404" replace />,
     },
     { path: 'homepage', element: <Homepage /> },
-    { path: 'news', element: <News /> }
+    { path: 'news', element: <News /> },
+    { path: 'hello', element: <Hello /> },
+
   ]);
 
   return routes;

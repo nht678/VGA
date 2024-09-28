@@ -2,11 +2,12 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
+import Footer from 'src/sections/footer/footer';
 
 import Nav from './nav';
 import Main from './main';
-import Header from './header';
-
+// import Header from './header';
+import Header from '../../pages/header';
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout({ children }) {
@@ -14,7 +15,9 @@ export default function DashboardLayout({ children }) {
 
   return (
     <>
-      <Header onOpenNav={() => setOpenNav(true)} />
+      {/* <Header onOpenNav={() => setOpenNav(true)} /> */}
+      <Header />
+
 
       <Box
         sx={{
@@ -27,6 +30,7 @@ export default function DashboardLayout({ children }) {
 
         <Main>{children}</Main>
       </Box>
+      <Footer />
     </>
   );
 }

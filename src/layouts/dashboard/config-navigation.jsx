@@ -27,6 +27,16 @@ const navConfig = [
     path: '/eventquiz',
     icon: icon('ic_user'),
   },
+  {
+    title: 'test edit quiz',
+    path: '/editquiz',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'my quiz',
+    path: '/myquiz',
+    icon: icon('ic_user'),
+  },
   // {
   //   title: 'product',
   //   path: '/products',

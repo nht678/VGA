@@ -1,9 +1,12 @@
+import React, { useState } from 'react';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import Grid from '@mui/system/Grid';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function EventQuizView() {
 
@@ -59,10 +62,21 @@ export default function EventQuizView() {
         }
       `,
     );
+    const VisuallyHiddenInput = styled('input')({
+        clip: 'rect(0 0 0 0)',
+        clipPath: 'inset(50%)',
+        height: 1,
+        overflow: 'hidden',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        whiteSpace: 'nowrap',
+        width: 1,
+    });
 
     return (
         <Box >
-            <Typography variant='h3'> Set Event Quiz</Typography>
+            <Typography sx={{ ml: 2 }} variant='h3'> Set Event Quiz</Typography>
             <Grid container spacing={2}>
                 <Grid size={{ md: 4 }}>
 
@@ -70,6 +84,7 @@ export default function EventQuizView() {
                         boxShadow: 10,
                         bgcolor: '#fff',
                         color: 'grey.800',
+                        height: 300,
                         p: 1,
                         m: 1,
                         borderRadius: 2,
@@ -81,10 +96,32 @@ export default function EventQuizView() {
                         }),
                     })}
                     >
-                        <Typography variant='h5' sx={{ mb: 1 }}>Title</Typography>
-                        <TextField sx={{ mb: 2 }} id="outlined-basic" label="Add a description title" variant="outlined" />
-                        <Typography variant='h5' sx={{ mb: 1 }}>Description</Typography>
-                        <Textarea aria-label="minimum height" minRows={3} placeholder="Minimum 3 rows" />
+                        <Box sx={{
+                            border: '2px dashed black',
+                            m: 2,
+                            height: '90%', // Chiếm toàn bộ chiều cao của Box
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center', // Căn giữa theo chiều dọc
+                            alignItems: 'center', // Căn giữa theo chiều ngang
+                        }}>
+                            <Typography variant='h5' sx={{ mb: 1 }}>Cover Image</Typography>
+                            <Typography variant='body2' sx={{ mb: 1 }}>Upload a cover image for the event quiz</Typography>
+                            <Button
+                                component="label"
+                                role={undefined}
+                                variant="contained"
+                                tabIndex={-1}
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Upload files
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    onChange={(event) => console.log(event.target.files)}
+                                    multiple
+                                />
+                            </Button>
+                        </Box>
                     </Box>
                 </Grid>
                 <Grid size={{ md: 8 }}>
@@ -93,6 +130,7 @@ export default function EventQuizView() {
                         boxShadow: 10,
                         bgcolor: '#fff',
                         color: 'grey.800',
+                        height: 300,
                         p: 1,
                         m: 1,
                         borderRadius: 2,
@@ -105,11 +143,14 @@ export default function EventQuizView() {
                     })}
                     >
                         <Typography variant='h5' sx={{ mb: 1 }}>Title</Typography>
-                        <TextField sx={{ mb: 2 }} id="outlined-basic" label="Add a description title" variant="outlined" />
+                        <TextField sx={{ mb: 2, width: '100%' }} id="outlined-basic" label="Add a description title" variant="outlined" />
                         <Typography variant='h5' sx={{ mb: 1 }}>Description</Typography>
-                        <Textarea aria-label="minimum height" minRows={3} placeholder="Minimum 3 rows" />
+                        <Textarea sx={{ width: '100%' }} aria-label="minimum height" minRows={4} placeholder="Description" />
                     </Box>
                 </Grid>
+            </Grid>
+            <Grid sx={{ justifyContent: 'flex-end', mr: 2, mt: 5 }} container spacing={2}>
+                <Button sx={{ height: 50, width: 90 }} variant="contained">Create</Button>
             </Grid>
 
         </Box>

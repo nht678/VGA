@@ -277,6 +277,9 @@ export default function Header() {
                         <Link to="/news" style={{ textDecoration: 'none', color: 'inherit' }}>
                             News
                         </Link>
+                        <Link to="/user" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            Manages
+                        </Link>
                     </Box>
                 </AppBar>
             </Box>
