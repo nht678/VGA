@@ -19,6 +19,7 @@ export const EventQuiz = lazy(() => import('src/pages/eventquiz'));
 export const EditQuiz = lazy(() => import('src/pages/quizdetail'));
 export const MyQuiz = lazy(() => import('src/pages/myquiz'));
 export const NewsDetail = lazy(() => import('src/pages/newsdetail'));
+export const NewsUniversity = lazy(() => import('src/pages/newsuniversity'));
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +45,8 @@ export default function Router() {
         { path: 'eventquiz', element: <EventQuiz /> },
         { path: 'editquiz', element: <EditQuiz /> },
         { path: 'myquiz', element: <MyQuiz /> },
-        { path: 'newsdetail', element: <NewsDetail /> },
+        { path: 'newsuniversity', element: <NewsUniversity /> },
+
       ],
     },
     {
@@ -62,6 +64,8 @@ export default function Router() {
     { path: 'homepage', element: <Homepage /> },
     { path: 'news', element: <News /> },
     { path: 'hello', element: <Hello /> },
+    { path: 'newsdetail', element: <NewsDetail /> },
+
 
   ]);
 

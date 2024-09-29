@@ -265,12 +265,6 @@ export default function Header() {
                         }}
                         onClick={preventDefault}
                     >
-                        {/* <Link href="/homepage" color="inherit">
-                            HomePage
-                        </Link>
-                        <Link href="/news" color="inherit">
-                            News
-                        </Link> */}
                         <Link to="/homepage" style={{ textDecoration: 'none', color: 'inherit' }}>
                             HomePage
                         </Link>

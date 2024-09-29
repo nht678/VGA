@@ -37,6 +37,11 @@ const navConfig = [
     path: '/myquiz',
     icon: icon('ic_user'),
   },
+  {
+    title: 'news',
+    path: '/newsuniversity',
+    icon: icon('ic_user'),
+  },
   // {
   //   title: 'product',
   //   path: '/products',
