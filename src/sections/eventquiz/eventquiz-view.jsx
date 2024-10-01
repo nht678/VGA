@@ -7,6 +7,7 @@ import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAuto
 import { styled } from '@mui/system';
 import Grid from '@mui/system/Grid';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Stack from '@mui/material/Stack';
 
 export default function EventQuizView() {
 
@@ -76,7 +77,9 @@ export default function EventQuizView() {
 
     return (
         <Box >
-            <Typography sx={{ ml: 2 }} variant='h3'> Set Event Quiz</Typography>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Typography sx={{ mt: 5, mb: 5 }} variant='h4'> Set Event Quiz</Typography>
+            </Stack>
             <Grid container spacing={2}>
                 <Grid size={{ md: 4 }}>
 

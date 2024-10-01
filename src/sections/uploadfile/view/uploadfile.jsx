@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -9,15 +9,23 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-// import Button from '@mui/material/Button';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import Popover from '@mui/material/Popover';
+import MenuItem from '@mui/material/MenuItem';
+import { Box } from '@mui/system';
 
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
+import { Button as AntButton, message, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 
 
@@ -52,7 +60,18 @@ export default function UploadFile() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [open, setOpen] = useState(null);
+
+  const handleOpenMenu = (event) => {
+    setOpen(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setOpen(null);
+  };
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -112,7 +131,6 @@ export default function UploadFile() {
   const notFound = !dataFiltered.length && !!filterName;
   // write your code here
 
-  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -121,75 +139,6 @@ export default function UploadFile() {
   const handleClose = () => {
     setOpen(false);
   };
-  // code upload file
-  // const [selectedFile, setSelectedFile] = useState(null);
-
-  // const props = {
-  //   name: 'file',
-  //   beforeUpload(file) {
-  //     // Lưu file đã chọn vào state
-  //     setSelectedFile(file);
-  //     return false;  // Ngăn chặn upload mặc định của antd
-  //   },
-  // };
-
-  // const handleUpload = () => {
-  //   if (!selectedFile) {
-  //     message.error('Please select a file first!');
-  //     return;
-  //   }
-
-  //   const reader = new FileReader();
-
-  //   reader.onload = (e) => {
-  //     const data = new Uint8Array(e.target.result);
-  //     const workbook = XLSX.read(data, { type: 'array' });
-
-  //     // Lấy sheet đầu tiên
-  //     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-  //     // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
-  //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-  //     // Tách header và rows
-  //     const [headers, ...rows] = jsonData;
-
-  //     // Lọc bỏ các hàng trống
-  //     const filteredRows = rows.filter(row =>
-  //       row.some(cell => cell !== undefined && cell !== null && cell !== '')
-  //     );
-
-  //     // Chuyển đổi các hàng còn lại thành các object dựa trên headers
-  //     const formattedData = filteredRows.map(row => {
-  //       const obj = {};
-  //       headers.forEach((header, index) => {
-  //         obj[header] = row[index];
-  //       });
-  //       return obj;
-  //     });
-
-  //     console.log('Filtered JSON Data:', formattedData);
-
-  //     // Gửi dữ liệu JSON tới backend
-  //     fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'authorization': 'authorization-text',
-  //       },
-  //       body: JSON.stringify(formattedData),
-  //     })
-  //       .then((response) => response.json())
-  //       .then((data1) => {
-  //         message.success(`${selectedFile.name} file uploaded and converted successfully`);
-  //       })
-  //       .catch((error) => {
-  //         message.error(`${selectedFile.name} file upload failed.`);
-  //       });
-  //   };
-
-  //   reader.readAsArrayBuffer(selectedFile);
-  // };
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -272,9 +221,9 @@ export default function UploadFile() {
   };
 
   return (
-    <Container>
+    <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Upload Student</Typography>
+        <Typography variant="h4" sx={{ mt: 5, mb: 5 }}>Upload Student</Typography>
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleClickOpen}>
           New Upload
         </Button>
@@ -290,23 +239,8 @@ export default function UploadFile() {
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               <Upload {...props}>
-                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                <AntButton icon={<UploadOutlined />}>Click to Upload</AntButton>
               </Upload>
-              {/* <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-              >
-                <FormControlLabel value="female" control={<Radio />} label="2017" />
-                <FormControlLabel value="male" control={<Radio />} label="2018" />
-                <FormControlLabel value="other" control={<Radio />} label="2019" />
-              </RadioGroup> */}
-              {/* <FormControlLabel
-                  value="disabled"
-                  disabled
-                  control={<Radio />}
-                  label="other"
-                /> */}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -318,60 +252,86 @@ export default function UploadFile() {
         </Dialog>
       </Stack>
 
-      <Card>
+      <Card >
         <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'date', label: 'Date' },
-                  // { id: 'company', label: 'Company' },
-                  // { id: 'role', label: 'Role' },
-                  // { id: 'isVerified', label: 'Verified', align: 'center' },
-                  // { id: 'status', label: 'Status' },
-                  { id: '' },
-                ]}
-              />
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
+        <TableContainer sx={{ height: 500 }}> {/* Bảng sẽ cuộn bên trong khung này */}
+          <Table sx={{ minWidth: 800 }} stickyHeader>
+            <UserTableHead
+              order={order}
+              orderBy={orderBy}
+              rowCount={users.length}
+              numSelected={selected.length}
+              onRequestSort={handleSort}
+              onSelectAllClick={handleSelectAllClick}
+              headLabel={[
+                { id: 'name', label: 'Name' },
+                { id: 'date', label: 'Date' },
+                { id: '' },
+              ]}
+            />
+            <TableBody sx={{ overflowY: 'auto', }}>
+              {dataFiltered
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <>
+                    {console.log('row,,..', row)}
+                    {/* role="checkbox" selected={selected} */}
+                    <TableRow hover tabIndex={-1} >
+                      <TableCell padding="checkbox">
+                        <Checkbox disableRipple checked={selected.indexOf(row.name) !== -1} onChange={(event) => handleClick(event, row.name)} />
+                      </TableCell>
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
+                      <TableCell component="th" scope="row" padding="none">
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                          <Avatar alt={row.name} src={row.avatarUrl} />
+                          <Typography variant="subtitle2" noWrap>
+                            {row.name}
+                          </Typography>
+                        </Stack>
+                      </TableCell>
 
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                      <TableCell>{row.company}</TableCell>
+                      <TableCell align="right">
+                        <IconButton onClick={(event) => handleOpenMenu(event, row)}>
+                          <Iconify icon="eva:more-vertical-fill" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+
+                    {/* <Popover
+                      open={Boolean(open)}
+                      anchorEl={open}
+                      onClose={handleCloseMenu}
+                      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                      PaperProps={{
+                        sx: { width: 140 },
+                      }}
+                    >
+                      <MenuItem >
+                        <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+                        Edit
+                      </MenuItem>
+
+                      <MenuItem sx={{ color: 'error.main' }}>
+                        <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+                        Delete
+                      </MenuItem>
+                    </Popover> */}
+                  </>
+                ))}
+
+              <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, users.length)} />
+              {notFound && <TableNoData query={filterName} />}
+            </TableBody>
+
+          </Table>
+        </TableContainer>
 
         <TablePagination
           page={page}
@@ -383,6 +343,7 @@ export default function UploadFile() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
-    </Container>
+    </>
+
   );
 }

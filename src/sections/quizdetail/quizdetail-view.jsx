@@ -82,7 +82,8 @@ export default function QuizDetailView() {
 
 
     return (
-        <Box >
+        <Box sx={{ mt: 5, mb: 5 }}>
+
             <Grid container spacing={2}>
                 <Grid size={{ md: 3 }}>
                     <Box sx={(theme) => ({

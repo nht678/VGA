@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }) {
       >
         <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />
 
-        <Main>{children}</Main>
+        <Main sx={{ pt: 0 }}>{children}</Main>
       </Box>
       <Footer />
     </>

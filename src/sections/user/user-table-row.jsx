@@ -64,7 +64,7 @@ export default function UserTableRow({
       gender: dialogGender,
     }
     // console.log("id",id);
-    dispatch(actUserUpdateAsync(user,userId));
+    dispatch(actUserUpdateAsync(user, userId));
     handleCloseDialog();
   }
   const handleDelete = () => {
@@ -77,7 +77,7 @@ export default function UserTableRow({
   };
   const { token } = theme.useToken();
   const wrapperStyle = {
-    width: 300,
+    width: '100%',
     border: `1px solid ${token.colorBorderSecondary}`,
     borderRadius: token.borderRadiusLG,
   };
@@ -144,7 +144,7 @@ export default function UserTableRow({
         <TableCell align='center'>{adminssionyear}2024</TableCell>
 
         <TableCell>
-          {gold}$ 
+          {gold}$
         </TableCell>
 
         <TableCell align="right">
@@ -165,7 +165,7 @@ export default function UserTableRow({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <Box
+            {/* <Box
               component="form"
               sx={{ '& > :not(style)': { m: 1, width: '25ch' } }}
               noValidate
@@ -205,10 +205,10 @@ export default function UserTableRow({
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="Year" />}
               />
-               <Typography variant="h6">Date Of Birth</Typography>
-                <Box style={wrapperStyle}>
-                  <Calendar fullscreen={false} onPanelChange={onPanelChange} />
-                </Box>
+              <Typography variant="h6">Date Of Birth</Typography>
+              <Box style={wrapperStyle}>
+                <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+              </Box>
               <FormControl>
                 <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
                 <RadioGroup
@@ -225,7 +225,85 @@ export default function UserTableRow({
                   <FormControlLabel value="male" control={<Radio />} label="Male" />
                 </RadioGroup>
               </FormControl>
-            </Box>
+            </Box> */}
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    value={dialogName}
+                    onChange={(event) => {
+                      setDialogName(event.target.value);
+                    }}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    value={dialogEmail}
+                    onChange={(event) => {
+                      setDialogEmail(event.target.value);
+                    }}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Gold"
+                    value={dialogGold}
+                    onChange={(event) => {
+                      setDialogGold(event.target.value);
+                    }}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                  <Autocomplete
+                    disablePortal
+                    options={Year}
+                    value={Year.find((item) => item.year === dialogYear)}
+                    onChange={(event, newValue) => {
+                      setDialogYear(newValue?.year);
+                    }}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Year" />}
+                  />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                  <Typography variant="h6">Date Of Birth</Typography>
+                  <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                  <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="row-radio-buttons-group"
+                      value={dialogGender}
+                      onChange={(event) => {
+                        setDialogGender(event.target.value);
+                      }
+                      }
+                    >
+                      <FormControlLabel value="female" control={<Radio />} label="Female" />
+                      <FormControlLabel value="male" control={<Radio />} label="Male" />
+                    </RadioGroup>
+                  </FormControl>
+                </Paper>
+              </Grid>
+            </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

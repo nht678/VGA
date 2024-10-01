@@ -191,21 +191,21 @@ export default function UserPage() {
     { label: '2020', year: 2020 },
     { label: '2021', year: 2021 },
   ];
-  const Item = styled(Paper)(({ theme1 }) => ({
-    backgroundColor: '#fff',
-    ...theme1.typography.body2,
-    padding: theme1.spacing(1),
-    textAlign: 'center',
-    color: theme1.palette.text.secondary,
-    ...theme1.applyStyles('dark', {
-      backgroundColor: '#1A2027',
-    }),
-  }));
+  // const Item = styled(Paper)(({ theme1 }) => ({
+  //   backgroundColor: '#fff',
+  //   ...theme1.typography.body2,
+  //   padding: theme1.spacing(1),
+  //   textAlign: 'center',
+  //   color: theme1.palette.text.secondary,
+  //   ...theme1.applyStyles('dark', {
+  //     backgroundColor: '#1A2027',
+  //   }),
+  // }));
 
   return (
-    <Container>
+    <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Students</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Students</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleClickOpen}>
           New Student
@@ -221,7 +221,7 @@ export default function UserPage() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              <Box
+              {/* <Box
                 component="form"
                 sx={{ '& > :not(style)': { m: 1, width: '25ch' } }}
                 noValidate
@@ -294,8 +294,73 @@ export default function UserPage() {
                   </RadioGroup>
                 </FormControl>
 
-              </Box>
-
+              </Box> */}
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value);
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Gold"
+                    value={gold}
+                    onChange={(event) => {
+                      setGold(event.target.value);
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Autocomplete
+                    disablePortal
+                    options={Year}
+                    value={Year.find((item) => item.year === adminsstionyear)}
+                    onChange={(event, newValue) => {
+                      setAdminsstionyear(newValue.year);
+                    }}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Year" />}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h6">Date Of Birth</Typography>
+                  <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl>
+                    <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="row-radio-buttons-group"
+                      value={gender}
+                      onChange={(event) => {
+                        setGender(event.target.value);
+                      }
+                      }
+                    >
+                      <FormControlLabel value="female" control={<Radio />} label="Female" />
+                      <FormControlLabel value="male" control={<Radio />} label="Male" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              </Grid>
 
             </DialogContentText>
           </DialogContent>
@@ -394,6 +459,6 @@ export default function UserPage() {
 
 
       </Card>
-    </Container>
+    </>
   );
 }

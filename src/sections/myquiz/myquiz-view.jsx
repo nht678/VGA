@@ -10,13 +10,16 @@ import { Link } from 'react-router-dom';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import Stack from '@mui/material/Stack';
 
 export default function MyQuizPage() {
     return (
         <Box>
-            <Typography variant="h3" sx={{ mb: 5 }}>
-                MyQuiz
-            </Typography>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Typography sx={{ mt: 5, mb: 5 }} variant="h4" >
+                    MyQuiz
+                </Typography>
+            </Stack>
             <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
                 <Grid item xs={12} sm={6} md={3}>
                     <Card sx={{ minWidth: 275 }}>
