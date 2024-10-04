@@ -1,31 +1,35 @@
 import * as React from 'react';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-// import Grid from '@mui/material/Grid2';
-import Grid from '@mui/system/Grid';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Iconify from 'src/components/iconify';
-import Stack from '@mui/material/Stack';
-import { TextField } from '@mui/material';
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { UploadOutlined } from '@ant-design/icons';
 import { Button as AntButton, message, Upload, Calendar } from 'antd';
-import { useAutocomplete } from '@mui/base/useAutocomplete';
-import { styled } from '@mui/system';
-import Box from '@mui/material/Box';
+import { UploadOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
 
-import { Dialog as DialogTw, DialogBackdrop, DialogPanel, DialogTitle as DialogTitleTw } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import {
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Button,
+    Typography,
+    Stack,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Box
+} from '@mui/material';
+import Grid from '@mui/system/Grid';
+import { styled } from '@mui/system';
+import Iconify from 'src/components/iconify';
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+import { useAutocomplete } from '@mui/base/useAutocomplete';
+
+
+import DeleteDialog from '../../pages/delete';
+import { updateNews, deleteNews } from '../../store/news/action';
 
 const options = ['Economy', 'Politics', 'Entertainment', 'Sports', 'Science', 'Education', 'Health'];
 
@@ -47,52 +51,59 @@ const props = {
         }
     },
 };
-const fakedata = [
-    {
-        id: 1,
-        title: "Enthusiasm for Chinese dramas grants student full scholarship to elite China university",
-        content: "A Vietnamese student transformed her passion for Chinese historical dramas and literature into a full scholarship at Peking University, China's top-ranked institution.",
-        image: "https://i1-english.vnecdn.net/2024/09/24/bac-kinh2-5864-1726731925-3884-1727171062.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=kuoO7VFNNqx4FYxIS8wUUA",
-    },
-    {
-        id: 2,
-        title: "Enthusiasm for Chinese dramas grants student full scholarship to elite China university",
-        content: "A Vietnamese student transformed her passion for Chinese historical dramas and literature into a full scholarship at Peking University, China's top-ranked institution.",
-        image: "https://i1-english.vnecdn.net/2024/09/24/bac-kinh2-5864-1726731925-3884-1727171062.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=kuoO7VFNNqx4FYxIS8wUUA",
-    },
-    {
-        id: 3,
-        title: "Enthusiasm for Chinese dramas grants student full scholarship to elite China university",
-        content: "A Vietnamese student transformed her passion for Chinese historical dramas and literature into a full scholarship at Peking University, China's top-ranked institution.",
-        image: "https://i1-english.vnecdn.net/2024/09/24/bac-kinh2-5864-1726731925-3884-1727171062.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=kuoO7VFNNqx4FYxIS8wUUA",
-    },
-    {
-        id: 4,
-        title: "Enthusiasm for Chinese dramas grants student full scholarship to elite China university",
-        content: "A Vietnamese student transformed her passion for Chinese historical dramas and literature into a full scholarship at Peking University, China's top-ranked institution.",
-        image: "https://i1-english.vnecdn.net/2024/09/24/bac-kinh2-5864-1726731925-3884-1727171062.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=kuoO7VFNNqx4FYxIS8wUUA",
-    },
-    {
-        id: 4,
-        title: "Enthusiasm for Chinese dramas grants student full scholarship to elite China university",
-        content: "A Vietnamese student transformed her passion for Chinese historical dramas and literature into a full scholarship at Peking University, China's top-ranked institution.",
-        image: "https://i1-english.vnecdn.net/2024/09/24/bac-kinh2-5864-1726731925-3884-1727171062.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=kuoO7VFNNqx4FYxIS8wUUA",
-    },
 
-
-];
 
 
 export default function NewsUniversityView() {
+    const dispatch = useDispatch();
     const [open, setOpen] = React.useState(null);
+    const [currentNews, setCurrentNews] = useState([]);
+    const [selectedNews, setSelectedNews] = useState(null); // Tin tức hiện tại
+    const [formData, setFormData] = useState({
+        title: '',
+        content: '',
+        image: '',
+        category: '',
+        date: '',
+    });
 
-    const handleClickOpen = (dialogType) => {
+    console.log('formData', formData);
+    const [title, setTitle] = useState('');
+    const handleClickOpen = (dialogType, news) => {
+        setSelectedNews(news); // Lưu lại tin tức hiện tại
         setOpen(dialogType);
     };
 
     const handleClose = () => {
         setOpen(null);
     };
+    const handleDelete = () => {
+        if (selectedNews) {
+            dispatch(deleteNews(selectedNews.id));
+            handleClose(); // Đóng dialog
+        }
+    };
+
+    const handleUpdate = () => {
+        if (selectedNews) {
+            dispatch(updateNews(selectedNews.id, formData));
+            handleClose(); // Đóng dialog
+        }
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('https://65dc58f6e7edadead7ebb035.mockapi.io/news');
+                console.log('data', response.data); // Sử dụng response.data
+                setCurrentNews(response.data); // Cập nhật state
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData(); // Gọi hàm fetchData
+    }, []);
+
     const [value, setValue] = React.useState(options[0]);
     const [inputValue, setInputValue] = React.useState('');
 
@@ -296,16 +307,17 @@ export default function NewsUniversityView() {
       `,
     );
 
+
     return (
         <Box>
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4" sx={{ mt: 5, mb: 5 }}>News University</Typography>
+                <Typography variant="h4" sx={{ mb: 5 }}>News University</Typography>
                 <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
                     New News
                 </Button>
             </Stack>
             <Grid container spacing={2} sx={{ mx: 4 }}>
-                {fakedata.map((news) => (
+                {currentNews.map((news) => (
                     <Grid size={{ md: 3 }} key={news.id}>
                         <Card sx={{ maxWidth: 300 }}>
                             <CardMedia
@@ -323,44 +335,55 @@ export default function NewsUniversityView() {
                                 </Typography>
                             </CardContent>
                             <CardActions sx={{ justifyContent: 'center', backgroundColor: 'rgba(232,223,249,1)' }}>
-                                <Button size="small">Edit</Button>
-                                <Button size="small" onClick={() => handleClickOpen('Delete')}>Delete</Button>
+                                <Button size="small" onClick={() => handleClickOpen('Edit', news)}>Edit</Button>
+                                <Button size="small" onClick={() => handleClickOpen('Delete', news)}>Delete</Button>
                             </CardActions>
                         </Card>
                     </Grid>
                 ))}
                 <Box>
                     <Dialog
-                        open={open === 'Create'}
+                        open={open === 'Create' || open === 'Edit'}
                         onClose={handleClose}
                         aria-labelledby="alert-dialog-title"
                         aria-describedby="alert-dialog-description"
-                    // fullWidth
-                    // maxWidth="md"
                     >
                         <DialogTitle id="alert-dialog-title">
-                            Create News
+                            {open === 'Create' ? 'Create News' : 'Edit News'}
                         </DialogTitle>
                         <DialogContent>
                             <DialogContentText id="alert-dialog-description">
-                                <Grid container spacing={2} >
+                                <Grid container spacing={2}>
                                     <Grid size={{ xs: 12, md: 12 }}>
                                         <Typography variant="h6" component="div">
                                             Title
                                         </Typography>
-                                        <Textarea aria-label="minimum height" minRows={3} placeholder="Write title here" />
+                                        <textarea
+                                            aria-label="minimum height"
+                                            placeholder="Write title here"
+                                            style={{ width: '100%', height: '100px', border: '1px solid #ccc', borderRadius: '4px', fontWeight: 'bold' }}
+                                            defaultValue={open === 'Edit' ? selectedNews.title : ''}
+                                            // Sử dụng value thay vì defaultValue
+                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        />
                                     </Grid>
                                     <Grid size={{ xs: 12, md: 12 }}>
                                         <Typography variant="h6" component="div">
                                             Content
                                         </Typography>
-                                        <Textarea aria-label="minimum height" minRows={3} placeholder="Write content here" />
+                                        <textarea
+                                            aria-label="minimum height"
+                                            placeholder="Write content here"
+                                            style={{ width: '100%', height: '100px', border: '1px solid #ccc', borderRadius: '4px', fontWeight: 'bold' }}
+                                            defaultValue={open === 'Edit' ? selectedNews.content : ''} // Sử dụng giá trị của news hiện tại nếu đang chỉnh sửa
+                                            onChange={(e) => setFormData({ ...formData, content: e.target.defaultValue })}
+                                        />
                                     </Grid>
                                     <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                                         <Typography variant="h6" component="div">
                                             Image
                                         </Typography>
-                                        <Upload {...props}>
+                                        <Upload {...props} onChange={(info) => setFormData({ ...formData, image: info.file.response.url })}>
                                             <AntButton icon={<UploadOutlined />}>Click to Upload</AntButton>
                                         </Upload>
                                     </Grid>
@@ -373,7 +396,7 @@ export default function NewsUniversityView() {
                                                 {...getRootProps()}
                                                 className={focused ? 'Mui-focused' : ''}
                                             >
-                                                <Input {...getInputProps()} />
+                                                <Input {...getInputProps()} onChange={(e) => setFormData({ ...formData, category: e.target.value })} />
                                             </AutocompleteRoot>
                                             {groupedOptions.length > 0 && (
                                                 <Listbox {...getListboxProps()}>
@@ -388,99 +411,21 @@ export default function NewsUniversityView() {
                                         <Typography variant="h6" component="div">
                                             Date
                                         </Typography>
-                                        <Calendar fullscreen={false} />
+                                        <Calendar fullscreen={false} onChange={(date, dateString) => setFormData({ ...formData, date: dateString })} />
                                     </Grid>
-                                    {/* <Grid item xs={12} sm={6} md={3}>
-                                            <Typography variant="h6" component="div">
-                                                Author
-                                            </Typography>
-                                            <Layout >
-                                          
-                                                <AutocompleteWrapper>
-                                                    <AutocompleteRoot
-                                                        {...getRootProps()}
-                                                        className={focused ? 'Mui-focused' : ''}
-                                                    >
-                                                        <Input {...getInputProps()} />
-                                                    </AutocompleteRoot>
-                                                    {groupedOptions.length > 0 && (
-                                                        <Listbox {...getListboxProps()}>
-                                                            {groupedOptions.map((option, index) => (
-                                                                <Option {...getOptionProps({ option, index })}>{option}</Option>
-                                                            ))}
-                                                        </Listbox>
-                                                    )}
-                                                </AutocompleteWrapper>
-                                            </Layout>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={3}>
-                                            <Typography variant="h6" component="div">
-                                                Source
-                                            </Typography>
-                                            <TextField id="outlined-basic" label="Source" variant="outlined" />
-                                        </Grid> */}
+                                    {/* Các trường khác nếu cần thiết */}
                                 </Grid>
-
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
-                            <Button onClick={handleClose} autoFocus>
-                                Create News
+                            <Button onClick={handleUpdate} autoFocus>
+                                {open === 'Create' ? 'Create News' : 'Update News'}
                             </Button>
                         </DialogActions>
                     </Dialog>
-                    <DialogTw open={open === 'Delete'} onClose={setOpen} className="relative z-10">
-                        <DialogBackdrop
-                            transition
-                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-                        />
 
-                        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                                <DialogPanel
-                                    transition
-                                    className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
-                                >
-                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
-                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                <ExclamationTriangleIcon aria-hidden="true" className="h-6 w-6 text-red-600" />
-                                            </div>
-                                            <div className="sm:ml-4 sm:mt-0 sm:text-left">
-                                                <DialogTitleTw as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                                                    Delete
-                                                </DialogTitleTw>
-                                                <div className="mt-2">
-                                                    <p className="text-sm text-gray-500">
-                                                        Are you sure you want  your news? All of your data this new will be permanently removed.
-                                                        This action cannot be undone.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setOpen(false)}
-                                            className=" mt-3 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            type="button"
-                                            data-autofocus
-                                            onClick={() => setOpen(false)}
-                                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </DialogPanel>
-                            </div>
-                        </div>
-                    </DialogTw>
+                    <DeleteDialog open={open} onClose={handleClose} />
                 </Box>
 
             </Grid>

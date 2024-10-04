@@ -14,13 +14,15 @@ import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAuto
 import Checkbox from '@mui/material/Checkbox';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
+import { TextField } from '@mui/material';
+import DeleteDialog from '../../pages/delete';
 
 export default function QuizDetailView() {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState('');
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const handleClickOpen = (Typedialog) => {
+        setOpen(Typedialog);
     };
 
     const handleClose = () => {
@@ -115,7 +117,7 @@ export default function QuizDetailView() {
                                 <Button sx={{ width: '100%', height: 20 }} variant="contained">Edit info</Button>
                             </Grid>
                             <Grid item xs={6}>
-                                <Button sx={{ width: '100%', height: 20 }} variant="contained">Time limit</Button>
+                                <Button onClick={() => handleClickOpen('SetTimeLimit')} sx={{ width: '100%', height: 20 }} variant="contained">Time limit</Button>
                             </Grid>
                         </Grid>
 
@@ -146,7 +148,7 @@ export default function QuizDetailView() {
                         >
                             <Typography variant='h5'>0 Question</Typography>
                         </Box>
-                        <Button onClick={handleClickOpen} sx={{
+                        <Button onClick={() => handleClickOpen('CreateQuestion')} sx={{
                             boxShadow: 10,
                             height: 50,
                             width: 200,
@@ -161,7 +163,7 @@ export default function QuizDetailView() {
                         }} variant="contained">Add Question</Button>
 
                         <Dialog
-                            open={open}
+                            open={open === 'CreateQuestion'}
                             onClose={handleClose}
                             aria-labelledby="alert-dialog-title"
                             aria-describedby="alert-dialog-description"
@@ -402,7 +404,7 @@ export default function QuizDetailView() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
 
                             <Button sx={{ mb: 1, width: 70, height: 40 }} variant="contained"><EditIcon />Edit</Button>
-                            <Button sx={{ width: 70, height: 40 }} variant="contained"><DeleteIcon /> Delete</Button>
+                            <Button sx={{ width: 70, height: 40 }} variant="contained" onClick={() => handleClickOpen('Delete')}><DeleteIcon /> Delete</Button>
                         </Box>
                         <Box sx={{ ml: 1 }}>
                             <Typography variant='h5'>Question 1</Typography>
@@ -474,6 +476,44 @@ export default function QuizDetailView() {
                     </Box>
                 </Grid>
             </Grid>
-        </Box>
+            <Box>
+                <Dialog
+                    open={open === 'SetTimeLimit'}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    width="50%"
+                >
+                    <DialogTitle id="alert-dialog-title" sx={{ wordWrap: 'break-word' }}>
+                        <Typography variant='h5'>Set the time limit for all  <br /> questions (in seconds):</Typography >
+                    </DialogTitle>
+                    <DialogContent >
+                        <DialogContentText id="alert-dialog-description">
+                            <Grid container spacing={2} sx={{ alignItems: 'center', mt: 2 }}>
+                                <Grid sx={{ mr: 1 }} size={{ md: 1 }}>
+                                    <AccessAlarmIcon />
+                                </Grid>
+                                <Grid size={{ md: 10 }}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Time limit"
+                                        variant="outlined"
+                                        fullWidth
+
+                                    />
+                                </Grid>
+                            </Grid>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleClose} autoFocus>
+                            Save
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                <DeleteDialog open={open} onClose={handleClose} />
+            </Box>
+        </Box >
     );
 }

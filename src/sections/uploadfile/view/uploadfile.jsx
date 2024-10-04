@@ -297,13 +297,13 @@ export default function UploadFile() {
 
                       <TableCell>{row.company}</TableCell>
                       <TableCell align="right">
-                        <IconButton onClick={(event) => handleOpenMenu(event, row)}>
+                        <IconButton onClick={() => handleOpenMenu('OpenMenu')}>
                           <Iconify icon="eva:more-vertical-fill" />
                         </IconButton>
                       </TableCell>
                     </TableRow>
 
-                    {/* <Popover
+                    <Popover
                       open={Boolean(open)}
                       anchorEl={open}
                       onClose={handleCloseMenu}
@@ -322,7 +322,7 @@ export default function UploadFile() {
                         <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
                         Delete
                       </MenuItem>
-                    </Popover> */}
+                    </Popover>
                   </>
                 ))}
 
@@ -339,7 +339,7 @@ export default function UploadFile() {
           count={users.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25]}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>

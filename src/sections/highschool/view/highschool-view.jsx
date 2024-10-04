@@ -53,7 +53,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function HighSchoolView() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -71,19 +71,9 @@ export default function UserPage() {
     console.log(value.format('YYYY-MM-DD'), mode);
   };
   const { token } = theme.useToken();
-  const wrapperStyle = {
-    width: 300,
-    border: `1px solid ${token.colorBorderSecondary}`,
-    borderRadius: token.borderRadiusLG,
-  };
 
   const dispatch = useDispatch();
-  // const {  users = [],total=0 } = useSelector((state) => state.usersReducer);
-  // useEffect(() => {
-  //   dispatch(actUserGetAsync());
-  // }, [dispatch]);
 
-  // const { users = [], totalCount = 0, currentPage = 1 } = useSelector((state) => state.usersReducer);
   const { students, total } = useSelector((state) => state.usersReducer);
   console.log('Students data:', students);
 
@@ -196,16 +186,7 @@ export default function UserPage() {
     { label: '2020', year: 2020 },
     { label: '2021', year: 2021 },
   ];
-  // const Item = styled(Paper)(({ theme1 }) => ({
-  //   backgroundColor: '#fff',
-  //   ...theme1.typography.body2,
-  //   padding: theme1.spacing(1),
-  //   textAlign: 'center',
-  //   color: theme1.palette.text.secondary,
-  //   ...theme1.applyStyles('dark', {
-  //     backgroundColor: '#1A2027',
-  //   }),
-  // }));
+
 
 
 
@@ -220,74 +201,7 @@ export default function UserPage() {
     },
   };
 
-  const handleUpload = () => {
-    if (!selectedFile) {
-      message.error('Please select a file first!');
-      return;
-    }
 
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-
-      // Lấy sheet đầu tiên
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-      // Tách header và rows
-      const [headers, ...rows] = jsonData;
-
-      // Lọc bỏ các hàng trống
-      const filteredRows = rows.filter(row =>
-        row.some(cell => cell !== undefined && cell !== null && cell !== '')
-      );
-
-      // Chuyển đổi các hàng còn lại thành các object dựa trên headers
-      const formattedData = filteredRows.map(row => {
-        const obj = {};
-        headers.forEach((header, index) => {
-          obj[header] = row[index];
-        });
-        return obj;
-      });
-
-
-
-      // Lấy ngày gửi hiện tại
-      const currentDate = new Date().toISOString();  // ISO format (yyyy-mm-ddThh:mm:ss)
-
-      // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
-      const payload = {
-        fileName: selectedFile.name,
-        uploadDate: currentDate,
-        data: formattedData
-      };
-      console.log('Filtered JSON Data:', payload);
-
-      // Gửi dữ liệu JSON tới backend
-      fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': 'authorization-text',
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((response) => response.json())
-        .then((data1) => {
-          message.success(`${selectedFile.name} file uploaded and converted successfully`);
-        })
-        .catch((error) => {
-          message.error(`${selectedFile.name} file upload failed.`);
-        });
-    };
-
-    reader.readAsArrayBuffer(selectedFile);
-  };
   return (
     <>
 
@@ -296,12 +210,6 @@ export default function UserPage() {
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
             New Student
-          </Button>
-          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
-            New Upload
-          </Button>
-          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateGold')}>
-            Distribute Gold
           </Button>
 
           <Dialog
@@ -426,29 +334,7 @@ export default function UserPage() {
             </DialogActions>
           </Dialog>
 
-          <Dialog
-            open={open === 'CreateUpload'}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">
-              {"Upload file"}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <Upload {...props}>
-                  <AntButton icon={<UploadOutlined />}>Click to Upload</AntButton>
-                </Upload>
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
-              <Button onClick={handleUpload} autoFocus>
-                Upload
-              </Button>
-            </DialogActions>
-          </Dialog>
+
 
         </Box>
       </Stack>
