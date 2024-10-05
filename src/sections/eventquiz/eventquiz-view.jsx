@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -8,6 +8,10 @@ import { styled } from '@mui/system';
 import Grid from '@mui/system/Grid';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Stack from '@mui/material/Stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { createQuiz, resetQuizStatus } from 'src/store/eventquiz/action';
+import Alert from '@mui/material/Alert';
+import { useNavigate } from 'react-router-dom';
 
 export default function EventQuizView() {
 
@@ -75,6 +79,40 @@ export default function EventQuizView() {
         width: 1,
     });
 
+    // set formdata
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        coverImage: '',
+    });
+    // useEffect use redux
+    const dispatch = useDispatch();
+    const navigate = useNavigate(); // Dùng để điều hướng
+    const { success, error } = useSelector((state) => state.quizReducer); // Lấy trạng thái từ store
+    console.log(success, error);
+    // handleCreateQuiz
+    const handleCreateQuiz = () => {
+        dispatch(createQuiz(formData));
+    };
+    // useEffect
+    useEffect(() => {
+        if (success) {
+            // Hiển thị thông báo thành công và chuyển hướng
+            alert('Quiz created successfully!'); // Tạm thời dùng alert, có thể thay bằng Snackbar
+            navigate('/eventquiz'); // Điều hướng người dùng
+            // Sau khi điều hướng, reset trạng thái thành công
+            dispatch(resetQuizStatus());
+        }
+
+        if (error) {
+            alert(`Error: ${error}`); // Hiển thị lỗi nếu có
+        }
+    }, [success, error, navigate]); // Thêm navigate vào dependency
+    // return
+
+
+
+
     return (
         <Box >
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -120,7 +158,8 @@ export default function EventQuizView() {
                                 Upload files
                                 <VisuallyHiddenInput
                                     type="file"
-                                    onChange={(event) => console.log(event.target.files)}
+                                    // onChange={(event) => console.log(event.target.files)}
+                                    onChange={(event) => setFormData({ ...formData, coverImage: event.target.files })}
                                     multiple
                                 />
                             </Button>
@@ -146,14 +185,34 @@ export default function EventQuizView() {
                     })}
                     >
                         <Typography variant='h5' sx={{ mb: 1 }}>Title</Typography>
-                        <TextField sx={{ mb: 2, width: '100%' }} id="outlined-basic" label="Add a description title" variant="outlined" />
+                        {/* <TextField sx={{ mb: 2, width: '100%' }} id="outlined-basic" label="Add a description title" variant="outlined"  /> */}
+                        <TextField
+                            sx={{ mb: 2, width: '100%' }}
+                            id="outlined-basic"
+                            label="Add a description title"
+                            variant="outlined"
+                            onChange={(event) => setFormData({ ...formData, title: event.target.value })}
+                        />
                         <Typography variant='h5' sx={{ mb: 1 }}>Description</Typography>
-                        <Textarea sx={{ width: '100%' }} aria-label="minimum height" minRows={4} placeholder="Description" />
+                        {/* <Textarea sx={{ width: '100%' }} aria-label="minimum height" minRows={4} placeholder="Description" /> */}
+                        <textarea
+                            aria-label="minimum height"
+                            placeholder="Description"
+                            style={{ width: '100%', height: '100px', border: '1px solid #ccc', borderRadius: '4px', fontWeight: 'bold' }}
+                            onChange={(event) => setFormData({ ...formData, description: event.target.value })}
+                        />
                     </Box>
                 </Grid>
             </Grid>
             <Grid sx={{ justifyContent: 'flex-end', mr: 2, mt: 5 }} container spacing={2}>
-                <Button sx={{ height: 50, width: 90 }} variant="contained">Create</Button>
+                {/* <Button sx={{ height: 50, width: 90 }} variant="contained">Create</Button> */}
+                <Button
+                    sx={{ height: 50, width: 90 }}
+                    variant="contained"
+                    onClick={() => handleCreateQuiz()}  // Gọi hàm handleCreateQuiz
+                >
+                    Create
+                </Button>
             </Grid>
 
         </Box>

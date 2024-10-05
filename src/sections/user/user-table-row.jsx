@@ -38,7 +38,8 @@ export default function UserTableRow({
   name,
   avatarUrl,
   gender,
-  adminssionyear,
+  email,
+  phone,
   gold,
   handleClick,
   id: userId,  // Đổi tên id props thành userId
@@ -47,24 +48,52 @@ export default function UserTableRow({
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogName, setDialogName] = useState(name);
-  const [dialogGold, setDialogGold] = useState(gold);
-  const [dialogYear, setDialogYear] = useState(adminssionyear);
-  const [dialogGender, setDialogGender] = useState(gender);
+  // const [dialogName, setDialogName] = useState(name);
+  // const [dialogGold, setDialogGold] = useState(gold);
+  // const [dialogGender, setDialogGender] = useState(gender);
   // console.log("userId", userId);  // Sử dụng userId thay vì id
-
-  const dispatch = useDispatch();
+  // const formdata
+  const [formdata, setFormdata] = useState({
+    name,
+    gold,
+    gender,
+    phone,
+    email,
+    dateOfBirth,
+  });
+  // handle change
+  const handleChange = (e) => {
+    setFormdata({
+      ...formdata,
+      [e.target.name]: e.target.value,
+    });
+  };
+  // update user
   const updateUser = () => {
     const user = {
-      name: dialogName,
-      gold: dialogGold,
-      adminssionyear: dialogYear,
-      gender: dialogGender,
-    }
+      name: formdata.name,
+      gold: formdata.gold,
+      gender: formdata.gender,
+      phone: formdata.phone,
+      email: formdata.email,
+      dateOfBirth: formdata.dateOfBirth,
+    };
     // console.log("id",id);
     dispatch(actUserUpdateAsync(user, userId));
     handleCloseDialog();
-  }
+  };
+
+  const dispatch = useDispatch();
+  // const updateUser = () => {
+  //   const user = {
+  //     name: dialogName,
+  //     gold: dialogGold,
+  //     gender: dialogGender,
+  //   }
+  //   // console.log("id",id);
+  //   dispatch(actUserUpdateAsync(user, userId));
+  //   handleCloseDialog();
+  // }
   const handleDelete = () => {
     // console.log("id",id);
     dispatch(actUserDelete(userId));
@@ -98,26 +127,18 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  const handleClickOpen = () => {
-    setDialogName(name);
-    setDialogGold(gold);
-    setDialogYear(adminssionyear);
-    setDialogGender(gender);
-    setOpenDialog(true);
-    setOpen(null);
-  };
 
   const handleClose = () => {
     setOpenDialog(false);
   };
 
-  const Year = [
-    { label: '2017', year: 2017 },
-    { label: '2018', year: 2018 },
-    { label: '2019', year: 2019 },
-    { label: '2020', year: 2020 },
-    { label: '2021', year: 2021 },
-  ];
+  // const Year = [
+  //   { label: '2017', year: 2017 },
+  //   { label: '2018', year: 2018 },
+  //   { label: '2019', year: 2019 },
+  //   { label: '2020', year: 2020 },
+  //   { label: '2021', year: 2021 },
+  // ];
 
   return (
     <>
@@ -134,13 +155,13 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
-
+        <TableCell sx={{ textAlign: 'center' }}>{email}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
         <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
-        <TableCell align='center'>{adminssionyear}2024</TableCell>
 
         <TableCell>
-          {gold}$
+          {gold}4000$
         </TableCell>
         <TableCell>
           {dateOfBirth}
@@ -170,10 +191,8 @@ export default function UserTableRow({
                   <TextField
                     fullWidth
                     label="Name"
-                    value={dialogName}
-                    onChange={(event) => {
-                      setDialogName(event.target.value);
-                    }}
+                    value={formdata.name}
+                    onChange={handleChange}
                   />
                 </Paper>
               </Grid>
@@ -182,14 +201,12 @@ export default function UserTableRow({
                   <TextField
                     fullWidth
                     label="Gold"
-                    value={dialogGold}
-                    onChange={(event) => {
-                      setDialogGold(event.target.value);
-                    }}
+                    value={formdata.gold}
+                    onChange={handleChange}
                   />
                 </Paper>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Paper sx={{ p: 2 }}>
                   <Autocomplete
                     disablePortal
@@ -202,7 +219,7 @@ export default function UserTableRow({
                     renderInput={(params) => <TextField {...params} label="Year" />}
                   />
                 </Paper>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2 }}>
                   <Typography variant="h6">Date Of Birth</Typography>
@@ -217,11 +234,8 @@ export default function UserTableRow({
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
                       name="row-radio-buttons-group"
-                      value={dialogGender}
-                      onChange={(event) => {
-                        setDialogGender(event.target.value);
-                      }
-                      }
+                      value={formdata.gender}
+                      onChange={handleChange}
                     >
                       <FormControlLabel value="female" control={<Radio />} label="Female" />
                       <FormControlLabel value="male" control={<Radio />} label="Male" />
@@ -293,11 +307,12 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   handleClick: PropTypes.func,
-  adminssionyear: PropTypes.number,
   name: PropTypes.string,
   gender: PropTypes.string,
   selected: PropTypes.bool,
   gold: PropTypes.string,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,
+  email: PropTypes.string,
+  phone: PropTypes.string,
 };

@@ -22,6 +22,7 @@ export const NewsDetail = lazy(() => import('src/pages/newsdetail'));
 export const NewsUniversity = lazy(() => import('src/pages/newsuniversity'));
 export const Profile = lazy(() => import('src/pages/profile'));
 export const Signin = lazy(() => import('src/pages/signin'));
+export const HighSchoolView = lazy(() => import('src/pages/highschool'));
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +50,8 @@ export default function Router() {
         { path: 'editquiz', element: <EditQuiz /> },
         { path: 'myquiz', element: <MyQuiz /> },
         { path: 'newsuniversity', element: <NewsUniversity /> },
-        { path: '/managers', element: <Dashboard /> }
+        { path: '/managers', element: <Dashboard /> },
+        { path: 'highschool', element: <HighSchoolView /> },
 
       ],
     },

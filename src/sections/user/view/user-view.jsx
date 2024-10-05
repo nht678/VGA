@@ -68,7 +68,9 @@ export default function UserPage() {
 
   // write code here
   const onPanelChange = (value, mode) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
+    // console.log(value.format('YYYY-MM-DD'), mode);
+    setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
+
   };
   const { token } = theme.useToken();
   const wrapperStyle = {
@@ -87,6 +89,39 @@ export default function UserPage() {
   const { students, total } = useSelector((state) => state.usersReducer);
   console.log('Students data:', students);
 
+  //   name: '',
+  //   email: '',
+  //   gold: '',
+  //   adminsstionyear: '',
+  //   gender: '',
+  //   phone: '',
+  // };
+  // const [formData, setformData] = useState({
+  //   name: '',
+  //   email: '',
+  //   gold: '',
+  //   gender: '',
+  //   phone: '',
+  //   dateOfBirth: '',
+  // });
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  console.log('userInfo:', userInfo);
+  const [formData, setformData] = useState({
+    Status: 'True', // Khởi tạo Status trong formData
+    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
+    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
+  });
+  console.log('formData:', formData);
+  // handlechange
+  const handleChange = (e) => {
+    setformData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+
+
   useEffect(() => {
     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
     console.log('Current page:', page + 1);
@@ -94,23 +129,12 @@ export default function UserPage() {
 
 
   const handleAddUser = () => {
-    const newUser = {
-      name,
-      email,
-      gold,
-      gender,
-      adminsstionyear,
-    };
-    dispatch(actAddUserAsync(newUser));
-    // reset form
-    setName('');
-    setEmail('');
-    setGold('');
-    setAdminsstionyear('');
-    setGender('');
-    setOpen(false);
-  }
-  // end
+    dispatch(actAddUserAsync(formData));
+    // close 
+    // setOpen(false);
+  };
+
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -183,12 +207,7 @@ export default function UserPage() {
   const handleClose = () => {
     setOpen(false);
   };
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [gold, setGold] = useState('');
-  const [adminsstionyear, setAdminsstionyear] = useState('');
-  const [gender, setGender] = useState('');
-  const [phone, setPhone] = useState('');
+
   const Year = [
     { label: '2017', year: 2017 },
     { label: '2018', year: 2018 },
@@ -196,18 +215,6 @@ export default function UserPage() {
     { label: '2020', year: 2020 },
     { label: '2021', year: 2021 },
   ];
-  // const Item = styled(Paper)(({ theme1 }) => ({
-  //   backgroundColor: '#fff',
-  //   ...theme1.typography.body2,
-  //   padding: theme1.spacing(1),
-  //   textAlign: 'center',
-  //   color: theme1.palette.text.secondary,
-  //   ...theme1.applyStyles('dark', {
-  //     backgroundColor: '#1A2027',
-  //   }),
-  // }));
-
-
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -320,10 +327,9 @@ export default function UserPage() {
                     <TextField
                       fullWidth
                       label="Gold"
-                      value={gold}
-                      onChange={(event) => {
-                        setGold(event.target.value);
-                      }}
+                      name='Gold'
+                      // onchange setformdata
+                      onChange={handleChange}
                     />
                   </Grid>
                 </Grid>
@@ -353,48 +359,51 @@ export default function UserPage() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
+                      name='Name'
                       label="Name"
-                      value={name}
-                      onChange={(event) => {
-                        setName(event.target.value);
-                      }}
+                      onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
+                      id='Email'
+                      name='Email'
                       label="Email"
-                      value={email}
-                      onChange={(event) => {
-                        setEmail(event.target.value);
-                      }}
+                      onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Gold"
-                      value={gold}
-                      onChange={(event) => {
-                        setGold(event.target.value);
-                      }}
+                      label="Password"
+                      name='Password'
+                      onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Phone"
+                      name='Phone'
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  {/* <Grid size={{ md: 6 }}>
                     <Autocomplete
                       disablePortal
                       options={Year}
                       value={Year.find((item) => item.year === adminsstionyear)}
-                      onChange={(event, newValue) => {
-                        setAdminsstionyear(newValue.year);
+                      onChange={(e) => {
+                        setformData({ ...formData, adminsstionyear: easily.year });
                       }}
                       sx={{ width: '100%' }}
                       renderInput={(params) => <TextField {...params} label="Year" />}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <Typography variant="h6">Date Of Birth</Typography>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+                    <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <FormControl>
@@ -402,15 +411,11 @@ export default function UserPage() {
                       <RadioGroup
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
-                        name="row-radio-buttons-group"
-                        value={gender}
-                        onChange={(event) => {
-                          setGender(event.target.value);
-                        }
-                        }
+                        name="Gender"
+                        onChange={handleChange}
                       >
-                        <FormControlLabel value="female" control={<Radio />} label="Female" />
-                        <FormControlLabel value="male" control={<Radio />} label="Male" />
+                        <FormControlLabel value="false" control={<Radio />} label="Female" />
+                        <FormControlLabel value="true" control={<Radio />} label="Male" />
                       </RadioGroup>
                     </FormControl>
                   </Grid>
@@ -472,57 +477,43 @@ export default function UserPage() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
+                  { id: 'email', label: 'Email', align: 'center' },
+                  { id: 'phone', label: 'Phone', align: 'center' },
                   { id: 'gender', label: 'Gender' },
-                  { id: 'adminsstionyear', label: 'Adminsstionyear', align: 'center' },
                   { id: 'gold', label: 'Gold' },
                   { id: 'dateOfBirth', label: 'DateOfBirth' },
                   { id: '' },
                 ]}
               />
-              {/* <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      id={row.id}
-                      gender={row.gender}
-                      gold={row["gold-balance"]}
-                      email={row.email}
-                      avatarUrl={row.avatarUrl}
-                      adminssionyear={row.adminssionyear}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, students.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody> */}
               <TableBody>
                 {dataFiltered.map((row) => (
+                  // <UserTableRow
+                  //   key={row.id}
+                  //   name={row.name}
+                  //   id={row.id}
+                  //   gender={row.gender}
+                  //   gold={row["gold-balance"]}
+                  //   email={row.account.email}
+                  //   phone={row.account.phone}
+                  //   avatarUrl={row.avatarUrl}
+                  //   dateOfBirth={new Date(row.dateOfBirth).toISOString().split('T')[0]}  // Chuyển đổi thành YYYY-MM-DD
+                  //   selected={selected.indexOf(row.name) !== -1}
+                  //   handleClick={(event) => handleClick(event, row.name)}
+                  // />
                   <UserTableRow
                     key={row.id}
-                    name={row.name}
-                    id={row.id}
-                    gender={row.gender}
-                    gold={row["gold-balance"]}
-                    avatarUrl={row.avatarUrl}
-                    adminssionyear={row.adminssionyear}
-                    dateOfBirth={new Date(row.dateOfBirth).toISOString().split('T')[0]}  // Chuyển đổi thành YYYY-MM-DD
+                    name={row.name || ''} // Kiểm tra row.name
+                    id={row.id || ''} // Kiểm tra row.id
+                    gender={row.gender || ''} // Kiểm tra row.gender
+                    gold={row["gold-balance"] || 0} // Kiểm tra row["gold-balance"]
+                    email={row.account?.email || ''} // Kiểm tra row.account?.email
+                    phone={row.account?.phone || ''} // Kiểm tra row.account?.phone
+                    avatarUrl={row.avatarUrl || ''} // Kiểm tra row.avatarUrl
+                    dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''} // Kiểm tra row.dateOfBirth
                     selected={selected.indexOf(row.name) !== -1}
                     handleClick={(event) => handleClick(event, row.name)}
                   />
                 ))}
-                {/* <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, students.length)}
-                /> */}
               </TableBody>
             </Table>
           </TableContainer>

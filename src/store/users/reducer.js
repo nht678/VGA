@@ -32,13 +32,15 @@
 //         //         user.id === action.payload.id ? action.payload : user
 //         //     );
 
+import { ca } from "date-fns/locale";
+
 // export default usersReducer;
 // const initialState = {
 //     users: [],       // Lưu danh sách sinh viên
 //     totalCount: 0,   // Tổng số lượng sinh viên
 //     currentPage: 1,  // Trang hiện tại
 //   };
-  
+
 //   const usersReducer = (state = initialState, action) => {
 //     switch (action.type) {
 //       case 'GET_USERS_SUCCESS':
@@ -58,29 +60,34 @@
 //     }
 //   };
 const initialState = {
-    students: [],
-    total: 0,
-    currentPage: 1,
-    error: null,
-  };
-  
-  const usersReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case 'GET_USERS_SUCCESS':
-        return {
-          ...state,
-          students: action.payload.students,
-          total: action.payload.total,
-          currentPage: action.payload.currentPage,
-        };
-      case 'GET_USERS_ERROR':
-        return {
-          ...state,
-          error: action.payload,
-        };
-      default:
-        return state;
-    }
-  };
-  
-  export default usersReducer;
+  students: [],
+  total: 0,
+  currentPage: 1,
+  error: null,
+};
+
+const usersReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'GET_USERS_SUCCESS':
+      return {
+        ...state,
+        students: action.payload.students,
+        total: action.payload.total,
+        currentPage: action.payload.currentPage,
+      };
+    case 'GET_USERS_ERROR':
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case 'ADD_USER':
+      return {
+        ...state,
+        students: [...state.students, action.payload]
+      };
+    default:
+      return state;
+  }
+};
+
+export default usersReducer;

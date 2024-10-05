@@ -23,3 +23,20 @@ export const deleteNews = (id) => async (dispatch) => {
         console.error('Error deleting news:', error);
     }
 };
+export const createNews = (news) => async (dispatch) => {
+    try {
+        const response = await baseAPI.post('/news', news);
+        dispatch({ type: 'CREATE_NEWS', payload: response.data });
+    } catch (error) {
+        console.error('Error creating news:', error);
+    }
+};
+// Thêm hành động lấy danh sách news
+export const getNews = () => async (dispatch) => {
+    try {
+        const response = await baseAPI.get('/news');
+        dispatch({ type: 'GET_NEWS', payload: response.data });
+    } catch (error) {
+        console.error('Error getting news:', error);
+    }
+};

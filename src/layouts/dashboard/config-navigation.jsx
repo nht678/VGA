@@ -17,11 +17,11 @@ const navConfig = [
     path: '/user',
     icon: icon('ic_user'),
   },
-  {
-    title: 'upload student',
-    path: '/upload',
-    icon: icon('ic_user'),
-  },
+  // {
+  //   title: 'upload student',
+  //   path: '/upload',
+  //   icon: icon('ic_user'),
+  // },
   {
     title: 'event quiz',
     path: '/eventquiz',
@@ -40,6 +40,11 @@ const navConfig = [
   {
     title: 'news',
     path: '/newsuniversity',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'high school',
+    path: '/highschool',
     icon: icon('ic_user'),
   },
   // {

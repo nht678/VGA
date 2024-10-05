@@ -2,7 +2,8 @@ import { Dialog as DialogTw, DialogBackdrop, DialogPanel, DialogTitle as DialogT
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import PropTypes from 'prop-types';
 
-export default function DeleteDialog({ open, onClose }) {  // Chuyển open, onClose thành object destructuring
+export default function DeleteDialog({ open, onClose, handleDelete }) {  // Chuyển open, onClose thành object destructuring
+    console.log('handleDelete', handleDelete);
     return (
         <>
             <DialogTw open={open === 'Delete'} onClose={onClose} className="relative z-10">
@@ -38,7 +39,7 @@ export default function DeleteDialog({ open, onClose }) {  // Chuyển open, onC
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <button
                                     type="button"
-                                    onClick={onClose}
+                                    onClick={handleDelete}
                                     className="  inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                 >
                                     Delete
@@ -63,4 +64,5 @@ export default function DeleteDialog({ open, onClose }) {  // Chuyển open, onC
 DeleteDialog.propTypes = {
     open: PropTypes.string.isRequired,    // Kiểu dữ liệu của open là string
     onClose: PropTypes.func.isRequired,   // Kiểu dữ liệu của onClose là function
+    handleDelete: PropTypes.func.isRequired,   // Kiểu dữ liệu của handleDelete là function
 };

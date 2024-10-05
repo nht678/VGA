@@ -32,6 +32,7 @@ import { Calendar, theme } from 'antd';
 
 import { useDispatch } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
+import DeleteDialog from 'src/pages/delete';
 
 export default function UserTableRow({
   selected,
@@ -45,7 +46,7 @@ export default function UserTableRow({
   dateOfBirth,
 }) {
   const [open, setOpen] = useState(null);
-  const [dialog, setDialog] = useState(null);
+  const [dialog, setDialog] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogName, setDialogName] = useState(name);
   const [dialogGold, setDialogGold] = useState(gold);
@@ -137,7 +138,7 @@ export default function UserTableRow({
 
 
         <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
-        <TableCell align='center'>{adminssionyear}2024</TableCell>
+        <TableCell>{adminssionyear}2024</TableCell>
 
         <TableCell>
           {gold}$
@@ -245,27 +246,11 @@ export default function UserTableRow({
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog
-        open={dialog === 'delete'}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Delete"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Do you want delete this student?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Disagree</Button>
-          <Button onClick={handleDelete} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteDialog
+        open={dialog}
+        onClose={handleCloseDialog}
+        onConfirm={handleDelete}
+      />
 
       <Popover
         open={!!open}
@@ -281,7 +266,7 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('delete')} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>

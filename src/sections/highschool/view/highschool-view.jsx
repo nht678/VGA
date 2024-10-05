@@ -83,24 +83,36 @@ export default function HighSchoolView() {
   }, [dispatch, page, rowsPerPage]);
 
 
-  const handleAddUser = () => {
-    const newUser = {
-      name,
-      email,
-      gold,
-      gender,
-      adminsstionyear,
-    };
-    dispatch(actAddUserAsync(newUser));
-    // reset form
-    setName('');
-    setEmail('');
-    setGold('');
-    setAdminsstionyear('');
-    setGender('');
-    setOpen(false);
-  }
+  // const handleAddUser = () => {
+  //   const newUser = {
+  //     name,
+  //     email,
+  //     gold,
+  //     gender,
+  //     adminsstionyear,
+  //   };
+  //   dispatch(actAddUserAsync(newUser));
+  //   // reset form
+  //   setName('');
+  //   setEmail('');
+  //   setGold('');
+  //   setAdminsstionyear('');
+  //   setGender('');
+  //   setOpen(false);
+  // }
   // end
+  // create formdata = useState
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    address: '',
+  });
+  const handleaddHighSchool = () => {
+
+  };
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -173,33 +185,9 @@ export default function HighSchoolView() {
   const handleClose = () => {
     setOpen(false);
   };
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [gold, setGold] = useState('');
-  const [adminsstionyear, setAdminsstionyear] = useState('');
-  const [gender, setGender] = useState('');
-  const [phone, setPhone] = useState('');
-  const Year = [
-    { label: '2017', year: 2017 },
-    { label: '2018', year: 2018 },
-    { label: '2019', year: 2019 },
-    { label: '2020', year: 2020 },
-    { label: '2021', year: 2021 },
-  ];
 
 
 
-
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  const props = {
-    name: 'file',
-    beforeUpload(file) {
-      // Lưu file đã chọn vào state
-      setSelectedFile(file);
-      return false;  // Ngăn chặn upload mặc định của antd
-    },
-  };
 
 
   return (
@@ -209,42 +197,9 @@ export default function HighSchoolView() {
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Students</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
-            New Student
+            New HighSchool
           </Button>
 
-          <Dialog
-            open={open === 'CreateGold'}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Distribute Gold"}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <Grid container spacing={2}>
-                  <Grid size={{ md: 12 }}>
-                    <TextField
-                      fullWidth
-                      label="Gold"
-                      value={gold}
-                      onChange={(event) => {
-                        setGold(event.target.value);
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Disagree</Button>
-              <Button onClick={handleAddUser} autoFocus>
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
 
           <Dialog
             open={open === 'CreateStudent'}
@@ -253,7 +208,7 @@ export default function HighSchoolView() {
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Create student"}
+              {"Create HighSchool"}
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
@@ -262,73 +217,50 @@ export default function HighSchoolView() {
                     <TextField
                       fullWidth
                       label="Name"
-                      value={name}
-                      onChange={(event) => {
-                        setName(event.target.value);
-                      }}
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
                       label="Email"
-                      value={email}
-                      onChange={(event) => {
-                        setEmail(event.target.value);
-                      }}
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Gold"
-                      value={gold}
-                      onChange={(event) => {
-                        setGold(event.target.value);
-                      }}
+                      label="Phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
-                    <Autocomplete
-                      disablePortal
-                      options={Year}
-                      value={Year.find((item) => item.year === adminsstionyear)}
-                      onChange={(event, newValue) => {
-                        setAdminsstionyear(newValue.year);
-                      }}
-                      sx={{ width: '100%' }}
-                      renderInput={(params) => <TextField {...params} label="Year" />}
+                    <TextField
+                      fullWidth
+                      label="Password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     />
                   </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6">Date Of Birth</Typography>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange} />
-                  </Grid>
                   <Grid size={{ md: 6 }}>
-                    <FormControl>
-                      <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby="demo-row-radio-buttons-group-label"
-                        name="row-radio-buttons-group"
-                        value={gender}
-                        onChange={(event) => {
-                          setGender(event.target.value);
-                        }
-                        }
-                      >
-                        <FormControlLabel value="female" control={<Radio />} label="Female" />
-                        <FormControlLabel value="male" control={<Radio />} label="Male" />
-                      </RadioGroup>
-                    </FormControl>
+                    <TextField
+                      fullWidth
+                      label="Address"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    />
                   </Grid>
+
                 </Grid>
 
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Disagree</Button>
-              <Button onClick={handleAddUser} autoFocus>
+              <Button onClick={handleaddHighSchool} autoFocus>
                 Agree
               </Button>
             </DialogActions>
@@ -358,38 +290,13 @@ export default function HighSchoolView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'gender', label: 'Gender' },
-                  { id: 'adminsstionyear', label: 'Adminsstionyear', align: 'center' },
-                  { id: 'gold', label: 'Gold' },
-                  { id: 'dateOfBirth', label: 'DateOfBirth' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'password', label: 'Password' },
+                  { id: 'phone', label: 'Phone' },
+                  { id: 'address', label: 'Address' },
                   { id: '' },
                 ]}
               />
-              {/* <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      id={row.id}
-                      gender={row.gender}
-                      gold={row["gold-balance"]}
-                      email={row.email}
-                      avatarUrl={row.avatarUrl}
-                      adminssionyear={row.adminssionyear}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, students.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody> */}
               <TableBody>
                 {dataFiltered.map((row) => (
                   <UserTableRow
@@ -405,10 +312,6 @@ export default function HighSchoolView() {
                     handleClick={(event) => handleClick(event, row.name)}
                   />
                 ))}
-                {/* <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, students.length)}
-                /> */}
               </TableBody>
             </Table>
           </TableContainer>

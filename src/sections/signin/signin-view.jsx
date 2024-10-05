@@ -1,12 +1,44 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-
-
+import { signinUser } from '../../store/account/action';
 
 
 export default function SigninView() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { isAuthenticated, error } = useSelector((state) => state.accountReducer);
+    console.log('isAuthenticated', isAuthenticated);
+
+
+    const [formData, setFormData] = React.useState({
+        email: '',
+        password: ''
+    });
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Form data', formData);
+        dispatch(signinUser(formData));
+    }
+    // use useEffect to check if user is authenticated
+    // if authenticated redirect to dashboard
+    // if not authenticated display error message
+    useEffect(() => {
+        if (isAuthenticated) {
+            console.log('User is authenticated');
+            navigate('/', { replace: true });
+        }
+    }, [dispatch, isAuthenticated]);
+
 
 
     return (
@@ -49,6 +81,7 @@ export default function SigninView() {
                                     required
                                     autoComplete="email"
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -72,6 +105,7 @@ export default function SigninView() {
                                     required
                                     autoComplete="current-password"
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -80,6 +114,7 @@ export default function SigninView() {
                             <button
                                 type="submit"
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                onClick={handleSubmit}
                             >
                                 Sign in
                             </button>

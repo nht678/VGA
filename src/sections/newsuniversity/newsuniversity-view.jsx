@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button as AntButton, message, Upload, Calendar } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 import {
@@ -29,7 +29,7 @@ import { useAutocomplete } from '@mui/base/useAutocomplete';
 
 
 import DeleteDialog from '../../pages/delete';
-import { updateNews, deleteNews } from '../../store/news/action';
+import { updateNews, deleteNews, createNews, getNews } from '../../store/news/action';
 
 const options = ['Economy', 'Politics', 'Entertainment', 'Sports', 'Science', 'Education', 'Health'];
 
@@ -79,6 +79,7 @@ export default function NewsUniversityView() {
     };
     const handleDelete = () => {
         if (selectedNews) {
+            console.log('selectedNews', selectedNews);
             dispatch(deleteNews(selectedNews.id));
             handleClose(); // Đóng dialog
         }
@@ -87,22 +88,65 @@ export default function NewsUniversityView() {
     const handleUpdate = () => {
         if (selectedNews) {
             dispatch(updateNews(selectedNews.id, formData));
+            setFormData({
+                title: '',
+                content: '',
+                image: '',
+                category: '',
+                date: '',
+            });
             handleClose(); // Đóng dialog
         }
     };
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('https://65dc58f6e7edadead7ebb035.mockapi.io/news');
-                console.log('data', response.data); // Sử dụng response.data
-                setCurrentNews(response.data); // Cập nhật state
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
+    const handleCreate = () => {
+        console.log('formData', formData);
+        dispatch(createNews(formData));
+        setFormData({
+            title: '',
+            content: '',
+            image: '',
+            category: '',
+            date: '',
+        });
+        handleClose(); // Đóng dialog
+    };
+    const handlLogic = () => {
+        if (open === 'Create') {
+            handleCreate();
+        } else if (open === 'Edit') {
+            handleUpdate();
+        } else if (open === 'Delete') {
+            handleDelete();
+        }
+    };
 
-        fetchData(); // Gọi hàm fetchData
-    }, []);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await axios.get('https://65dc58f6e7edadead7ebb035.mockapi.io/news');
+    //             console.log('data', response.data); // Sử dụng response.data
+    //             setCurrentNews(response.data); // Cập nhật state
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     };
+
+    //     fetchData(); // Gọi hàm fetchData
+    // }, []);
+    // Thay đổi useEffect để gọi hàm lấy danh sách news từ store Redux , set currentNews từ store
+    // const getnews = useSelector((state) => state.newsReducer);
+
+    // Lấy dữ liệu news từ Redux store
+    const News = useSelector((state) => state.newsReducer);
+    console.log('news', News);
+
+    // Khi component render, gọi action getNews để lấy dữ liệu
+    useEffect(() => {
+        dispatch(getNews());
+    }, [dispatch]);
+
+    // use useselector để lấy danh sách news từ store Redux
+
 
     const [value, setValue] = React.useState(options[0]);
     const [inputValue, setInputValue] = React.useState('');
@@ -317,7 +361,7 @@ export default function NewsUniversityView() {
                 </Button>
             </Stack>
             <Grid container spacing={2} sx={{ mx: 4 }}>
-                {currentNews.map((news) => (
+                {News.map((news) => (
                     <Grid size={{ md: 3 }} key={news.id}>
                         <Card sx={{ maxWidth: 300 }}>
                             <CardMedia
@@ -419,13 +463,13 @@ export default function NewsUniversityView() {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
-                            <Button onClick={handleUpdate} autoFocus>
+                            <Button onClick={handlLogic} autoFocus>
                                 {open === 'Create' ? 'Create News' : 'Update News'}
                             </Button>
                         </DialogActions>
                     </Dialog>
 
-                    <DeleteDialog open={open} onClose={handleClose} />
+                    <DeleteDialog handleDelete={handleDelete} open={open} onClose={handleClose} />
                 </Box>
 
             </Grid>
