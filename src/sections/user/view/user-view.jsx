@@ -38,6 +38,8 @@ import { actUserGetAsync, actAddUserAsync } from 'src/store/users/action';
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
+import { uploadFile } from 'src/store/uploadfile/action';
+import LoadingPage from 'src/pages/loading';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
@@ -54,9 +56,21 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
+
+  const dispatch = useDispatch();
+  const { students, total, usersSuccess } = useSelector((state) => state.usersReducer);
+  const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
+
+  const [formData, setformData] = useState({
+    Status: true, // Khởi tạo Status trong formData
+    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
+    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
+  });
 
   const [selected, setSelected] = useState([]);
 
@@ -67,51 +81,15 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // write code here
+  useEffect(() => {
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+  }, [dispatch, page, rowsPerPage]);
+
   const onPanelChange = (value, mode) => {
-    // console.log(value.format('YYYY-MM-DD'), mode);
     setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
 
   };
-  const { token } = theme.useToken();
-  const wrapperStyle = {
-    width: 300,
-    border: `1px solid ${token.colorBorderSecondary}`,
-    borderRadius: token.borderRadiusLG,
-  };
 
-  const dispatch = useDispatch();
-  // const {  users = [],total=0 } = useSelector((state) => state.usersReducer);
-  // useEffect(() => {
-  //   dispatch(actUserGetAsync());
-  // }, [dispatch]);
-
-  // const { users = [], totalCount = 0, currentPage = 1 } = useSelector((state) => state.usersReducer);
-  const { students, total } = useSelector((state) => state.usersReducer);
-  console.log('Students data:', students);
-
-  //   name: '',
-  //   email: '',
-  //   gold: '',
-  //   adminsstionyear: '',
-  //   gender: '',
-  //   phone: '',
-  // };
-  // const [formData, setformData] = useState({
-  //   name: '',
-  //   email: '',
-  //   gold: '',
-  //   gender: '',
-  //   phone: '',
-  //   dateOfBirth: '',
-  // });
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log('userInfo:', userInfo);
-  const [formData, setformData] = useState({
-    Status: 'True', // Khởi tạo Status trong formData
-    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
-    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
-  });
-  console.log('formData:', formData);
   // handlechange
   const handleChange = (e) => {
     setformData({
@@ -120,18 +98,29 @@ export default function UserPage() {
     });
   };
 
-
-
-  useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-    console.log('Current page:', page + 1);
-  }, [dispatch, page, rowsPerPage]);
-
-
   const handleAddUser = () => {
-    dispatch(actAddUserAsync(formData));
-    // close 
-    // setOpen(false);
+    // Tạo formDataObj
+    const formDataObj = new FormData();
+
+    // Thêm các trường từ formData
+    formDataObj.append('Name', formData.Name);
+    formDataObj.append('Email', formData.Email);
+    formDataObj.append('Phone', formData.Phone);
+    formDataObj.append('Password', formData.Password);
+    formDataObj.append('Gender', formData.Gender);
+    formDataObj.append('DateOfBirth', formData.DateOfBirth);
+    formDataObj.append('CreateAt', formData.CreateAt);
+    formDataObj.append('Status', formData.Status);
+    formDataObj.append('HighSchoolId', formData.highSchoolId);
+
+    // Sau khi kiểm tra, gửi formDataObj tới action
+    dispatch(actAddUserAsync(formDataObj));
+    if (usersSuccess) {
+      message.success('Add user success');
+    } else {
+      message.error('Add user failed');
+    }
+    setOpen(false);
   };
 
 
@@ -172,13 +161,11 @@ export default function UserPage() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    console.log('newPage', newPage);
     dispatch(actUserGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
-    console.log('newRowsPerPage', newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
     dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
@@ -227,6 +214,7 @@ export default function UserPage() {
     },
   };
 
+
   const handleUpload = () => {
     if (!selectedFile) {
       message.error('Please select a file first!');
@@ -262,40 +250,41 @@ export default function UserPage() {
         return obj;
       });
 
-
-
       // Lấy ngày gửi hiện tại
       const currentDate = new Date().toISOString();  // ISO format (yyyy-mm-ddThh:mm:ss)
 
       // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
       const payload = {
+        data: formattedData,
         fileName: selectedFile.name,
         uploadDate: currentDate,
-        data: formattedData
       };
-      console.log('Filtered JSON Data:', payload);
-
-      // Gửi dữ liệu JSON tới backend
-      fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': 'authorization-text',
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((response) => response.json())
-        .then((data1) => {
-          message.success(`${selectedFile.name} file uploaded and converted successfully`);
-        })
-        .catch((error) => {
-          message.error(`${selectedFile.name} file upload failed.`);
-        });
+      const payloadString = JSON.stringify(payload);
+      const formUpload = new FormData();
+      formUpload.append('stringJson', payloadString);
+      formUpload.append('highschoolId', userInfo.highSchoolId);
+      // Log FormData entries to console
+      formUpload.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
+      // Dispatch action upload file
+      // console.log('formUpload', formUpload);
+      dispatch(uploadFile(formUpload));
+      if (uploadSuccess) {
+        message.success(`${selectedFile.name} file uploaded and converted successfully`);
+        setOpen(false);
+      } else {
+        message.error(`${selectedFile.name} file upload failed.`);
+      }
     };
 
     reader.readAsArrayBuffer(selectedFile);
   };
   return (
+    // if loading is false then show div below else show loading
+    // true ? (
+    //   <LoadingPage />
+    // ) : (
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -355,7 +344,7 @@ export default function UserPage() {
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
@@ -406,18 +395,15 @@ export default function UserPage() {
                     <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
                   </Grid>
                   <Grid size={{ md: 6 }}>
-                    <FormControl>
-                      <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby="demo-row-radio-buttons-group-label"
-                        name="Gender"
-                        onChange={handleChange}
-                      >
-                        <FormControlLabel value="false" control={<Radio />} label="Female" />
-                        <FormControlLabel value="true" control={<Radio />} label="Male" />
-                      </RadioGroup>
-                    </FormControl>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="Gender"
+                      onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                    >
+                      <FormControlLabel value control={<Radio />} label="Male" />
+                      <FormControlLabel value={false} control={<Radio />} label="Female" />
+                    </RadioGroup>
                   </Grid>
                 </Grid>
 
@@ -487,21 +473,7 @@ export default function UserPage() {
               />
               <TableBody>
                 {dataFiltered.map((row) => (
-                  // <UserTableRow
-                  //   key={row.id}
-                  //   name={row.name}
-                  //   id={row.id}
-                  //   gender={row.gender}
-                  //   gold={row["gold-balance"]}
-                  //   email={row.account.email}
-                  //   phone={row.account.phone}
-                  //   avatarUrl={row.avatarUrl}
-                  //   dateOfBirth={new Date(row.dateOfBirth).toISOString().split('T')[0]}  // Chuyển đổi thành YYYY-MM-DD
-                  //   selected={selected.indexOf(row.name) !== -1}
-                  //   handleClick={(event) => handleClick(event, row.name)}
-                  // />
                   <UserTableRow
-                    key={row.id}
                     name={row.name || ''} // Kiểm tra row.name
                     id={row.id || ''} // Kiểm tra row.id
                     gender={row.gender || ''} // Kiểm tra row.gender
@@ -531,5 +503,6 @@ export default function UserPage() {
 
       </Card>
     </>
-  );
-}
+  )
+  // );
+}  

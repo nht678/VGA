@@ -25,6 +25,8 @@
     }
   },
   "rules": {
+    "no-restricted-syntax": "off",
+    "prefer-const": "off",
     "jsx-a11y/label-has-associated-control": "off",
     "react/jsx-curly-brace-presence": "off",
     "no-alert": "off",

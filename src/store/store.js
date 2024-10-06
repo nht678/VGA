@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from './test/reducer';
 import usersReducer from './users/reducer';
 import newsReducer from './news/reducer';
 import quizReducer from './eventquiz/reducer';
 import accountReducer from './account/reducer';
+import uploadReducer from './uploadfile/reducer';
+
 
 const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
         newsReducer,
         quizReducer,
         accountReducer,
+        uploadReducer
     }
 });
 

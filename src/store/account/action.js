@@ -6,7 +6,6 @@ export function signinUser(data) {
         try {
             dispatch({ type: 'SIGNIN_USER_REQUEST' });
             const response = await baseAPI.post('/login', data);
-            console.log('response data:', response.data); // In response để kiểm tra
             dispatch({ type: 'SIGNIN_USER_SUCCESS', payload: response.data });
             console.log('response.data:', response.data);
             localStorage.setItem('userInfo', JSON.stringify(response.data));

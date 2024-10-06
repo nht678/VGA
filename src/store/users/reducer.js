@@ -33,6 +33,7 @@
 //         //     );
 
 import { ca } from "date-fns/locale";
+import { success } from "src/theme/palette";
 
 // export default usersReducer;
 // const initialState = {
@@ -64,6 +65,7 @@ const initialState = {
   total: 0,
   currentPage: 1,
   error: null,
+  usersSuccess: false,
 };
 
 const usersReducer = (state = initialState, action) => {
@@ -74,17 +76,36 @@ const usersReducer = (state = initialState, action) => {
         students: action.payload.students,
         total: action.payload.total,
         currentPage: action.payload.currentPage,
+        usersSuccess: true,
       };
     case 'GET_USERS_ERROR':
       return {
         ...state,
         error: action.payload,
+        usersSuccess: false,
       };
     case 'ADD_USER':
       return {
         ...state,
-        students: [...state.students, action.payload]
+        students: [...state.students, action.payload],
+        usersSuccess: true,
+
       };
+    case 'UPDATE_USER':
+      return {
+        ...state,
+        usersSuccess: true,
+        students: state.students.map((student) =>
+          student.id === action.payload.id ? action.payload : student,
+        )
+      };
+    case 'REMOVE_USER':
+      return {
+        ...state,
+        students: state.students.filter((student) => student.id !== action.payload),
+        usersSuccess: true,
+      };
+
     default:
       return state;
   }

@@ -32,27 +32,16 @@ export function actUserDelete(id) {
 }
 
 
-// export function actUserGetAsync() {
-//     return async (dispatch) => {
-//         try {
-//             const response = await apiUser.get('/users');
-//             dispatch(actUserGet(response.data));
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     };
-// }
+
+
 export const actUserGetAsync = ({ page, pageSize }) => async (dispatch) => {
     try {
-        console.log('Fetching data for page:', page, 'and pageSize:', pageSize);
         const response = await apiUser.get('', {
             params: {
                 'current-page': page,
                 'page-size': pageSize,
             },
         });
-        console.log('Response data:', response.data);
-
         dispatch({
             type: 'GET_USERS_SUCCESS',
             payload: {
@@ -75,7 +64,6 @@ export function actAddUserAsync(data) {
     return async (dispatch) => {
         try {
             const response = await apiUser.post('', data);
-            console.log('response:', response);
             dispatch(actAddUser(response.data));
         } catch (error) {
             console.log(error);
@@ -86,7 +74,7 @@ export function actUserUpdateAsync(data, id) {
     return async (dispatch) => {
         try {
             console.log("data", data, id);
-            const response = await apiUser.put(`/users/${id}`, data);
+            const response = await apiUser.put(`${id}`, data);
             dispatch(actUserUpdate(response.data));
         } catch (error) {
             console.log(error);
@@ -103,3 +91,4 @@ export function actUserDeleteAsync(id) {
         }
     };
 }
+

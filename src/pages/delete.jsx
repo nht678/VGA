@@ -3,7 +3,6 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import PropTypes from 'prop-types';
 
 export default function DeleteDialog({ open, onClose, handleDelete }) {  // Chuyển open, onClose thành object destructuring
-    console.log('handleDelete', handleDelete);
     return (
         <>
             <DialogTw open={open === 'Delete'} onClose={onClose} className="relative z-10">

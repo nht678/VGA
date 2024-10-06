@@ -1,4 +1,0 @@
-const increaseCounter = {
-    type: 'INCREMENT'
-  };
-  

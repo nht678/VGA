@@ -32,6 +32,7 @@ import { Calendar, theme } from 'antd';
 
 import { useDispatch } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
+import DeleteDialog from '../../pages/delete';
 
 export default function UserTableRow({
   selected,
@@ -45,57 +46,28 @@ export default function UserTableRow({
   id: userId,  // Đổi tên id props thành userId
   dateOfBirth,
 }) {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
-  const [dialog, setDialog] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  // const [dialogName, setDialogName] = useState(name);
-  // const [dialogGold, setDialogGold] = useState(gold);
-  // const [dialogGender, setDialogGender] = useState(gender);
-  // console.log("userId", userId);  // Sử dụng userId thay vì id
-  // const formdata
-  const [formdata, setFormdata] = useState({
-    name,
-    gold,
-    gender,
-    phone,
-    email,
-    dateOfBirth,
+  const [dialog, setDialog] = useState('');
+  const [formData, setformData] = useState({
+    Status: true, // Khởi tạo Status trong formData
+    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
+    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
   });
   // handle change
   const handleChange = (e) => {
-    setFormdata({
-      ...formdata,
+    setformData({
+      ...formData,
       [e.target.name]: e.target.value,
     });
   };
-  // update user
-  const updateUser = () => {
-    const user = {
-      name: formdata.name,
-      gold: formdata.gold,
-      gender: formdata.gender,
-      phone: formdata.phone,
-      email: formdata.email,
-      dateOfBirth: formdata.dateOfBirth,
-    };
-    // console.log("id",id);
-    dispatch(actUserUpdateAsync(user, userId));
-    handleCloseDialog();
-  };
 
   const dispatch = useDispatch();
-  // const updateUser = () => {
-  //   const user = {
-  //     name: dialogName,
-  //     gold: dialogGold,
-  //     gender: dialogGender,
-  //   }
-  //   // console.log("id",id);
-  //   dispatch(actUserUpdateAsync(user, userId));
-  //   handleCloseDialog();
-  // }
+  const handleUpdate = () => {
+    dispatch(actUserUpdateAsync(formData, userId));
+    handleCloseDialog();
+  };
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actUserDelete(userId));
     handleCloseDialog();
   }
@@ -129,7 +101,7 @@ export default function UserTableRow({
 
 
   const handleClose = () => {
-    setOpenDialog(false);
+    setDialog(null);
   };
 
   // const Year = [
@@ -185,102 +157,72 @@ export default function UserTableRow({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    value={formdata.name}
-                    onChange={handleChange}
-                  />
-                </Paper>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  name='Name'
+                  label="Name"
+                  value={name}
+                  onChange={handleChange}
+                />
               </Grid>
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <TextField
-                    fullWidth
-                    label="Gold"
-                    value={formdata.gold}
-                    onChange={handleChange}
-                  />
-                </Paper>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  id='Email'
+                  name='Email'
+                  label="Email"
+                  value={email}
+                  onChange={handleChange}
+                />
               </Grid>
-              {/* <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <Autocomplete
-                    disablePortal
-                    options={Year}
-                    value={Year.find((item) => item.year === dialogYear)}
-                    onChange={(event, newValue) => {
-                      setDialogYear(newValue?.year);
-                    }}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Year" />}
-                  />
-                </Paper>
-              </Grid> */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <Typography variant="h6">Date Of Birth</Typography>
-                  <Calendar fullscreen={false} onPanelChange={onPanelChange} />
-                </Paper>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  name='Password'
+                  onChange={handleChange}
+                />
               </Grid>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  name='Phone'
+                  value={phone}
+                  onChange={handleChange}
+                />
+              </Grid>
+
               <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <FormControl>
-                    <FormLabel id="demo-row-radio-buttons-group-label">Gender</FormLabel>
-                    <RadioGroup
-                      row
-                      aria-labelledby="demo-row-radio-buttons-group-label"
-                      name="row-radio-buttons-group"
-                      value={formdata.gender}
-                      onChange={handleChange}
-                    >
-                      <FormControlLabel value="female" control={<Radio />} label="Female" />
-                      <FormControlLabel value="male" control={<Radio />} label="Male" />
-                    </RadioGroup>
-                  </FormControl>
-                </Paper>
+                <Typography variant="h6">Date Of Birth</Typography>
+                <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="Gender"
+                  value={gender}
+                  onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                >
+                  <FormControlLabel value control={<Radio />} label="Male" />
+                  <FormControlLabel value={false} control={<Radio />} label="Female" />
+                </RadioGroup>
               </Grid>
             </Grid>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Disagree</Button>
-          <Button
-            onClick={() => {
-              // Handle save logic here
-              updateUser();
-            }}
-            autoFocus
-          >
-            Agree
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={dialog === 'delete'}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Delete"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Do you want delete this student?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Disagree</Button>
-          <Button onClick={handleDelete} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
-      </Dialog>
 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleUpdate} autoFocus>
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover
         open={!!open}
         anchorEl={open}
@@ -295,7 +237,7 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('delete')} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
