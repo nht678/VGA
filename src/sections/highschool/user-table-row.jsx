@@ -33,54 +33,48 @@ import { Calendar, theme } from 'antd';
 import { useDispatch } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
 import DeleteDialog from 'src/pages/delete';
+import { Phone } from '@mui/icons-material';
+import { hi } from 'date-fns/locale';
 
 export default function UserTableRow({
   selected,
   name,
   avatarUrl,
-  gender,
-  adminssionyear,
-  gold,
   handleClick,
-  id: userId,  // Đổi tên id props thành userId
-  dateOfBirth,
+  id: highschoolId,
+  email,
+  phone,
+  locationDetail,
 }) {
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogName, setDialogName] = useState(name);
-  const [dialogGold, setDialogGold] = useState(gold);
-  const [dialogYear, setDialogYear] = useState(adminssionyear);
-  const [dialogGender, setDialogGender] = useState(gender);
+  // const [openDialog, setOpenDialog] = useState(false);
+  // const [dialogName, setDialogName] = useState(name);
+  // const [dialogGold, setDialogGold] = useState(gold);
+  // const [dialogYear, setDialogYear] = useState(adminssionyear);
+  // const [dialogGender, setDialogGender] = useState(gender);
   // console.log("userId", userId);  // Sử dụng userId thay vì id
 
   const dispatch = useDispatch();
-  const updateUser = () => {
-    const user = {
-      name: dialogName,
-      gold: dialogGold,
-      adminssionyear: dialogYear,
-      gender: dialogGender,
-    }
-    // console.log("id",id);
-    dispatch(actUserUpdateAsync(user, userId));
-    handleCloseDialog();
-  }
+  // const updateUser = () => {
+  //   const user = {
+  //     name: dialogName,
+  //     gold: dialogGold,
+  //     adminssionyear: dialogYear,
+  //     gender: dialogGender,
+  //   }
+  //   // console.log("id",id);
+  //   dispatch(actUserUpdateAsync(user, highschoolId));
+  //   handleCloseDialog();
+  // }
   const handleDelete = () => {
     // console.log("id",id);
-    dispatch(actUserDelete(userId));
+    dispatch(actUserDelete(highschoolId));
     handleCloseDialog();
   }
   const onPanelChange = (value, mode) => {
     console.log(value.format('YYYY-MM-DD'), mode);
   };
-  const { token } = theme.useToken();
-  const wrapperStyle = {
-    width: '100%',
-    border: `1px solid ${token.colorBorderSecondary}`,
-    borderRadius: token.borderRadiusLG,
-  };
-
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -99,18 +93,26 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  const handleClickOpen = () => {
-    setDialogName(name);
-    setDialogGold(gold);
-    setDialogYear(adminssionyear);
-    setDialogGender(gender);
-    setOpenDialog(true);
-    setOpen(null);
-  };
+  // const handleClickOpen = () => {
+  //   setDialogName(name);
+  //   setDialogGold(gold);
+  //   setDialogYear(adminssionyear);
+  //   setDialogGender(gender);
+  //   setOpenDialog(true);
+  //   setOpen(null);
+  // };
+  const [formData, setFormData] = useState({});
 
-  const handleClose = () => {
-    setOpenDialog(false);
-  };
+  const handlechange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  }
+
+  // const handleClose = () => {
+  //   setOpenDialog(false);
+  // };
 
   const Year = [
     { label: '2017', year: 2017 },
@@ -137,14 +139,11 @@ export default function UserTableRow({
         </TableCell>
 
 
-        <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
-        <TableCell>{adminssionyear}2024</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{email}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
-        <TableCell>
-          {gold}$
-        </TableCell>
-        <TableCell>
-          {dateOfBirth}
+        <TableCell sx={{ textAlign: 'center' }}>
+          {locationDetail}
         </TableCell>
 
         <TableCell align="right">
@@ -154,7 +153,7 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <Dialog
+      {/* <Dialog
         open={dialog === 'edit'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -171,10 +170,9 @@ export default function UserTableRow({
                   <TextField
                     fullWidth
                     label="Name"
-                    value={dialogName}
-                    onChange={(event) => {
-                      setDialogName(event.target.value);
-                    }}
+                    defaultValue={name}
+                    onChange={handlechange}
+
                   />
                 </Paper>
               </Grid>
@@ -184,26 +182,11 @@ export default function UserTableRow({
                     fullWidth
                     label="Gold"
                     value={dialogGold}
-                    onChange={(event) => {
-                      setDialogGold(event.target.value);
-                    }}
+                    onChange={handlechange}
                   />
                 </Paper>
               </Grid>
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <Autocomplete
-                    disablePortal
-                    options={Year}
-                    value={Year.find((item) => item.year === dialogYear)}
-                    onChange={(event, newValue) => {
-                      setDialogYear(newValue?.year);
-                    }}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Year" />}
-                  />
-                </Paper>
-              </Grid>
+
               <Grid item xs={12}>
                 <Paper sx={{ p: 2 }}>
                   <Typography variant="h6">Date Of Birth</Typography>
@@ -219,10 +202,7 @@ export default function UserTableRow({
                       aria-labelledby="demo-row-radio-buttons-group-label"
                       name="row-radio-buttons-group"
                       value={dialogGender}
-                      onChange={(event) => {
-                        setDialogGender(event.target.value);
-                      }
-                      }
+                      onChange={handlechange}
                     >
                       <FormControlLabel value="female" control={<Radio />} label="Female" />
                       <FormControlLabel value="male" control={<Radio />} label="Male" />
@@ -238,19 +218,19 @@ export default function UserTableRow({
           <Button
             onClick={() => {
               // Handle save logic here
-              updateUser();
+              // updateUser();
             }}
             autoFocus
           >
             Agree
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog >
       <DeleteDialog
         open={dialog}
         onClose={handleCloseDialog}
         onConfirm={handleDelete}
-      />
+      /> */}
 
       <Popover
         open={!!open}
@@ -278,11 +258,11 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   handleClick: PropTypes.func,
-  adminssionyear: PropTypes.number,
   name: PropTypes.string,
-  gender: PropTypes.string,
   selected: PropTypes.bool,
-  gold: PropTypes.string,
   id: PropTypes.string,
-  dateOfBirth: PropTypes.string,
+  email: PropTypes.string,
+  phone: PropTypes.string,
+  locationDetail: PropTypes.string,
+
 };

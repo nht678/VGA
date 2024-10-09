@@ -50,10 +50,17 @@ export default function UserTableRow({
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [formData, setformData] = useState({
-    Status: true, // Khởi tạo Status trong formData
-    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
-    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
+    Name: name,
+    Email: email,
+    Password: '',
+    Phone: phone,
+    Status: true,
+    CreateAt: new Date().toISOString().split('T')[0],
+    highSchoolId: userInfo ? userInfo.highSchoolId : '',
+    DateOfBirth: dateOfBirth,
+    Gender: gender,
   });
+
   // handle change
   const handleChange = (e) => {
     setformData({
@@ -61,10 +68,20 @@ export default function UserTableRow({
       [e.target.name]: e.target.value,
     });
   };
+  // if not onchange then onchange will take value default
+  // use useEffect not onchange then onchange will take value default
+
+
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
-    dispatch(actUserUpdateAsync(formData, userId));
+    const formDataObj = new FormData();
+
+    // Chuyển đổi các trường trong formData thành FormData format
+    Object.keys(formData).forEach((key) => {
+      formDataObj.append(key, formData[key]);
+    });
+    dispatch(actUserUpdateAsync(formDataObj, userId));
     handleCloseDialog();
   };
   const handleDelete = () => {
@@ -72,7 +89,7 @@ export default function UserTableRow({
     handleCloseDialog();
   }
   const onPanelChange = (value, mode) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
+    setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();
   const wrapperStyle = {
@@ -163,7 +180,7 @@ export default function UserTableRow({
                   fullWidth
                   name='Name'
                   label="Name"
-                  value={name}
+                  defaultValue={name}
                   onChange={handleChange}
                 />
               </Grid>
@@ -173,7 +190,7 @@ export default function UserTableRow({
                   id='Email'
                   name='Email'
                   label="Email"
-                  value={email}
+                  defaultValue={email}
                   onChange={handleChange}
                 />
               </Grid>
@@ -190,7 +207,7 @@ export default function UserTableRow({
                   fullWidth
                   label="Phone"
                   name='Phone'
-                  value={phone}
+                  defaultValue={phone}
                   onChange={handleChange}
                 />
               </Grid>
@@ -204,7 +221,7 @@ export default function UserTableRow({
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="Gender"
-                  value={gender}
+                  defaultValue={gender}
                   onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                 >
                   <FormControlLabel value control={<Radio />} label="Male" />

@@ -545,12 +545,11 @@ export default function HomepageView() {
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     Lizards are a widespread group of squamate reptiles, with over 6,000
+                    species, ranging across all continents except Antarctica Lizards are a widespread group of squamate reptiles, with over 6,000
                     species, ranging across all continents except Antarctica
                   </Typography>
                 </CardContent>
-                <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button variant='contained' size="medium">Mua ngay</Button>
-                </CardActions>
+
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -566,12 +565,11 @@ export default function HomepageView() {
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     Lizards are a widespread group of squamate reptiles, with over 6,000
+                    species, ranging across all continents except Antarctica Lizards are a widespread group of squamate reptiles, with over 6,000
                     species, ranging across all continents except Antarctica
                   </Typography>
                 </CardContent>
-                <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button variant='contained' size="medium">Mua ngay</Button>
-                </CardActions>
+
               </Card>
               {/* <div className="relative isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
               <div aria-hidden="true" className="absolute inset-x-0 -top-3 -z-10 transform-gpu overflow-hidden px-36 blur-3xl">

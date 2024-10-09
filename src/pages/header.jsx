@@ -16,11 +16,13 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link } from 'react-router-dom';
-import { Image } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { Image, Button, message } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { signoutUser } from '../store/account/action';
 
 const user = {
     name: 'Tom Cook',
@@ -37,7 +39,7 @@ const navigation = [
 const userNavigation = [
     { name: 'Your Profile', href: '/profile' },
     { name: 'Sign in', href: '/signin' },
-    { name: 'Sign out', href: '/logout' },
+    { name: 'Sign out', onClick: 'logout' },
 ]
 
 function classNames(...classes) {
@@ -87,105 +89,23 @@ function classNames(...classes) {
 // }));
 
 export default function Header() {
-    // const [anchorEl, setAnchorEl] = React.useState(null);
-    // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { isAuthenticated } = useSelector((state) => state.accountReducer);
 
-    // const isMenuOpen = Boolean(anchorEl);
-    // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-    // const handleProfileMenuOpen = (event) => {
-    //     setAnchorEl(event.currentTarget);
-    // };
-
-    // const handleMobileMenuClose = () => {
-    //     setMobileMoreAnchorEl(null);
-    // };
-
-    // const handleMenuClose = () => {
-    //     setAnchorEl(null);
-    //     handleMobileMenuClose();
-    // };
-
-    // const handleMobileMenuOpen = (event) => {
-    //     setMobileMoreAnchorEl(event.currentTarget);
-    // };
-
-    // const menuId = 'primary-search-account-menu';
-    // const renderMenu = (
-    //     <Menu
-    //         anchorEl={anchorEl}
-    //         anchorOrigin={{
-    //             vertical: 'top',
-    //             horizontal: 'right',
-    //         }}
-    //         id={menuId}
-    //         keepMounted
-    //         transformOrigin={{
-    //             vertical: 'top',
-    //             horizontal: 'right',
-    //         }}
-    //         open={isMenuOpen}
-    //         onClose={handleMenuClose}
-    //     >
-    //         <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-    //         <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    //     </Menu>
-    // );
-
-    // const mobileMenuId = 'primary-search-account-menu-mobile';
-    // const renderMobileMenu = (
-    //     <Menu
-    //         anchorEl={mobileMoreAnchorEl}
-    //         anchorOrigin={{
-    //             vertical: 'top',
-    //             horizontal: 'right',
-    //         }}
-    //         id={mobileMenuId}
-    //         keepMounted
-    //         transformOrigin={{
-    //             vertical: 'top',
-    //             horizontal: 'right',
-    //         }}
-    //         open={isMobileMenuOpen}
-    //         onClose={handleMobileMenuClose}
-    //     >
-    //         <MenuItem>
-    //             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-    //                 <Badge badgeContent={4} color="error">
-    //                     <MailIcon />
-    //                 </Badge>
-    //             </IconButton>
-    //             <p>Messages</p>
-    //         </MenuItem>
-    //         <MenuItem>
-    //             <IconButton
-    //                 size="large"
-    //                 aria-label="show 17 new notifications"
-    //                 color="inherit"
-    //             >
-    //                 <Badge badgeContent={17} color="error">
-    //                     <NotificationsIcon />
-    //                 </Badge>
-    //             </IconButton>
-    //             <p>Notifications</p>
-    //         </MenuItem>
-    //         <MenuItem onClick={handleProfileMenuOpen}>
-    //             <IconButton
-    //                 size="large"
-    //                 aria-label="account of current user"
-    //                 aria-controls="primary-search-account-menu"
-    //                 aria-haspopup="true"
-    //                 color="inherit"
-    //             >
-    //                 <AccountCircle />
-    //             </IconButton>
-    //             <p>Profile</p>
-    //         </MenuItem>
-    //     </Menu>
-    // );
-    // // write code here
-    // const preventDefault = (event) => event.preventDefault();
-
+    const handleLogout = () => {
+        dispatch(signoutUser());
+        if (isAuthenticated) {
+            navigate('/signin', { replace: true });
+            message.success('Sign out successfully');
+        }
+    }
+    // React.useEffect(() => {
+    //     if (!isAuthenticated) {
+    //         navigate('/signin', { replace: true });
+    //         message.success('Sign out successfully');
+    //     }
+    // }, [isAuthenticated, navigate]);
     return (
         // <Box>
         //     <Box sx={{ flexGrow: 1 }}>
@@ -377,12 +297,23 @@ export default function Header() {
                                         >
                                             {userNavigation.map((item) => (
                                                 <MenuItem key={item.name}>
+                                                    {/* {item.onClick ? (
+                                                        <Button
+                                                            sx={{ border: 'none' }}
+                                                            onClick={handleLogout}
+                                                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                                                        >
+                                                            {item.name}
+                                                        </Button>
+                                                    ) : ( */}
                                                     <Link
                                                         to={item.href}
+                                                        onClick={item.name === 'Sign out' ? handleLogout : null}
                                                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                                                     >
                                                         {item.name}
                                                     </Link>
+                                                    {/* )} */}
                                                 </MenuItem>
                                             ))}
                                         </MenuItems>

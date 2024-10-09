@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import { message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -28,29 +29,25 @@ export default function SigninView() {
         e.preventDefault();
         console.log('Form data', formData);
         dispatch(signinUser(formData));
-    }
-    // use useEffect to check if user is authenticated
-    // if authenticated redirect to dashboard
-    // if not authenticated display error message
-    useEffect(() => {
         if (isAuthenticated) {
-            console.log('User is authenticated');
+            message.success('Sign in successfully');
             navigate('/', { replace: true });
         }
-    }, [dispatch, isAuthenticated]);
+    }
+    // useEffect(() => {
+    //     debugger
+    //     if (isAuthenticated) {
+    //         navigate('/', { replace: true });
+    //         message.success('Sign in successfully');
+    //     }
+    // }, [error]);
 
 
 
     return (
         <>
-            {/*
-            This example requires updating your template:
-    
-            ```
-            <html class="h-full bg-white">
-            <body class="h-full">
-            ```
-          */}
+
+
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm contents ">
                     {/* <img

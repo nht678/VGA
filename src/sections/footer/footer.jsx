@@ -220,8 +220,7 @@ const Footer = () => {
           <div className="max-w-xl lg:max-w-lg">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Subscribe to our newsletter.</h2>
             <p className="mt-4 text-lg leading-8 text-gray-300">
-              Nostrud amet eu ullamco nisi aute in ad minim nostrud adipisicing velit quis. Duis tempor incididunt
-              dolore.
+              Stay updated with the latest news and exclusive insights by subscribing to our newsletter, where you’ll receive carefully curated content directly to your inbox.
             </p>
             <div className="mt-6 flex max-w-md gap-x-4">
               <label htmlFor="email-address" className="sr-only">
@@ -251,7 +250,7 @@ const Footer = () => {
               </div>
               <dt className="mt-4 font-semibold text-white">Weekly articles</dt>
               <dd className="mt-2 leading-7 text-gray-400">
-                Non laboris consequat cupidatat laborum magna. Eiusmod non irure cupidatat duis commodo amet.
+                Each week, we deliver a selection of insightful articles covering the latest trends and developments to keep you informed and engaged.
               </dd>
             </div>
             <div className="flex flex-col items-start">
@@ -260,7 +259,7 @@ const Footer = () => {
               </div>
               <dt className="mt-4 font-semibold text-white">No spam</dt>
               <dd className="mt-2 leading-7 text-gray-400">
-                Officia excepteur ullamco ut sint duis proident non adipisicing. Voluptate incididunt anim.
+                Please avoid sending multiple unnecessary messages in a short period. Let’s keep the conversation efficient and respectful for everyone.
               </dd>
             </div>
           </dl>

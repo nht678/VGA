@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+import LoadingPage from 'src/pages/loading';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
@@ -23,16 +24,24 @@ export const NewsUniversity = lazy(() => import('src/pages/newsuniversity'));
 export const Profile = lazy(() => import('src/pages/profile'));
 export const Signin = lazy(() => import('src/pages/signin'));
 export const HighSchoolView = lazy(() => import('src/pages/highschool'));
+export const Logout = lazy(() => import('src/pages/logout'));
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const routes = useRoutes([
-    { element: <Homepage />, index: true },
+    {
+      element: (
+        <Suspense fallback={<LoadingPage />}>
+          <Homepage />
+        </Suspense>
+      ),
+      index: true
+    },
     {
       element: (
         <DashboardLayout>
-          <Suspense >
+          <Suspense fallback={<LoadingPage />}>
             <Outlet />
           </Suspense>
         </DashboardLayout>
@@ -68,14 +77,46 @@ export default function Router() {
       element: <Navigate to="/404" replace />,
     },
 
-    { path: 'news', element: <News /> },
+    {
+      path: 'news',
+      element: (
+        <Suspense fallback={<LoadingPage />}>
+          <News />
+        </Suspense>
+      )
+    },
     { path: 'hello', element: <Hello /> },
-    { path: 'newsdetail', element: <NewsDetail /> },
-    { path: 'profile', element: <Profile /> },
-    { path: 'signin', element: <Signin /> },
-
-
+    {
+      path: 'newsdetail', element: (
+        <Suspense fallback={<LoadingPage />}>
+          <NewsDetail />
+        </Suspense>
+      )
+    },
+    {
+      path: 'profile', element:
+        (
+          <Suspense fallback={<LoadingPage />}>
+            <Profile />
+          </Suspense>
+        )
+    },
+    {
+      path: 'signin',
+      element: (
+        <Suspense fallback={<LoadingPage />}>
+          <Signin />
+        </Suspense>
+      )
+    },
+    {
+      path: 'logout',
+      element: (
+        <Suspense fallback={<LoadingPage />}>
+          <Logout />
+        </Suspense>
+      )
+    },
   ]);
-
   return routes;
 }

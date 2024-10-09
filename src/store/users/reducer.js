@@ -1,5 +1,5 @@
 
-// const usersReducer = (state = [], action) => {
+
 //     switch (action.type) {
 //         case 'ACT_USER_GET':
 //             return {
@@ -35,7 +35,6 @@
 import { ca } from "date-fns/locale";
 import { success } from "src/theme/palette";
 
-// export default usersReducer;
 // const initialState = {
 //     users: [],       // Lưu danh sách sinh viên
 //     totalCount: 0,   // Tổng số lượng sinh viên
@@ -67,7 +66,7 @@ const initialState = {
   error: null,
   usersSuccess: false,
 };
-
+console.log('initialState.usersSuccess:', initialState.usersSuccess);
 const usersReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'GET_USERS_SUCCESS':
@@ -76,7 +75,7 @@ const usersReducer = (state = initialState, action) => {
         students: action.payload.students,
         total: action.payload.total,
         currentPage: action.payload.currentPage,
-        usersSuccess: true,
+        usersSuccess: false,
       };
     case 'GET_USERS_ERROR':
       return {
@@ -85,6 +84,7 @@ const usersReducer = (state = initialState, action) => {
         usersSuccess: false,
       };
     case 'ADD_USER':
+      console.log('initialState.usersSuccess:', initialState.usersSuccess)
       return {
         ...state,
         students: [...state.students, action.payload],
@@ -104,6 +104,11 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         students: state.students.filter((student) => student.id !== action.payload),
         usersSuccess: true,
+      };
+    case 'RESET_USER_SUCCESS':
+      return {
+        ...state,
+        usersSuccess: false,
       };
 
     default:

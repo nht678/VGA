@@ -34,7 +34,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { actUserGetAsync, actAddUserAsync } from 'src/store/users/action';
+import { actUserGetAsync, actAddUserAsync, resetUserSuccess } from 'src/store/users/action';
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
@@ -55,10 +55,11 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function UserView() {
 
   const dispatch = useDispatch();
   const { students, total, usersSuccess } = useSelector((state) => state.usersReducer);
+  console.log('students', students);
   const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -80,10 +81,7 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // write code here
-  useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-  }, [dispatch, page, rowsPerPage]);
+
 
   const onPanelChange = (value, mode) => {
     setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
@@ -98,25 +96,23 @@ export default function UserPage() {
     });
   };
 
+
+
+
+
   const handleAddUser = () => {
     // Tạo formDataObj
     const formDataObj = new FormData();
-
-    // Thêm các trường từ formData
-    formDataObj.append('Name', formData.Name);
-    formDataObj.append('Email', formData.Email);
-    formDataObj.append('Phone', formData.Phone);
-    formDataObj.append('Password', formData.Password);
-    formDataObj.append('Gender', formData.Gender);
-    formDataObj.append('DateOfBirth', formData.DateOfBirth);
-    formDataObj.append('CreateAt', formData.CreateAt);
-    formDataObj.append('Status', formData.Status);
-    formDataObj.append('HighSchoolId', formData.highSchoolId);
+    Object.keys(formData).forEach((key) => {
+      formDataObj.append(key, formData[key]);
+    });
 
     // Sau khi kiểm tra, gửi formDataObj tới action
     dispatch(actAddUserAsync(formDataObj));
     if (usersSuccess) {
       message.success('Add user success');
+      // set reset 
+
     } else {
       message.error('Add user failed');
     }
@@ -280,6 +276,24 @@ export default function UserPage() {
 
     reader.readAsArrayBuffer(selectedFile);
   };
+
+  useEffect(() => {
+    // if (uploadSuccess) {
+    //   dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    //   dispatch(resetUserSuccess());
+    // }
+  }, [dispatch, page, rowsPerPage, uploadSuccess]);
+
+  // write code here
+  useEffect(() => {
+    if (usersSuccess) {
+      debugger
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+      // dispatch(resetUserSuccess());
+    } else {
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    }
+  }, [dispatch, page, rowsPerPage, usersSuccess]);
   return (
     // if loading is false then show div below else show loading
     // true ? (

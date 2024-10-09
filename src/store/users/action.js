@@ -30,6 +30,9 @@ export function actUserDelete(id) {
         payload: id,
     };
 }
+export const resetUserSuccess = () => ({
+    type: 'RESET_USER_SUCCESS',
+});
 
 
 
@@ -48,6 +51,7 @@ export const actUserGetAsync = ({ page, pageSize }) => async (dispatch) => {
                 students: response.data.students, // Lấy danh sách sinh viên
                 total: response.data.total,       // Lấy tổng số sinh viên
                 currentPage: response.data['current-page'], // Lấy trang hiện tại
+
             },
         });
     } catch (error) {
@@ -70,11 +74,23 @@ export function actAddUserAsync(data) {
         }
     };
 }
+// export function actUserUpdateAsync(data, id) {
+//     return async (dispatch) => {
+//         try {
+//             // console.log("data", data, id);
+//             console.log('url', apiUser.put(`/${id}`, data));
+//             const response = await apiUser.put(`/${id}`, data);
+//             console.log("response", response);
+//             dispatch(actUserUpdate(response.data));
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     };
+// }
 export function actUserUpdateAsync(data, id) {
     return async (dispatch) => {
         try {
-            console.log("data", data, id);
-            const response = await apiUser.put(`${id}`, data);
+            const response = await apiUser.put(`/${id}`, data);
             dispatch(actUserUpdate(response.data));
         } catch (error) {
             console.log(error);

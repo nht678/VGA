@@ -4,6 +4,7 @@ import newsReducer from './news/reducer';
 import quizReducer from './eventquiz/reducer';
 import accountReducer from './account/reducer';
 import uploadReducer from './uploadfile/reducer';
+import highschoolReducer from './highschool/reducer';
 
 
 const store = configureStore({
@@ -13,7 +14,8 @@ const store = configureStore({
         newsReducer,
         quizReducer,
         accountReducer,
-        uploadReducer
+        uploadReducer,
+        highschoolReducer,
     }
 });
 

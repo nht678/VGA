@@ -7,6 +7,11 @@ const initialState = {
 };
 const accountReducer = (state = initialState, action) => {
     switch (action.type) {
+        case 'SIGNIN_USER_REQUEST':
+            return {
+                ...state,
+                error: null,
+            };
         case 'SIGNIN_USER_SUCCESS':
             return {
                 ...state,
@@ -26,6 +31,11 @@ const accountReducer = (state = initialState, action) => {
                 user: null,
                 isAuthenticated: false,
                 error: null,
+            };
+        case 'SIGN_OUT_FAIL':
+            return {
+                ...state,
+                error: action.payload,
             };
         default:
             return state;

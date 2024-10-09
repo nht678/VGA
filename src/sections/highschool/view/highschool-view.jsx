@@ -38,6 +38,7 @@ import { actUserGetAsync, actAddUserAsync } from 'src/store/users/action';
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
+import { actHighSchoolGetAsync } from 'src/store/highschool/action';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
@@ -45,6 +46,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+
 
 
 
@@ -70,15 +72,14 @@ export default function HighSchoolView() {
   const onPanelChange = (value, mode) => {
     console.log(value.format('YYYY-MM-DD'), mode);
   };
-  const { token } = theme.useToken();
 
   const dispatch = useDispatch();
 
-  const { students, total } = useSelector((state) => state.usersReducer);
-  console.log('Students data:', students);
+  const { highschools, total } = useSelector((state) => state.highschoolReducer);
+  console.log('highschools', highschools);
 
   useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    dispatch(actHighSchoolGetAsync({ page: page + 1, pageSize: rowsPerPage }));
     console.log('Current page:', page + 1);
   }, [dispatch, page, rowsPerPage]);
 
@@ -123,7 +124,7 @@ export default function HighSchoolView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = students.map((n) => n.name);
+      const newSelecteds = highschools.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -151,14 +152,14 @@ export default function HighSchoolView() {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     console.log('newPage', newPage);
-    dispatch(actUserGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actHighSchoolGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     console.log('newRowsPerPage', newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actHighSchoolGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
 
@@ -168,7 +169,7 @@ export default function HighSchoolView() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: students,
+    inputData: highschools,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -194,7 +195,7 @@ export default function HighSchoolView() {
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Students</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">HighSchool</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
             New HighSchool
@@ -290,24 +291,23 @@ export default function HighSchoolView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'email', label: 'Email' },
-                  { id: 'password', label: 'Password' },
-                  { id: 'phone', label: 'Phone' },
-                  { id: 'address', label: 'Address' },
+                  { id: 'email', label: 'Email', align: 'center' },
+                  // { id: 'password', label: 'Password' },
+                  { id: 'phone', label: 'Phone', align: 'center' },
+                  { id: 'address', label: 'Address', align: 'center' },
                   { id: '' },
                 ]}
               />
               <TableBody>
                 {dataFiltered.map((row) => (
                   <UserTableRow
-                    key={row.id}
+                    // key={row.id}
                     name={row.name}
+                    email={row.account.email}
+                    phone={row.account.phone}
+                    locationDetail={row.locationDetail}
                     id={row.id}
-                    gender={row.gender}
-                    gold={row["gold-balance"]}
                     avatarUrl={row.avatarUrl}
-                    adminssionyear={row.adminssionyear}
-                    dateOfBirth={new Date(row.dateOfBirth).toISOString().split('T')[0]}  // Chuyển đổi thành YYYY-MM-DD
                     selected={selected.indexOf(row.name) !== -1}
                     handleClick={(event) => handleClick(event, row.name)}
                   />
