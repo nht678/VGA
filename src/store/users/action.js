@@ -1,6 +1,5 @@
-import { apiUser } from "src/services/userServices";
+import { apiUser, apiUserUpdate } from "src/services/userServices";
 import axios from "axios";
-import { combineReducers } from "@reduxjs/toolkit";
 
 export const ACT_USER_GET = 'ACT_USER_GET';
 export const ADD_USER = 'ADD_USER';
@@ -37,14 +36,16 @@ export const resetUserSuccess = () => ({
 
 
 
-export const actUserGetAsync = ({ page, pageSize }) => async (dispatch) => {
+export const actUserGetAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
         const response = await apiUser.get('', {
             params: {
                 'current-page': page,
                 'page-size': pageSize,
+                name: search || '',
             },
         });
+        // dispatch({ type: 'GET_USERS_REQUEST' });
         dispatch({
             type: 'GET_USERS_SUCCESS',
             payload: {
@@ -90,7 +91,7 @@ export function actAddUserAsync(data) {
 export function actUserUpdateAsync(data, id) {
     return async (dispatch) => {
         try {
-            const response = await apiUser.put(`/${id}`, data);
+            const response = await apiUserUpdate.put(`/${id}`, data);
             dispatch(actUserUpdate(response.data));
         } catch (error) {
             console.log(error);

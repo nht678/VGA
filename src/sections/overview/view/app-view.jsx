@@ -171,7 +171,7 @@ export default function AppView() {
             }),
           })}
           >
-            a
+            .
           </Box>
         </Grid>
 

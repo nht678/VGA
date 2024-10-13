@@ -59,6 +59,7 @@ export default function UserView() {
 
   const dispatch = useDispatch();
   const { students, total, usersSuccess } = useSelector((state) => state.usersReducer);
+  console.log('usersSuccess', usersSuccess);
   console.log('students', students);
   const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -103,17 +104,17 @@ export default function UserView() {
   const handleAddUser = () => {
     // Tạo formDataObj
     const formDataObj = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataObj.append(key, formData[key]);
-    });
+    // Object.keys(formData).forEach((key) => {
+    //   formDataObj.append(key, formData[key]);
+    // });
 
     // Sau khi kiểm tra, gửi formDataObj tới action
-    dispatch(actAddUserAsync(formDataObj));
-    if (usersSuccess) {
-      message.success('Add user success');
-      // set reset 
-
-    } else {
+    try {
+      dispatch(actAddUserAsync(formData));
+      if (usersSuccess) {
+        message.success('Add user success');
+      }
+    } catch (e) {
       message.error('Add user failed');
     }
     setOpen(false);
@@ -167,10 +168,10 @@ export default function UserView() {
   };
 
 
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
+  // const handleFilterByName = (event) => {
+  //   setPage(0);
+  //   setFilterName(event.target.value);
+  // };
 
   const dataFiltered = applyFilter({
     inputData: students,
@@ -277,28 +278,40 @@ export default function UserView() {
     reader.readAsArrayBuffer(selectedFile);
   };
 
-  useEffect(() => {
-    // if (uploadSuccess) {
-    //   dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-    //   dispatch(resetUserSuccess());
-    // }
-  }, [dispatch, page, rowsPerPage, uploadSuccess]);
+  // useEffect(() => {
+  //   if (uploadSuccess) {
+  //     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+  //     dispatch(resetUserSuccess());
+  //   }
+  // }, [dispatch, page, rowsPerPage, uploadSuccess]);
 
   // write code here
+  // Load initial data on page load
+  useEffect(() => {
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+  }, [dispatch, page, rowsPerPage]);
+
+  // Re-fetch data when a new user is added successfully
   useEffect(() => {
     if (usersSuccess) {
-      debugger
       dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-      // dispatch(resetUserSuccess());
-    } else {
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+      dispatch(resetUserSuccess());
     }
-  }, [dispatch, page, rowsPerPage, usersSuccess]);
+  }, [usersSuccess, dispatch, page, rowsPerPage]);
+
+  const handleFilterByName = async (event) => {
+    const filterValue = event.target.value;
+    setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+
+    if (filterValue.trim()) {
+      dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+    } else {
+      // Gọi lại API khi không có từ khóa tìm kiếm
+      dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage }));
+    }
+  };
+
   return (
-    // if loading is false then show div below else show loading
-    // true ? (
-    //   <LoadingPage />
-    // ) : (
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

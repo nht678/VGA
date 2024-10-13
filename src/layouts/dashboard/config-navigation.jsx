@@ -13,8 +13,18 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'user',
-    path: '/user',
+    title: 'students',
+    path: '/students',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'consultant',
+    path: '/consultants',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'university',
+    path: '/unversity',
     icon: icon('ic_user'),
   },
   // {
@@ -22,26 +32,26 @@ const navConfig = [
   //   path: '/upload',
   //   icon: icon('ic_user'),
   // },
-  {
-    title: 'event quiz',
-    path: '/eventquiz',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'test edit quiz',
-    path: '/editquiz',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'my quiz',
-    path: '/myquiz',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'news',
-    path: '/newsuniversity',
-    icon: icon('ic_user'),
-  },
+  // {
+  //   title: 'event quiz',
+  //   path: '/eventquiz',
+  //   icon: icon('ic_user'),
+  // },
+  // {
+  //   title: 'test edit quiz',
+  //   path: '/editquiz',
+  //   icon: icon('ic_user'),
+  // },
+  // {
+  //   title: 'my quiz',
+  //   path: '/myquiz',
+  //   icon: icon('ic_user'),
+  // },
+  // {
+  //   title: 'news',
+  //   path: '/newsuniversity',
+  //   icon: icon('ic_user'),
+  // },
   {
     title: 'high school',
     path: '/highschool',
@@ -52,11 +62,11 @@ const navConfig = [
   //   path: '/products',
   //   icon: icon('ic_cart'),
   // },
-  {
-    title: 'blog',
-    path: '/blog',
-    icon: icon('ic_blog'),
-  },
+  // {
+  //   title: 'blog',
+  //   path: '/blog',
+  //   icon: icon('ic_blog'),
+  // },
   // {
   //   title: 'login',
   //   path: '/login',

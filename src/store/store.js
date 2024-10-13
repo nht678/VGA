@@ -5,6 +5,8 @@ import quizReducer from './eventquiz/reducer';
 import accountReducer from './account/reducer';
 import uploadReducer from './uploadfile/reducer';
 import highschoolReducer from './highschool/reducer';
+import regionReducer from './region/reducer';
+import consultantReducer from './consultant/reducer';
 
 
 const store = configureStore({
@@ -16,6 +18,8 @@ const store = configureStore({
         accountReducer,
         uploadReducer,
         highschoolReducer,
+        regionReducer,
+        consultantReducer,
     }
 });
 

@@ -29,8 +29,6 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { UploadOutlined } from '@ant-design/icons';
-import * as XLSX from 'xlsx';
 import { actHighSchoolGetAsync, actAddHighSchoolAsync, resetHighSchoolSuccess } from 'src/store/highschool/action';
 import { actGetRegionAsync } from 'src/store/region/action';
 
@@ -42,7 +40,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
-export default function HighSchoolView() {
+export default function UniversityView() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');

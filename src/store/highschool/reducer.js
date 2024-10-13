@@ -1,8 +1,8 @@
-import { success } from "src/theme/palette";
+
 
 const initialState = {
     highschools: [], // hoặc là một đối tượng khác tuỳ bạn
-    success: false,
+    successHighSchool: false,
     error: null,
 };
 
@@ -15,24 +15,34 @@ const highschoolReducer = (state = initialState, action) => {
                 highschools: action.payload.highschools,
                 total: action.payload.total,
                 currentPage: action.payload.currentPage,
-                success: true,
+                successHighSchool: true,
             };
-        case 'CREATE_HIGH_SCHOOL_SUCCESS':
+        case 'ADD_HIGH_SCHOOL':
             return {
                 ...state,
-                highschools: [...state.highSchools, action.payload],
-                success: true, // Cập nhật success khi tạo thành công
+                highschools: [...state.highschools, action.payload],
+                successHighSchool: true, // Cập nhật success khi tạo thành công
             };
-        case 'CREATE_HIGH_SCHOOL_FAILURE':
+        case 'UPDATE_HIGH_SCHOOL':
             return {
                 ...state,
-                error: action.payload, // Cập nhật lỗi nếu tạo thất bại
-                success: false,
+                highschools: state.highschools.map((highschool) =>
+                    highschool.id === action.payload.id ? action.payload : highschool,
+                ),
+                successHighSchool: true,
             };
-        case 'RESET_HIGH_SCHOOL_STATUS': // Xử lý việc reset trạng thái
+        case 'DELETE_HIGH_SCHOOL':
             return {
                 ...state,
-                success: false,
+                highschools: state.highschools.filter((highschool) => highschool.id !== action.payload),
+                successHighSchool: true,
+            };
+
+        case 'RESET_HIGH_SCHOOL_SUCCESS': // Xử lý việc reset trạng thái
+            debugger
+            return {
+                ...state,
+                successHighSchool: false,
                 error: null,
             };
         default:

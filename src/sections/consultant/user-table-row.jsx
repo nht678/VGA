@@ -38,16 +38,16 @@ export default function UserTableRow({
   selected,
   name,
   avatarUrl,
-  gender,
   email,
   phone,
-  gold,
   handleClick,
-  id: userId,  // Đổi tên id props thành userId
+  id,  // Đổi tên id props thành userId
   dateOfBirth,
+  description,
+  consultantLevelId,
+  gender
 }) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log('userInfo:', userInfo);
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [formData, setformData] = useState({
@@ -57,9 +57,8 @@ export default function UserTableRow({
     Phone: phone,
     Status: true,
     CreateAt: new Date().toISOString().split('T')[0],
-    id: userId,
+    highSchoolId: userInfo ? userInfo.highSchoolId : '',
     DateOfBirth: dateOfBirth,
-    Gender: gender,
   });
 
   // handle change
@@ -76,17 +75,17 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
-    const formDataObj = new FormData();
+    // const formDataObj = new FormData();
 
-    // Chuyển đổi các trường trong formData thành FormData format
+    // // Chuyển đổi các trường trong formData thành FormData format
     // Object.keys(formData).forEach((key) => {
     //   formDataObj.append(key, formData[key]);
     // });
-    dispatch(actUserUpdateAsync(formData, userId));
+    // dispatch(actUserUpdateAsync(formDataObj, userId));
     handleCloseDialog();
   };
   const handleDelete = () => {
-    dispatch(actUserDelete(userId));
+    // dispatch(actUserDelete(userId));
     handleCloseDialog();
   }
   const onPanelChange = (value, mode) => {
@@ -122,13 +121,7 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  // const Year = [
-  //   { label: '2017', year: 2017 },
-  //   { label: '2018', year: 2018 },
-  //   { label: '2019', year: 2019 },
-  //   { label: '2020', year: 2020 },
-  //   { label: '2021', year: 2021 },
-  // ];
+
 
   return (
     <>
@@ -148,11 +141,15 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{email}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
-        <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
 
         <TableCell>
-          {gold}4000$
+          {description}
         </TableCell>
+        <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
+        <TableCell>
+          {consultantLevelId}
+        </TableCell>
+
         <TableCell>
           {dateOfBirth}
         </TableCell>
@@ -164,82 +161,7 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <Dialog
-        open={dialog === 'edit'}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-          {"Update student"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  name='Name'
-                  label="Name"
-                  defaultValue={name}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  id='Email'
-                  name='Email'
-                  label="Email"
-                  defaultValue={email}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Password"
-                  name='Password'
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Phone"
-                  name='Phone'
-                  defaultValue={phone}
-                  onChange={handleChange}
-                />
-              </Grid>
 
-              <Grid item xs={12}>
-                <Typography variant="h6">Date Of Birth</Typography>
-                <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="Gender"
-                  defaultValue={gender}
-                  onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
-                >
-                  <FormControlLabel value control={<Radio />} label="Male" />
-                  <FormControlLabel value={false} control={<Radio />} label="Female" />
-                </RadioGroup>
-              </Grid>
-            </Grid>
-
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleUpdate} autoFocus>
-            Update
-          </Button>
-        </DialogActions>
-      </Dialog>
       <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover
         open={!!open}
@@ -268,11 +190,12 @@ UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   handleClick: PropTypes.func,
   name: PropTypes.string,
-  gender: PropTypes.string,
   selected: PropTypes.bool,
-  gold: PropTypes.string,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,
   email: PropTypes.string,
   phone: PropTypes.string,
+  description: PropTypes.string,
+  gender: PropTypes.bool,
+  consultantLevelId: PropTypes.string,
 };

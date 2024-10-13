@@ -3,6 +3,7 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import LoadingPage from 'src/pages/loading';
 
 import DashboardLayout from 'src/layouts/dashboard';
+import UniversityView from 'src/sections/university/view/university-view';
 
 export const Dashboard = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -25,6 +26,7 @@ export const Profile = lazy(() => import('src/pages/profile'));
 export const Signin = lazy(() => import('src/pages/signin'));
 export const HighSchoolView = lazy(() => import('src/pages/highschool'));
 export const Logout = lazy(() => import('src/pages/logout'));
+export const ConsultantView = lazy(() => import('src/pages/consultant'));
 
 // ----------------------------------------------------------------------
 
@@ -48,10 +50,9 @@ export default function Router() {
       ),
       children: [
         // { element: <IndexPage />, index: true },
-        { path: 'user', element: <UserPage /> },
+        { path: 'students', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
-        { path: 'test', element: <Hello /> },
         { path: 'upload', element: <UploadFile /> },
         { path: 'counter', element: <CounterComponent /> },
         // {path: 'homepage', element: <Homepage />},
@@ -61,6 +62,8 @@ export default function Router() {
         { path: 'newsuniversity', element: <NewsUniversity /> },
         { path: '/managers', element: <Dashboard /> },
         { path: 'highschool', element: <HighSchoolView /> },
+        { path: 'consultants', element: <ConsultantView /> },
+        { path: 'unversity', element: <UniversityView /> }
 
       ],
     },

@@ -25,6 +25,7 @@
     }
   },
   "rules": {
+    "object-shorthand": "off",
     "no-restricted-syntax": "off",
     "prefer-const": "off",
     "jsx-a11y/label-has-associated-control": "off",
