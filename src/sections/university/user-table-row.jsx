@@ -23,8 +23,9 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actHighSchoolDeleteAsync, actHighSchoolUpdateAsync, resetHighSchoolSuccess } from 'src/store/highschool/action';
-import { actGetRegionAsync } from 'src/store/region/action';
+import { actUniversityUpdateAsync, actUniversityDeleteAsync, resetUniversitySuccess } from 'src/store/university/action';
+import { propTypes } from 'react-bootstrap/esm/Image';
+import { message } from 'antd';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -62,22 +63,28 @@ export default function UserTableRow({
   id,
   email,
   phone,
-  locationDetail,
+  address,
   status,
+  description,
 }) {
-
-
+  console.log('id', id)
   console.log('status', status)
+
+
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
 
   const dispatch = useDispatch();
-  const { successHighSchool } = useSelector((state) => state.highschoolReducer);
-  const { regions } = useSelector((state) => state.regionReducer);
+
+  const { successUniversity } = useSelector((state) => state.reducerUniversity);
 
   const handleDelete = () => {
     // console.log("id",id);
-    dispatch(actHighSchoolDeleteAsync(id));
+    dispatch(actUniversityDeleteAsync(id));
+    if (successUniversity) {
+      dispatch(resetUniversitySuccess());
+      message.success('Delete university success');
+    }
     handleCloseDialog();
   }
   const onPanelChange = (value, mode) => {
@@ -105,44 +112,43 @@ export default function UserTableRow({
     email: email,
     phone: phone,
     password: '',
-    locationDetail: locationDetail,
-    regionId: id,
+    address: address,
+    description: description,
   });
 
   const handlechange = (event) => {
-    debugger
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
-      regionId: value?.id,
 
     });
   }
 
-  const handleUpdateHighSchool = () => {
-    dispatch(actHighSchoolUpdateAsync(formData, id));
-    if (successHighSchool) {
-      dispatch(resetHighSchoolSuccess());
+  const handleUpdateUniversity = () => {
+    dispatch(actUniversityUpdateAsync({ formData, id }));
+    if (successUniversity) {
+      dispatch(resetUniversitySuccess());
       setFormData({
         name: '',
         email: '',
         phone: '',
         password: '',
-        locationDetail: '',
-        regionId: '',
+        address: '',
+        description: '',
       });
+      message.success('Update university success');
     }
     handleCloseDialog();
   }
 
   // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
-  };
+  // const handleRegionChange = (event, newValue) => {
+  //   setValue(newValue);
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
+  //   }));
+  // };
 
   const handleClose = () => {
     setDialog(null);
@@ -152,12 +158,7 @@ export default function UserTableRow({
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
-  // useEffect(() => {
-  //   dispatch(actGetRegionAsync());
-  //   setOptions(regions);
-  // }, []);
 
-  console.log('formdata:', formData);
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -168,7 +169,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" noWrap>
+            <Typography variant="subtitle2" component='span' noWrap>
               {name}
             </Typography>
           </Stack>
@@ -179,7 +180,10 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
         <TableCell sx={{ textAlign: 'center' }}>
-          {locationDetail}
+          {address}
+        </TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>
+          {description}
         </TableCell>
         <TableCell align="center">
           <Chip
@@ -203,7 +207,7 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-          {"Update HighSchool"}
+          {"Cập nhật thông tin trường đại học"}
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -249,30 +253,20 @@ export default function UserTableRow({
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
-                  defaultValue={locationDetail}
-                  name='locationDetail'
+                  defaultValue={address}
+                  name='address'
                   label="Address"
                   onChange={handlechange}
 
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
-                <Autocomplete
-                  // value={value}
-                  // onChange={(event, newValue) => {
-                  //   setValue(newValue);
-                  // }}
-                  // inputValue={inputValue}
-                  // onInputChange={(event, newInputValue) => {
-                  //   setInputValue(newInputValue);
-                  // }}
-                  onChange={handleRegionChange}
-                  id="controllable-states-demo"
-                  options={regions.regions || []} // Đảm bảo options luôn là một mảng
-                  getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
-                  renderInput={(params) => <TextField {...params} label="Chọn tỉnh thành" />}
+                <textarea name='description' onChange={handlechange} placeholder="Description" style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                  defaultValue={description}
                 />
+
               </Grid>
+
 
             </Grid>
 
@@ -280,7 +274,7 @@ export default function UserTableRow({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleUpdateHighSchool} autoFocus>
+          <Button onClick={handleUpdateUniversity} autoFocus>
             Create
           </Button>
         </DialogActions>
@@ -325,6 +319,7 @@ UserTableRow.propTypes = {
   id: PropTypes.string,
   email: PropTypes.string,
   phone: PropTypes.string,
-  locationDetail: PropTypes.string,
-  status: PropTypes.string,
+  address: PropTypes.string,
+  status: PropTypes.number,
+  description: propTypes.string,
 };

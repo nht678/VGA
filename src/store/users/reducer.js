@@ -6,25 +6,17 @@ const initialState = {
   error: null,
   usersSuccess: false,
 };
-console.log('initialState.usersSuccess:', initialState.usersSuccess);
 const usersReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'GET_USERS_SUCCESS':
+    case 'ACT_USER_GET':
       return {
         ...state,
         students: action.payload.students,
         total: action.payload.total,
         currentPage: action.payload.currentPage,
-        usersSuccess: false,
-      };
-    case 'GET_USERS_ERROR':
-      return {
-        ...state,
-        error: action.payload,
-        usersSuccess: false,
+        usersSuccess: true,
       };
     case 'ADD_USER':
-      console.log('initialState.usersSuccess:', initialState.usersSuccess)
       return {
         ...state,
         students: [...state.students, action.payload],

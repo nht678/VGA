@@ -28,8 +28,8 @@ import Scrollbar from 'src/components/scrollbar';
 import Autocomplete from '@mui/material/Autocomplete';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { actUserGetAsync, actAddUserAsync, resetUserSuccess } from 'src/store/users/action';
-import { fetchConsultants } from 'src/store/consultant/action';
+import { getConsultants, resetConsultantSuccess, addConsultant } from 'src/store/consultant/action';
+import { actLevelGetAsync } from 'src/store/level/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -47,17 +47,22 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 export default function ConsultantView() {
 
   const dispatch = useDispatch();
-  const { consultants, total } = useSelector((state) => state.consultantReducer);
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const { consultants, total, successConsultant } = useSelector((state) => state.consultantReducer);
+  const { consultantLevels } = useSelector((state) => state.levelReducer);
+  console.log('consultantLevels', consultantLevels)
 
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
   const [formData, setformData] = useState({
-    Status: true, // Khởi tạo Status trong formData
-    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
-    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    doB: '',
+    description: '',
+    consultantLevelId: '',
   });
 
   const [selected, setSelected] = useState([]);
@@ -75,7 +80,7 @@ export default function ConsultantView() {
   const [inputValue, setInputValue] = useState(''); // Giá trị input
 
   const onPanelChange = (value1, mode) => {
-    setformData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
+    setformData({ ...formData, doB: value1.format('YYYY-MM-DD') });
 
   };
 
@@ -88,15 +93,24 @@ export default function ConsultantView() {
     });
   };
 
+  useEffect(() => {
+    dispatch(getConsultants(page + 1, rowsPerPage));
+    // dispatch(actLevelGetAsync)
+  }, [page, rowsPerPage]);
 
   useEffect(() => {
-    dispatch(fetchConsultants({ page: 1, pageSize: rowsPerPage }));
-  }, [dispatch, rowsPerPage]);
+    dispatch(actLevelGetAsync());
+  }, []);
 
   const handleAddConsultant = () => {
-    // dispatch(actAddUserAsync(formData));
-    setOpen(false);
-  };
+    dispatch(addConsultant(formData));
+    if (successConsultant) {
+      message.success('Add Consultant Success');
+      dispatch(resetConsultantSuccess);
+    };
+  }
+
+
 
 
 
@@ -137,13 +151,13 @@ export default function ConsultantView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actUserGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
 
@@ -171,7 +185,10 @@ export default function ConsultantView() {
     setOpen(false);
   };
 
-
+  const handleLevelChange = (event, newValue) => {
+    setValue(newValue);
+    setformData({ ...formData, consultantLevelId: newValue?.id || '' });
+  };
 
 
   // write code here
@@ -246,9 +263,7 @@ export default function ConsultantView() {
                     <Typography variant="h6">Level</Typography>
                     <Autocomplete
                       value={value}
-                      onChange={(event, newValue) => {
-                        setValue(newValue);
-                      }}
+                      onChange={handleLevelChange}
 
                       // name='consultantLevelId'
                       // onChange={handleChange}
@@ -257,7 +272,7 @@ export default function ConsultantView() {
                         setInputValue(newInputValue);
                       }}
                       id="controllable-states-demo"
-                      options={options || []} // Đảm bảo options luôn là một mảng
+                      options={consultantLevels || []} // Đảm bảo options luôn là một mảng
                       getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
                       renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
                     />
@@ -272,8 +287,8 @@ export default function ConsultantView() {
                     <RadioGroup
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
-                      name="Gender"
-                      onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                      name="gender"
+                      onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                     >
                       <FormControlLabel value control={<Radio />} label="Male" />
                       <FormControlLabel value={false} control={<Radio />} label="Female" />
@@ -318,9 +333,9 @@ export default function ConsultantView() {
                   { id: 'name', label: 'Name' },
                   { id: 'email', label: 'Email', align: 'center' },
                   { id: 'phone', label: 'Phone', align: 'center' },
-                  { id: 'decription', label: 'Description' },
+                  { id: 'decription', label: 'Description', align: 'center' },
                   { id: 'gender', label: 'Gender' },
-                  { id: 'consultantLevelId', label: 'Level' },
+                  { id: 'consultantLevelId', label: 'Level', align: 'center' },
                   { id: 'dateOfBirth', label: 'DateOfBirth' },
                   { id: '' },
                 ]}
@@ -328,6 +343,7 @@ export default function ConsultantView() {
               <TableBody>
                 {dataFiltered.map((row) => (
                   <UserTableRow
+                    key={row.id}
                     id={row.id || ''}
                     name={row.name || ''}
                     email={row?.email || ''}

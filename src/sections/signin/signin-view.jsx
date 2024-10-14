@@ -35,7 +35,6 @@ export default function SigninView() {
         }
     }
     // useEffect(() => {
-    //     debugger
     //     if (isAuthenticated) {
     //         navigate('/', { replace: true });
     //         message.success('Sign in successfully');

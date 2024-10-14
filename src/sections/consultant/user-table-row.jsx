@@ -34,6 +34,21 @@ import { useDispatch } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
 import DeleteDialog from '../../pages/delete';
 
+const getColorByLevel = (level) => {
+  switch (level) {
+    case 1:
+      return 'green';
+    case 2:
+      return 'blue';
+    case 3:
+      return 'orange';
+    case 4:
+      return 'red';
+    default:
+      return 'black'; // Màu mặc định nếu không có level hợp lệ
+  }
+};
+
 export default function UserTableRow({
   selected,
   name,
@@ -133,7 +148,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" noWrap>
+            <Typography variant="subtitle2" component='span' noWrap>
               {name}
             </Typography>
           </Stack>
@@ -142,14 +157,19 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
 
-        <TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>
           {description}
         </TableCell>
         <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
-        <TableCell>
-          {consultantLevelId}
+        <TableCell
+          sx={{
+            textAlign: 'center',
+            color: getColorByLevel(consultantLevelId),
+            fontWeight: 'bold'
+          }}
+        >
+          {`Level ${consultantLevelId}`}
         </TableCell>
-
         <TableCell>
           {dateOfBirth}
         </TableCell>
@@ -197,5 +217,5 @@ UserTableRow.propTypes = {
   phone: PropTypes.string,
   description: PropTypes.string,
   gender: PropTypes.bool,
-  consultantLevelId: PropTypes.string,
+  consultantLevelId: PropTypes.number,
 };

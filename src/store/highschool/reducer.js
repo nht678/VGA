@@ -39,7 +39,6 @@ const highschoolReducer = (state = initialState, action) => {
             };
 
         case 'RESET_HIGH_SCHOOL_SUCCESS': // Xử lý việc reset trạng thái
-            debugger
             return {
                 ...state,
                 successHighSchool: false,

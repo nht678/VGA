@@ -38,7 +38,7 @@ import { actUserGetAsync, actAddUserAsync, resetUserSuccess } from 'src/store/us
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
-import { uploadFile } from 'src/store/uploadfile/action';
+import { uploadFileAsync } from 'src/store/uploadfile/action';
 import LoadingPage from 'src/pages/loading';
 
 import TableNoData from '../table-no-data';
@@ -51,28 +51,31 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 
 
-
+// create option các năm học có value là năm học
+const options = [
+  { name: '2017', value: 2017 },
+  { name: '2018', value: 2018 },
+  { name: '2019', value: 2019 },
+  { name: '2020', value: 2020 },
+  { name: '2021', value: 2021 },
+];
 
 // ----------------------------------------------------------------------
 
 export default function UserView() {
 
   const dispatch = useDispatch();
-  const { students, total, usersSuccess } = useSelector((state) => state.usersReducer);
+  const { students = [], total, usersSuccess } = useSelector((state) => state.usersReducer);
+
   console.log('usersSuccess', usersSuccess);
   console.log('students', students);
+
   const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
-
-  const [formData, setformData] = useState({
-    Status: true, // Khởi tạo Status trong formData
-    CreateAt: new Date().toISOString().split('T')[0], // Chuyển đổi thành định dạng YYYY-MM-DD
-    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
-  });
 
   const [selected, setSelected] = useState([]);
 
@@ -82,10 +85,16 @@ export default function UserView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [formData, setformData] = useState({
+    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
+  });
+
+  const [value, setValue] = useState('');
 
 
-  const onPanelChange = (value, mode) => {
-    setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
+
+  const onPanelChange = (value1, mode) => {
+    setformData({ ...formData, dateOfBirth: value1.format('YYYY-MM-DD') });
 
   };
 
@@ -102,22 +111,26 @@ export default function UserView() {
 
 
   const handleAddUser = () => {
-    // Tạo formDataObj
-    const formDataObj = new FormData();
-    // Object.keys(formData).forEach((key) => {
-    //   formDataObj.append(key, formData[key]);
-    // });
-
-    // Sau khi kiểm tra, gửi formDataObj tới action
     try {
       dispatch(actAddUserAsync(formData));
       if (usersSuccess) {
-        message.success('Add user success');
+        dispatch(resetUserSuccess());
+        setformData({
+          name: '',
+          email: '',
+          password: '',
+          phone: '',
+          dateOfBirth: '',
+          schoolYears: '',
+          highSchoolId: userInfo ? userInfo.highSchoolId : '',
+        });
       }
     } catch (e) {
       message.error('Add user failed');
     }
-    setOpen(false);
+
+
+    setOpen(true);
   };
 
 
@@ -261,12 +274,11 @@ export default function UserView() {
       formUpload.append('stringJson', payloadString);
       formUpload.append('highschoolId', userInfo.highSchoolId);
       // Log FormData entries to console
-      formUpload.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
-      // Dispatch action upload file
-      // console.log('formUpload', formUpload);
-      dispatch(uploadFile(formUpload));
+      // formUpload.forEach((value, key) => {
+      //   console.log(`${key}:`, value);
+      // });
+
+      dispatch(uploadFileAsync(formUpload));
       if (uploadSuccess) {
         message.success(`${selectedFile.name} file uploaded and converted successfully`);
         setOpen(false);
@@ -278,26 +290,13 @@ export default function UserView() {
     reader.readAsArrayBuffer(selectedFile);
   };
 
-  // useEffect(() => {
-  //   if (uploadSuccess) {
-  //     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-  //     dispatch(resetUserSuccess());
-  //   }
-  // }, [dispatch, page, rowsPerPage, uploadSuccess]);
 
-  // write code here
-  // Load initial data on page load
   useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-  }, [dispatch, page, rowsPerPage]);
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName }));
+  }, [page, rowsPerPage, usersSuccess]);
 
-  // Re-fetch data when a new user is added successfully
-  useEffect(() => {
-    if (usersSuccess) {
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-      dispatch(resetUserSuccess());
-    }
-  }, [usersSuccess, dispatch, page, rowsPerPage]);
+
+
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
@@ -311,6 +310,13 @@ export default function UserView() {
     }
   };
 
+  // const [inputValue, setInputValue] = useState('');
+  const handleYearChange = (event, newValue) => {
+    setValue(newValue);
+    setformData({ ...formData, schoolYears: newValue?.value });
+  };
+
+  console.log('form', formData);
   return (
     <>
 
@@ -375,7 +381,7 @@ export default function UserView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      name='Name'
+                      name='name'
                       label="Name"
                       onChange={handleChange}
                     />
@@ -384,7 +390,7 @@ export default function UserView() {
                     <TextField
                       fullWidth
                       id='Email'
-                      name='Email'
+                      name='email'
                       label="Email"
                       onChange={handleChange}
                     />
@@ -392,31 +398,28 @@ export default function UserView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Password"
-                      name='Password'
+                      label="password"
+                      name='password'
                       onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Phone"
-                      name='Phone'
+                      label="phone"
+                      name='phone'
                       onChange={handleChange}
                     />
                   </Grid>
-                  {/* <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 6 }}>
                     <Autocomplete
-                      disablePortal
-                      options={Year}
-                      value={Year.find((item) => item.year === adminsstionyear)}
-                      onChange={(e) => {
-                        setformData({ ...formData, adminsstionyear: easily.year });
-                      }}
-                      sx={{ width: '100%' }}
-                      renderInput={(params) => <TextField {...params} label="Year" />}
+                      onChange={handleYearChange}
+                      id="controllable-states-demo"
+                      options={options} // Truyền đúng mảng options
+                      getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
+                      renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                     />
-                  </Grid> */}
+                  </Grid>
                   <Grid item xs={12}>
                     <Typography variant="h6">Date Of Birth</Typography>
                     <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
@@ -425,8 +428,8 @@ export default function UserView() {
                     <RadioGroup
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
-                      name="Gender"
-                      onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                      name="gender"
+                      onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                     >
                       <FormControlLabel value control={<Radio />} label="Male" />
                       <FormControlLabel value={false} control={<Radio />} label="Female" />
@@ -454,11 +457,25 @@ export default function UserView() {
               {"Upload file"}
             </DialogTitle>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <Upload {...props}>
-                  <AntButton icon={<UploadOutlined />}>Click to Upload</AntButton>
-                </Upload>
-              </DialogContentText>
+              <Grid container spacing={2}>
+                <Grid size={{ md: 12 }}>
+                  <DialogContentText id="alert-dialog-description">
+                    <Upload {...props}>
+                      <AntButton icon={<UploadOutlined />}>Click to Upload</AntButton>
+                    </Upload>
+                  </DialogContentText>
+                </Grid>
+                <Grid size={{ md: 12 }}>
+                  <Autocomplete
+                    onChange={handleYearChange}
+                    id="controllable-states-demo"
+                    options={options} // Truyền đúng mảng options
+                    getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
+                    renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
+                  />
+                </Grid>
+
+              </Grid>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
@@ -501,6 +518,7 @@ export default function UserView() {
               <TableBody>
                 {dataFiltered.map((row) => (
                   <UserTableRow
+                    key={row.id}
                     name={row.name || ''} // Kiểm tra row.name
                     id={row.id || ''} // Kiểm tra row.id
                     gender={row.gender || ''} // Kiểm tra row.gender

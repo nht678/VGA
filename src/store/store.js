@@ -7,6 +7,8 @@ import uploadReducer from './uploadfile/reducer';
 import highschoolReducer from './highschool/reducer';
 import regionReducer from './region/reducer';
 import consultantReducer from './consultant/reducer';
+import reducerUniversity from './university/reducer';
+import levelReducer from './level/reducer';
 
 
 const store = configureStore({
@@ -20,6 +22,8 @@ const store = configureStore({
         highschoolReducer,
         regionReducer,
         consultantReducer,
+        reducerUniversity,
+        levelReducer,
     }
 });
 

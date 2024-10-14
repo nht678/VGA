@@ -21,6 +21,7 @@ import TextField from '@mui/material/TextField';
 
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
+import { message } from 'antd';
 
 
 
@@ -29,13 +30,12 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actHighSchoolGetAsync, actAddHighSchoolAsync, resetHighSchoolSuccess } from 'src/store/highschool/action';
+import { actUniversityAddAsync, actUniversityGetAsync, resetUniversitySuccess } from 'src/store/university/action';
 import { actGetRegionAsync } from 'src/store/region/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
 
 
 // ----------------------------------------------------------------------
@@ -58,8 +58,8 @@ export default function UniversityView() {
     email: '',
     phone: '',
     password: '',
-    locationDetail: '',
-    regionId: '',
+    address: '',
+    description: '',
   });
 
   const [status, setStatus] = useState('false');
@@ -70,47 +70,33 @@ export default function UniversityView() {
 
   const dispatch = useDispatch();
 
-  const { highschools, total, successHighSchool } = useSelector((state) => state.highschoolReducer);
-  console.log('successHighSchool', successHighSchool);
-  console.log('highschools', highschools);
-  const { regions } = useSelector((state) => state.regionReducer);
-  console.log('regions', regions);
-  console.log('highschools', highschools);
+  const { universities = [], successUniversity, total } = useSelector((state) => state.reducerUniversity);
+  console.log('universities', universities);
+  console.log('successUniversity', successUniversity)
 
   // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
   useEffect(() => {
-    dispatch(actHighSchoolGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    dispatch(actUniversityGetAsync({ page: page + 1, pageSize: rowsPerPage }));
     // Fetch regions chỉ một lần khi component mount
-    if (!regions || regions.length === 0) {
-      dispatch(actGetRegionAsync());
-    }
-    setOptions(regions);
-  }, [dispatch, page, rowsPerPage]);
+
+  }, [dispatch, page, rowsPerPage, successUniversity]);
 
 
 
-  // useEffect(() => {
-  //   if (Array.isArray(regions) && regions.length > 0) {
-  //     debugger
-  //     setOptions(regions);
-  //   }
-  // }, [regions]);
-  const handleAddHighSchool = () => {
-    // const ojbformData = new FormData();
-    // Object.keys(formData).forEach((key) => {
-    //   ojbformData.append(key, formData[key]);
-    // });
-    dispatch(actAddHighSchoolAsync(formData));
-    if (successHighSchool) {
-      dispatch(resetHighSchoolSuccess());
+  const handleAddUniversity = () => {
+
+    dispatch(actUniversityAddAsync(formData));
+    if (successUniversity) {
+      dispatch((resetUniversitySuccess()));
       setFormData({
         name: '',
         email: '',
         phone: '',
         password: '',
-        locationDetail: '',
-        regionId: '',
+        address: '',
+        description: '',
       });
+      message.success('Thêm trường đại học thành công');
     }
 
     handleClose();
@@ -129,7 +115,6 @@ export default function UniversityView() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-      regionId: value?.id || '', // Đảm bảo regionId nhận id nếu value có giá trị
     });
   };
   // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
@@ -151,7 +136,7 @@ export default function UniversityView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = highschools.map((n) => n.name);
+      const newSelecteds = universities.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -178,14 +163,13 @@ export default function UniversityView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    console.log('newPage', newPage);
-    dispatch(actHighSchoolGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actUniversityGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actHighSchoolGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actUniversityGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
 
@@ -213,17 +197,17 @@ export default function UniversityView() {
     setOpen(false);
   };
 
-  const handleFilterByName = async (event) => {
-    const filterValue = event.target.value;
-    setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+  // const handleFilterByName = async (event) => {
+  //   const filterValue = event.target.value;
+  //   setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
-    if (filterValue.trim()) {
-      dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
-    } else {
-      // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage }));
-    }
-  };
+  //   if (filterValue.trim()) {
+  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+  //   } else {
+  //     // Gọi lại API khi không có từ khóa tìm kiếm
+  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage }));
+  //   }
+  // };
 
 
 
@@ -235,15 +219,15 @@ export default function UniversityView() {
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">HighSchool</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Trường đại học</Typography>
         <Box>
-          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
-            New HighSchool
+          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
+            Tạo trường đại học
           </Button>
 
 
           <Dialog
-            open={open === 'CreateStudent'}
+            open={open === 'Create'}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
@@ -292,25 +276,18 @@ export default function UniversityView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      name='locationDetail'
+                      name='address'
                       label="Address"
                       onChange={handlechange}
 
                     />
                   </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <Autocomplete
-                      onChange={handleRegionChange}
-                      // inputValue={inputValue}
-                      // onInputChange={(event, newInputValue) => {
-                      //   setInputValue(newInputValue);
-                      // }}
-                      id="controllable-states-demo"
-                      options={regions.regions} // Truyền đúng mảng options
-                      getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
-                      renderInput={(params) => <TextField {...params} label="Chọn tỉnh thành" />}
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Description</Typography>
+                    <textarea name='description' onChange={handlechange} placeholder="Description" style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
                   </Grid>
+
 
                 </Grid>
 
@@ -318,7 +295,7 @@ export default function UniversityView() {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button onClick={handleAddHighSchool} autoFocus>
+              <Button onClick={handleAddUniversity} autoFocus>
                 Create
               </Button>
             </DialogActions>
@@ -333,7 +310,7 @@ export default function UniversityView() {
         <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
-          onFilterName={handleFilterByName}
+        // onFilterName={handleFilterByName}
         />
 
         <Scrollbar>
@@ -351,18 +328,20 @@ export default function UniversityView() {
                   { id: 'email', label: 'Email', align: 'center' },
                   { id: 'phone', label: 'Phone', align: 'center' },
                   { id: 'address', label: 'Address', align: 'center' },
+                  { id: 'description', label: 'Description', align: 'center' },
                   { id: 'status', label: 'Status', align: 'center' },
                   { id: '' },
                 ]}
               />
               <TableBody>
-                {highschools.map((row) => (
+                {universities.map((row) => (
                   <UserTableRow
-                    // key={row.id}
-                    name={row.name}
-                    email={row.account?.email}
-                    phone={row.account?.phone}
-                    locationDetail={row?.locationDetail}
+                    key={row.id}
+                    name={row?.name}
+                    email={row?.account?.email}
+                    phone={row?.account?.phone}
+                    address={row?.address}
+                    description={row?.description}
                     id={row?.id}
                     status={row?.account?.status}
                     avatarUrl={row?.avatarUrl}

@@ -70,7 +70,7 @@ export function actAddHighSchoolAsync(data) {
             console.log('data:', data);
             const response = await apiHighSchool.post('high-school', data);
             dispatch(actAddHighSchool(response.data));
-            dispatch(actHighSchoolGetAsync({ page: 1, pageSize: 10 }));
+            // dispatch(actHighSchoolGetAsync({ page: 1, pageSize: 10 }));
         } catch (error) {
             console.log(error);
         }
@@ -93,6 +93,7 @@ export function actHighSchoolDeleteAsync(id) {
             const response = await apiHighSchool.delete(`high-school/${id}`);
             console.log('response:', response);
             dispatch(actHighSchoolDelete(id));
+            // dispatch(actHighSchoolGetAsync({ page: 1, pageSize: 10 }));
         } catch (error) {
             console.log(error);
         }

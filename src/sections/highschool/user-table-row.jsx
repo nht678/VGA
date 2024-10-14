@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actHighSchoolDeleteAsync, actHighSchoolUpdateAsync, resetHighSchoolSuccess } from 'src/store/highschool/action';
 import { actGetRegionAsync } from 'src/store/region/action';
+import { message } from 'antd';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -78,6 +79,10 @@ export default function UserTableRow({
   const handleDelete = () => {
     // console.log("id",id);
     dispatch(actHighSchoolDeleteAsync(id));
+    if (successHighSchool) {
+      dispatch(resetHighSchoolSuccess());
+      message.success('Delete HighSchool Success');
+    }
     handleCloseDialog();
   }
   const onPanelChange = (value, mode) => {
@@ -110,7 +115,6 @@ export default function UserTableRow({
   });
 
   const handlechange = (event) => {
-    debugger
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
@@ -131,6 +135,7 @@ export default function UserTableRow({
         locationDetail: '',
         regionId: '',
       });
+      message.success('Update HighSchool Success');
     }
     handleCloseDialog();
   }
@@ -152,10 +157,7 @@ export default function UserTableRow({
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
-  // useEffect(() => {
-  //   dispatch(actGetRegionAsync());
-  //   setOptions(regions);
-  // }, []);
+
 
   console.log('formdata:', formData);
   return (
@@ -168,7 +170,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" noWrap>
+            <Typography variant="subtitle2" component="span" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -326,5 +328,5 @@ UserTableRow.propTypes = {
   email: PropTypes.string,
   phone: PropTypes.string,
   locationDetail: PropTypes.string,
-  status: PropTypes.string,
+  status: PropTypes.number,
 };

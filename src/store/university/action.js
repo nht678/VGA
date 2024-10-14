@@ -34,14 +34,15 @@ export const resetUniversitySuccess = () => ({
     type: 'RESET_UNIVERSITY_SUCCESS',
 });
 
-export const actUniversityGetAsync = (page, pageSize) => async (dispatch) => {
+export const actUniversityGetAsync = ({ page, pageSize }) => async (dispatch) => {
     try {
         const response = await universityService.getUniversities(page, pageSize);
         dispatch(actUniversityGet(response));
     } catch (error) {
         console.error(error);
     }
-}
+};
+
 
 export const actUniversityAddAsync = (data) => async (dispatch) => {
     try {
@@ -52,18 +53,18 @@ export const actUniversityAddAsync = (data) => async (dispatch) => {
     }
 }
 
-export const actUniversityUpdateAsync = (data) => async (dispatch) => {
+export const actUniversityUpdateAsync = (data) => (dispatch) => {
     try {
-        const response = await universityService.updateUniversity(data);
+        const response = universityService.updateUniversity(data);
         dispatch(actUniversityUpdate(response));
     } catch (error) {
         console.error(error);
     }
 }
 
-export const actUniversityDeleteAsync = (id) => async (dispatch) => {
+export const actUniversityDeleteAsync = (id) => (dispatch) => {
     try {
-        await universityService.deleteUniversity(id);
+        universityService.deleteUniversity(id);
         dispatch(actUniversityDelete(id));
     } catch (error) {
         console.error(error);

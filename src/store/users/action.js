@@ -1,8 +1,9 @@
-import { apiUser, apiUserUpdate } from "src/services/userServices";
-import axios from "axios";
+
+import userServices from '../../services/userServices';
 
 export const ACT_USER_GET = 'ACT_USER_GET';
 export const ADD_USER = 'ADD_USER';
+
 
 export function actUserGet(data) {
     return {
@@ -34,65 +35,33 @@ export const resetUserSuccess = () => ({
 });
 
 
-
-
-export const actUserGetAsync = ({ page, pageSize, search }) => async (dispatch) => {
-    try {
-        const response = await apiUser.get('', {
-            params: {
-                'current-page': page,
-                'page-size': pageSize,
-                name: search || '',
-            },
-        });
-        // dispatch({ type: 'GET_USERS_REQUEST' });
-        dispatch({
-            type: 'GET_USERS_SUCCESS',
-            payload: {
-                students: response.data.students, // Lấy danh sách sinh viên
-                total: response.data.total,       // Lấy tổng số sinh viên
-                currentPage: response.data['current-page'], // Lấy trang hiện tại
-
-            },
-        });
-    } catch (error) {
-        dispatch({
-            type: 'GET_USERS_ERROR',
-            payload: error,
-        });
-    }
-};
-
-
-export function actAddUserAsync(data) {
-    console.log('data:', data);
+export function actUserGetAsync({ page, pageSize, search }) {
     return async (dispatch) => {
         try {
-            const response = await apiUser.post('', data);
-            dispatch(actAddUser(response.data));
+            const data = await userServices.getUsers({ page, pageSize, search });
+            dispatch(actUserGet(data));
         } catch (error) {
             console.log(error);
         }
     };
 }
-// export function actUserUpdateAsync(data, id) {
-//     return async (dispatch) => {
-//         try {
-//             // console.log("data", data, id);
-//             console.log('url', apiUser.put(`/${id}`, data));
-//             const response = await apiUser.put(`/${id}`, data);
-//             console.log("response", response);
-//             dispatch(actUserUpdate(response.data));
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     };
-// }
-export function actUserUpdateAsync(data, id) {
+
+export function actAddUserAsync(data) {
     return async (dispatch) => {
         try {
-            const response = await apiUserUpdate.put(`/${id}`, data);
-            dispatch(actUserUpdate(response.data));
+            const response = await userServices.addUser(data);
+            dispatch(actAddUser(response));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+}
+
+export function actUserUpdateAsync(data, userId) {
+    return async (dispatch) => {
+        try {
+            const response = await userServices.updateUser(data, userId);
+            dispatch(actUserUpdate(response));
         } catch (error) {
             console.log(error);
         }
@@ -101,11 +70,49 @@ export function actUserUpdateAsync(data, id) {
 export function actUserDeleteAsync(id) {
     return async (dispatch) => {
         try {
-            const response = await apiUser.delete(`/users/${id}`);
+            const response = await userServices.deleteUser(id);
             dispatch(actUserDelete(id));
         } catch (error) {
             console.log(error);
         }
     };
 }
+
+
+
+
+
+
+// export function actAddUserAsync(data) {
+//     console.log('data:', data);
+//     return async (dispatch) => {
+//         try {
+//             const response = await apiUser.post('', data);
+//             dispatch(actAddUser(response.data));
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     };
+// }
+
+// export function actUserUpdateAsync(data, id) {
+//     return async (dispatch) => {
+//         try {
+//             const response = await apiUserUpdate.put(`/${id}`, data);
+//             dispatch(actUserUpdate(response.data));
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     };
+// }
+// export function actUserDeleteAsync(id) {
+//     return async (dispatch) => {
+//         try {
+//             const response = await apiUser.delete(`/users/${id}`);
+//             dispatch(actUserDelete(id));
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     };
+// }
 

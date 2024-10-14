@@ -30,7 +30,6 @@
 //     // }
 //     useEffect(() => {
 //         dispatch(signoutUser());
-//         debugger
 //         if (!isAuthenticated) {
 //             navigate('/signin', { replace: true });
 //             message.success('Sign out successfully');

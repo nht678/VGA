@@ -21,6 +21,7 @@ import TextField from '@mui/material/TextField';
 
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
+import { message } from 'antd';
 
 
 
@@ -87,23 +88,23 @@ export default function HighSchoolView() {
       dispatch(actGetRegionAsync());
     }
     setOptions(regions);
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, successHighSchool]);
 
 
 
   // useEffect(() => {
   //   if (Array.isArray(regions) && regions.length > 0) {
-  //     debugger
   //     setOptions(regions);
   //   }
   // }, [regions]);
+  // const ojbformData = new FormData();
+  // Object.keys(formData).forEach((key) => {
+  //   ojbformData.append(key, formData[key]);
+  // });
   const handleAddHighSchool = () => {
-    // const ojbformData = new FormData();
-    // Object.keys(formData).forEach((key) => {
-    //   ojbformData.append(key, formData[key]);
-    // });
     dispatch(actAddHighSchoolAsync(formData));
     if (successHighSchool) {
+      message.success('Create HighSchool Success');
       dispatch(resetHighSchoolSuccess());
       setFormData({
         name: '',
@@ -114,7 +115,6 @@ export default function HighSchoolView() {
         regionId: '',
       });
     }
-
     handleClose();
   };
 
@@ -360,7 +360,7 @@ export default function HighSchoolView() {
               <TableBody>
                 {highschools.map((row) => (
                   <UserTableRow
-                    // key={row.id}
+                    key={row.id}
                     name={row.name}
                     email={row.account?.email}
                     phone={row.account?.phone}

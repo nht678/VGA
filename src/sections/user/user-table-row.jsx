@@ -14,25 +14,29 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid2';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Calendar, theme } from 'antd';
+import Autocomplete from '@mui/material/Autocomplete';
 
-import { useDispatch } from 'react-redux';
-import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
+import { useDispatch, useSelector } from 'react-redux';
+import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync } from 'src/store/users/action';
 import DeleteDialog from '../../pages/delete';
+
+
+const options = [
+  { name: '2017', value: 2017 },
+  { name: '2018', value: 2018 },
+  { name: '2019', value: 2019 },
+  { name: '2020', value: 2020 },
+  { name: '2021', value: 2021 },
+];
+
 
 export default function UserTableRow({
   selected,
@@ -47,19 +51,17 @@ export default function UserTableRow({
   dateOfBirth,
 }) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log('userInfo:', userInfo);
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [formData, setformData] = useState({
-    Name: name,
-    Email: email,
-    Password: '',
-    Phone: phone,
-    Status: true,
-    CreateAt: new Date().toISOString().split('T')[0],
-    id: userId,
-    DateOfBirth: dateOfBirth,
-    Gender: gender,
+    name: name,
+    email: email,
+    password: '',
+    phone: phone,
+    dateOfBirth: dateOfBirth,
+    gender: gender,
+    schoolYears: ''
+
   });
 
   // handle change
@@ -69,28 +71,38 @@ export default function UserTableRow({
       [e.target.name]: e.target.value,
     });
   };
-  // if not onchange then onchange will take value default
-  // use useEffect not onchange then onchange will take value default
 
 
 
   const dispatch = useDispatch();
-  const handleUpdate = () => {
-    const formDataObj = new FormData();
+  const { usersSuccess } = useSelector((state) => state.usersReducer);
 
-    // Chuyển đổi các trường trong formData thành FormData format
-    // Object.keys(formData).forEach((key) => {
-    //   formDataObj.append(key, formData[key]);
-    // });
+
+  const handleUpdate = () => {
     dispatch(actUserUpdateAsync(formData, userId));
+    if (usersSuccess) {
+      // setformData({
+      //   name: '',
+      //   email: '',
+      //   password: '',
+      //   phone: '',
+      //   dateOfBirth: '',
+      //   schoolYears: '',
+      // });
+      dispatch(resetUserSuccess());
+    }
     handleCloseDialog();
   };
+  console.log('formData:', formData);
   const handleDelete = () => {
-    dispatch(actUserDelete(userId));
+    dispatch(actUserDeleteAsync(userId));
+    if (usersSuccess) {
+      dispatch(resetUserSuccess());
+    }
     handleCloseDialog();
   }
   const onPanelChange = (value, mode) => {
-    setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
+    setformData({ ...formData, dateOfBirth: value.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();
   const wrapperStyle = {
@@ -121,14 +133,12 @@ export default function UserTableRow({
   const handleClose = () => {
     setDialog(null);
   };
+  const [value, setValue] = useState(options[0]);
+  const handleYearChange = (event, newValue) => {
+    setValue(newValue);
+    setformData({ ...formData, schoolYears: newValue?.value });
+  };
 
-  // const Year = [
-  //   { label: '2017', year: 2017 },
-  //   { label: '2018', year: 2018 },
-  //   { label: '2019', year: 2019 },
-  //   { label: '2020', year: 2020 },
-  //   { label: '2021', year: 2021 },
-  // ];
 
   return (
     <>
@@ -179,8 +189,8 @@ export default function UserTableRow({
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
-                  name='Name'
-                  label="Name"
+                  name='name'
+                  label="name"
                   defaultValue={name}
                   onChange={handleChange}
                 />
@@ -189,7 +199,7 @@ export default function UserTableRow({
                 <TextField
                   fullWidth
                   id='Email'
-                  name='Email'
+                  name='email'
                   label="Email"
                   defaultValue={email}
                   onChange={handleChange}
@@ -199,7 +209,7 @@ export default function UserTableRow({
                 <TextField
                   fullWidth
                   label="Password"
-                  name='Password'
+                  name='password'
                   onChange={handleChange}
                 />
               </Grid>
@@ -207,23 +217,32 @@ export default function UserTableRow({
                 <TextField
                   fullWidth
                   label="Phone"
-                  name='Phone'
+                  name='phone'
                   defaultValue={phone}
                   onChange={handleChange}
                 />
               </Grid>
+              <Grid size={{ md: 6 }}>
+                <Autocomplete
+                  onChange={handleYearChange}
+                  id="controllable-states-demo"
+                  options={options} // Truyền đúng mảng options
+                  getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
+                  renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
+                />
+              </Grid>
 
               <Grid item xs={12}>
-                <Typography variant="h6">Date Of Birth</Typography>
+                <Typography variant="h6" component="div">Date Of Birth</Typography>
                 <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
               </Grid>
               <Grid size={{ md: 6 }}>
                 <RadioGroup
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="Gender"
+                  name="gender"
                   defaultValue={gender}
-                  onChange={(e) => setformData({ ...formData, Gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                  onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                 >
                   <FormControlLabel value control={<Radio />} label="Male" />
                   <FormControlLabel value={false} control={<Radio />} label="Female" />
@@ -268,9 +287,9 @@ UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   handleClick: PropTypes.func,
   name: PropTypes.string,
-  gender: PropTypes.string,
+  gender: PropTypes.bool,
   selected: PropTypes.bool,
-  gold: PropTypes.string,
+  gold: PropTypes.number,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,
   email: PropTypes.string,

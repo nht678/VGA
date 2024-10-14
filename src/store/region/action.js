@@ -13,7 +13,6 @@ export function actRegionGet(data) {
 export function actGetRegionAsync() {
     return async (dispatch) => {
         try {
-            debugger
             const response = await apiRegion.get('');
             console.log('response:', response);
             dispatch(actRegionGet(response.data));
