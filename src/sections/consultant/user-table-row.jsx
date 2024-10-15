@@ -30,8 +30,8 @@ import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Calendar, theme } from 'antd';
 
-import { useDispatch } from 'react-redux';
-import { actUserUpdateAsync, actUserDelete } from 'src/store/users/action';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateConsultant, deleteConsultant } from 'src/store/consultant/action';
 import DeleteDialog from '../../pages/delete';
 
 const getColorByLevel = (level) => {
@@ -62,19 +62,29 @@ export default function UserTableRow({
   consultantLevelId,
   gender
 }) {
+  console.log('id', id)
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [formData, setformData] = useState({
-    Name: name,
-    Email: email,
-    Password: '',
-    Phone: phone,
-    Status: true,
-    CreateAt: new Date().toISOString().split('T')[0],
-    highSchoolId: userInfo ? userInfo.highSchoolId : '',
-    DateOfBirth: dateOfBirth,
+    name: name,
+    email: email,
+    password: '',
+    phone: phone,
+    status: true,
+    doB: dateOfBirth,
+    description: description,
+    consultantLevelId: '',
   });
+  console.log('formData1', formData)
+  const { consultantLevels } = useSelector((state) => state.levelReducer);
+  const [inputValue, setInputValue] = useState(''); // Giá trị input
+  const [value, setValue] = useState(null); // Giá trị đã chọn
+  const handleLevelChange = (event, newValue) => {
+    setValue(newValue);
+    setformData({ ...formData, consultantLevelId: newValue?.id || '' });
+  };
+
 
   // handle change
   const handleChange = (e) => {
@@ -90,21 +100,16 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
-    // const formDataObj = new FormData();
 
-    // // Chuyển đổi các trường trong formData thành FormData format
-    // Object.keys(formData).forEach((key) => {
-    //   formDataObj.append(key, formData[key]);
-    // });
-    // dispatch(actUserUpdateAsync(formDataObj, userId));
+    dispatch(updateConsultant(id, formData));
     handleCloseDialog();
   };
   const handleDelete = () => {
-    // dispatch(actUserDelete(userId));
+    dispatch(deleteConsultant(id));
     handleCloseDialog();
   }
-  const onPanelChange = (value, mode) => {
-    setformData({ ...formData, DateOfBirth: value.format('YYYY-MM-DD') });
+  const onPanelChange = (value1, mode) => {
+    setformData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();
   const wrapperStyle = {
@@ -180,7 +185,109 @@ export default function UserTableRow({
           </IconButton>
         </TableCell>
       </TableRow>
+      <Dialog
+        open={dialog === 'edit'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+          Tạo người tư vấn
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  value={name}
+                  name='name'
+                  label="Tên"
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  value={email}
+                  id='Email'
+                  name='email'
+                  label="Email"
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Mật khẩu"
+                  name='password'
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  value={phone}
+                  label="Số điện thoại"
+                  name='phone'
+                  onChange={handleChange}
+                />
+              </Grid>
 
+              <Grid size={{ md: 6 }}>
+                <Typography variant="h6">Description</Typography>
+                <textarea
+                  style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
+                  label="Mô tả"
+                  value={description}
+                  name='description'
+                  placeholder='Hãy viết mô tả...'
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <Typography variant="h6">Level</Typography>
+                <Autocomplete
+                  onChange={handleLevelChange}
+                  inputValue={inputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setInputValue(newInputValue);
+                  }}
+                  id="controllable-states-demo"
+                  options={consultantLevels || []} // Đảm bảo options luôn là một mảng
+                  getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
+                  renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
+                />
+              </Grid>
+
+
+              <Grid item xs={12}>
+                <Typography variant="h6">Ngày sinh</Typography>
+                <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="gender"
+                  onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                >
+                  <FormControlLabel value control={<Radio />} label="Nam" />
+                  <FormControlLabel value={false} control={<Radio />} label="Nữ" />
+                </RadioGroup>
+              </Grid>
+
+            </Grid>
+
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
+          <Button onClick={handleUpdate} autoFocus>
+            Cập nhật
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover

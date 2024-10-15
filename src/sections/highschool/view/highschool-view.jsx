@@ -237,10 +237,10 @@ export default function HighSchoolView() {
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">HighSchool</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Trường cấp 3</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
-            New HighSchool
+            Tạo trường cấp 3
           </Button>
 
 
@@ -251,7 +251,7 @@ export default function HighSchoolView() {
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Create HighSchool"}
+              Tạo trường cấp 3
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
@@ -260,7 +260,7 @@ export default function HighSchoolView() {
                     <TextField
                       fullWidth
                       name='name'
-                      label="Name"
+                      label="tên"
                       onChange={handlechange}
 
                     />
@@ -277,7 +277,7 @@ export default function HighSchoolView() {
                     <TextField
                       fullWidth
                       name='phone'
-                      label="Phone"
+                      label="Số điện thoại"
                       onChange={handlechange}
 
                     />
@@ -286,7 +286,7 @@ export default function HighSchoolView() {
                     <TextField
                       fullWidth
                       name='password'
-                      label="Password"
+                      label="Mật khẩu"
                       onChange={handlechange}
 
                     />
@@ -295,7 +295,7 @@ export default function HighSchoolView() {
                     <TextField
                       fullWidth
                       name='locationDetail'
-                      label="Address"
+                      label="Địa chỉ"
                       onChange={handlechange}
 
                     />
@@ -319,9 +319,9 @@ export default function HighSchoolView() {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
               <Button onClick={handleAddHighSchool} autoFocus>
-                Create
+                Tạo mới
               </Button>
             </DialogActions>
           </Dialog>
@@ -349,11 +349,11 @@ export default function HighSchoolView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
+                  { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
-                  { id: 'phone', label: 'Phone', align: 'center' },
-                  { id: 'address', label: 'Address', align: 'center' },
-                  { id: 'status', label: 'Status', align: 'center' },
+                  { id: 'phone', label: 'Số điện thoại', align: 'center' },
+                  { id: 'address', label: 'Địa chỉ', align: 'center' },
+                  { id: 'status', label: 'Tình trạng', align: 'center' },
                   { id: '' },
                 ]}
               />

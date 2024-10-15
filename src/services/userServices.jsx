@@ -2,12 +2,13 @@ import axios from 'axios';
 import { BASE_API } from './api';
 
 const userServices = {
-    getUsers: async ({ page, pageSize, search }) => {
+    getUsers: async ({ page, pageSize, search, schoolYears }) => {
         const response = await BASE_API.get(`/students`, {
             params: {
                 'current-page': page,
                 'page-size': pageSize,
                 name: search || '',
+                'school-years': schoolYears || '',
             },
         });
         return response.data;

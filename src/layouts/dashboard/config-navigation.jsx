@@ -8,22 +8,22 @@ const icon = (name) => (
 
 const navConfig = [
   {
-    title: 'dashboard',
+    title: 'Thống kê',
     path: '/managers',
     icon: icon('ic_analytics'),
   },
   {
-    title: 'students',
+    title: 'Học sinh',
     path: '/students',
     icon: icon('ic_user'),
   },
   {
-    title: 'consultant',
+    title: 'Tư vấn viên',
     path: '/consultants',
     icon: icon('ic_user'),
   },
   {
-    title: 'university',
+    title: 'Trường đại học',
     path: '/unversity',
     icon: icon('ic_user'),
   },
@@ -53,7 +53,7 @@ const navConfig = [
   //   icon: icon('ic_user'),
   // },
   {
-    title: 'high school',
+    title: 'Trường cấp 3',
     path: '/highschool',
     icon: icon('ic_user'),
   },

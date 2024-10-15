@@ -242,7 +242,7 @@ export default function UniversityView() {
                     <TextField
                       fullWidth
                       name='name'
-                      label="Name"
+                      label="Tên"
                       onChange={handlechange}
 
                     />
@@ -259,7 +259,7 @@ export default function UniversityView() {
                     <TextField
                       fullWidth
                       name='phone'
-                      label="Phone"
+                      label="Số điện thoại"
                       onChange={handlechange}
 
                     />
@@ -268,7 +268,7 @@ export default function UniversityView() {
                     <TextField
                       fullWidth
                       name='password'
-                      label="Password"
+                      label="Mật khẩu"
                       onChange={handlechange}
 
                     />
@@ -277,14 +277,14 @@ export default function UniversityView() {
                     <TextField
                       fullWidth
                       name='address'
-                      label="Address"
+                      label="Địa chỉ"
                       onChange={handlechange}
 
                     />
                   </Grid>
                   <Grid size={{ md: 12 }}>
-                    <Typography variant="h6">Description</Typography>
-                    <textarea name='description' onChange={handlechange} placeholder="Description" style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                    <Typography variant="h6">Mô tả</Typography>
+                    <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
                   </Grid>
 
@@ -294,9 +294,9 @@ export default function UniversityView() {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
               <Button onClick={handleAddUniversity} autoFocus>
-                Create
+                Tạo mới
               </Button>
             </DialogActions>
           </Dialog>
@@ -324,12 +324,12 @@ export default function UniversityView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
+                  { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
-                  { id: 'phone', label: 'Phone', align: 'center' },
-                  { id: 'address', label: 'Address', align: 'center' },
-                  { id: 'description', label: 'Description', align: 'center' },
-                  { id: 'status', label: 'Status', align: 'center' },
+                  { id: 'phone', label: 'Số điện thoại', align: 'center' },
+                  { id: 'address', label: 'Địa chỉ', align: 'center' },
+                  { id: 'description', label: 'Mô tả', align: 'center' },
+                  { id: 'status', label: 'Tình trạng', align: 'center' },
                   { id: '' },
                 ]}
               />

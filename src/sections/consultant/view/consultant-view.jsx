@@ -105,11 +105,21 @@ export default function ConsultantView() {
   const handleAddConsultant = () => {
     dispatch(addConsultant(formData));
     if (successConsultant) {
-      message.success('Add Consultant Success');
+      // message.success('Add Consultant Success');
       dispatch(resetConsultantSuccess);
     };
-  }
+    setformData({
+      name: '',
+      email: '',
+      password: '',
+      phone: '',
+      doB: '',
+      description: '',
+      consultantLevelId: '',
+    });
 
+    setOpen(false);
+  }
 
 
 
@@ -196,10 +206,10 @@ export default function ConsultantView() {
   return (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Consultant</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Tư vấn viên</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateConsultant')}>
-            New Consultant
+            Tạo người tư vấn
           </Button>
 
           <Dialog
@@ -209,7 +219,7 @@ export default function ConsultantView() {
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Create Consultant"}
+              Tạo người tư vấn
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
@@ -218,7 +228,7 @@ export default function ConsultantView() {
                     <TextField
                       fullWidth
                       name='name'
-                      label="Name"
+                      label="Tên"
                       onChange={handleChange}
                     />
                   </Grid>
@@ -234,7 +244,7 @@ export default function ConsultantView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Password"
+                      label="Mật khẩu"
                       name='password'
                       onChange={handleChange}
                     />
@@ -242,7 +252,7 @@ export default function ConsultantView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Phone"
+                      label="Số điện thoại"
                       name='phone'
                       onChange={handleChange}
                     />
@@ -252,21 +262,16 @@ export default function ConsultantView() {
                     <Typography variant="h6">Description</Typography>
                     <textarea
                       style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
-                      label="Description"
+                      label="Mô tả"
                       name='description'
-                      placeholder='Description'
+                      placeholder='Hãy viết mô tả...'
                       onChange={handleChange}
                     />
-
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <Typography variant="h6">Level</Typography>
                     <Autocomplete
-                      value={value}
                       onChange={handleLevelChange}
-
-                      // name='consultantLevelId'
-                      // onChange={handleChange}
                       inputValue={inputValue}
                       onInputChange={(event, newInputValue) => {
                         setInputValue(newInputValue);
@@ -280,7 +285,7 @@ export default function ConsultantView() {
 
 
                   <Grid item xs={12}>
-                    <Typography variant="h6">Date Of Birth</Typography>
+                    <Typography variant="h6">Ngày sinh</Typography>
                     <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -290,8 +295,8 @@ export default function ConsultantView() {
                       name="gender"
                       onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                     >
-                      <FormControlLabel value control={<Radio />} label="Male" />
-                      <FormControlLabel value={false} control={<Radio />} label="Female" />
+                      <FormControlLabel value control={<Radio />} label="Nam" />
+                      <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
                   </Grid>
 
@@ -330,13 +335,13 @@ export default function ConsultantView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
+                  { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
-                  { id: 'phone', label: 'Phone', align: 'center' },
-                  { id: 'decription', label: 'Description', align: 'center' },
-                  { id: 'gender', label: 'Gender' },
+                  { id: 'phone', label: 'Số điện thoại', align: 'center' },
+                  { id: 'decription', label: 'Mô tả', align: 'center' },
+                  { id: 'gender', label: 'Giới tính' },
                   { id: 'consultantLevelId', label: 'Level', align: 'center' },
-                  { id: 'dateOfBirth', label: 'DateOfBirth' },
+                  { id: 'dateOfBirth', label: 'Ngày sinh' },
                   { id: '' },
                 ]}
               />

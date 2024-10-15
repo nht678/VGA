@@ -58,6 +58,9 @@ const options = [
   { name: '2019', value: 2019 },
   { name: '2020', value: 2020 },
   { name: '2021', value: 2021 },
+  { name: '2022', value: 2022 },
+  { name: '2023', value: 2023 },
+  { name: '2024', value: 2024 },
 ];
 
 // ----------------------------------------------------------------------
@@ -85,13 +88,14 @@ export default function UserView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [year, setYear] = useState('');
+  console.log('year', year);
+
   const [formData, setformData] = useState({
     highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
   });
 
   const [value, setValue] = useState('');
-
-
 
   const onPanelChange = (value1, mode) => {
     setformData({ ...formData, dateOfBirth: value1.format('YYYY-MM-DD') });
@@ -105,10 +109,6 @@ export default function UserView() {
       [e.target.name]: e.target.value,
     });
   };
-
-
-
-
 
   const handleAddUser = () => {
     try {
@@ -179,12 +179,6 @@ export default function UserView() {
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
     dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
-
-
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
 
   const dataFiltered = applyFilter({
     inputData: students,
@@ -273,41 +267,57 @@ export default function UserView() {
       const formUpload = new FormData();
       formUpload.append('stringJson', payloadString);
       formUpload.append('highschoolId', userInfo.highSchoolId);
+      formUpload.append('schoolYear', year);
       // Log FormData entries to console
-      // formUpload.forEach((value, key) => {
-      //   console.log(`${key}:`, value);
+      // formUpload.forEach((value1, key) => {
+      //   console.log(`${key}:`, value1);
       // });
 
       dispatch(uploadFileAsync(formUpload));
-      if (uploadSuccess) {
-        message.success(`${selectedFile.name} file uploaded and converted successfully`);
-        setOpen(false);
-      } else {
-        message.error(`${selectedFile.name} file upload failed.`);
-      }
+      // if (uploadSuccess) {
+      //   message.success(`${selectedFile.name} file uploaded and converted successfully`);
+      //   setOpen(false);
+      // } else {
+      //   message.error(`${selectedFile.name} file upload failed.`);
+      // }
+      setOpen(false);
     };
 
     reader.readAsArrayBuffer(selectedFile);
+
   };
 
 
   useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName, schoolYears: filterYear }));
   }, [page, rowsPerPage, usersSuccess]);
 
 
+  const [search, setSearch] = useState('');
+  const getCurrentYear = () => new Date().getFullYear();
 
+  // Gọi hàm
+  console.log(getCurrentYear()); // Sẽ in ra năm hiện tại, ví dụ: 2024
+  const [filterYear, setFilterYear] = useState(getCurrentYear);
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue, schoolYears: filterYear }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
       dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage }));
     }
+  };
+
+  const handleFilter = (selectedYear) => {
+    console.log('schoolYearsoption', selectedYear);
+    setFilterYear(selectedYear);
+    // Gọi API với giá trị filter
+    dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage, schoolYears: selectedYear, search: filterName }));
+    handleClose(); // Đóng menu sau khi chọn
   };
 
   // const [inputValue, setInputValue] = useState('');
@@ -316,21 +326,23 @@ export default function UserView() {
     setformData({ ...formData, schoolYears: newValue?.value });
   };
 
+
+
   console.log('form', formData);
   return (
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Students</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Học sinh</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
-            New Student
+            Tạo học sinh
           </Button>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
-            New Upload
+            Tạo học sinh từ file
           </Button>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateGold')}>
-            Distribute Gold
+            Phân phối vàng
           </Button>
 
           <Dialog
@@ -373,7 +385,7 @@ export default function UserView() {
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Create student"}
+              Tạo học sinh
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
@@ -382,7 +394,7 @@ export default function UserView() {
                     <TextField
                       fullWidth
                       name='name'
-                      label="Name"
+                      label="Tên"
                       onChange={handleChange}
                     />
                   </Grid>
@@ -398,7 +410,7 @@ export default function UserView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="password"
+                      label="Mật khẩu"
                       name='password'
                       onChange={handleChange}
                     />
@@ -406,7 +418,7 @@ export default function UserView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      label="phone"
+                      label="Số điện thoại"
                       name='phone'
                       onChange={handleChange}
                     />
@@ -421,7 +433,7 @@ export default function UserView() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography variant="h6">Date Of Birth</Typography>
+                    <Typography variant="h6">Ngày Sinh</Typography>
                     <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -431,8 +443,8 @@ export default function UserView() {
                       name="gender"
                       onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                     >
-                      <FormControlLabel value control={<Radio />} label="Male" />
-                      <FormControlLabel value={false} control={<Radio />} label="Female" />
+                      <FormControlLabel value control={<Radio />} label="Nam" />
+                      <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
                   </Grid>
                 </Grid>
@@ -440,9 +452,9 @@ export default function UserView() {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Disagree</Button>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
               <Button onClick={handleAddUser} autoFocus>
-                Agree
+                Tạo mới
               </Button>
             </DialogActions>
           </Dialog>
@@ -453,24 +465,24 @@ export default function UserView() {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title">
-              {"Upload file"}
+            <DialogTitle sx={{ display: 'flex', justifyContent: 'center' }} id="alert-dialog-title">
+              Tạo học sinh từ file
             </DialogTitle>
             <DialogContent>
               <Grid container spacing={2}>
                 <Grid size={{ md: 12 }}>
-                  <DialogContentText id="alert-dialog-description">
-                    <Upload {...props}>
-                      <AntButton icon={<UploadOutlined />}>Click to Upload</AntButton>
+                  <DialogContentText sx={{ display: 'flex', justifyContent: 'center' }} id="alert-dialog-description">
+                    <Upload  {...props} >
+                      <AntButton icon={<UploadOutlined />}>Chọn để Upload file</AntButton>
                     </Upload>
                   </DialogContentText>
                 </Grid>
                 <Grid size={{ md: 12 }}>
                   <Autocomplete
-                    onChange={handleYearChange}
+                    onChange={(event, value1) => setYear(value1?.value || '')}
                     id="controllable-states-demo"
-                    options={options} // Truyền đúng mảng options
-                    getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
+                    options={options}
+                    getOptionLabel={(option) => option?.name || ''}
                     renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                   />
                 </Grid>
@@ -493,6 +505,8 @@ export default function UserView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
+          handleFilter={handleFilter}
+          filterYear={filterYear}
         />
 
         <Scrollbar>
@@ -506,12 +520,12 @@ export default function UserView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
+                  { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
-                  { id: 'phone', label: 'Phone', align: 'center' },
-                  { id: 'gender', label: 'Gender' },
-                  { id: 'gold', label: 'Gold' },
-                  { id: 'dateOfBirth', label: 'DateOfBirth' },
+                  { id: 'phone', label: 'Số điện thoại', align: 'center' },
+                  { id: 'gender', label: 'Giới tính' },
+                  { id: 'gold', label: 'Vàng' },
+                  { id: 'dateOfBirth', label: 'Ngày sinh' },
                   { id: '' },
                 ]}
               />

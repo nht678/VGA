@@ -30,9 +30,9 @@ export const addConsultant = (data) => async (dispatch) => {
     }
 }
 
-export const updateConsultant = (data) => async (dispatch) => {
+export const updateConsultant = (id, data) => async (dispatch) => {
     try {
-        const response = await consultantService.updateConsultant(data);
+        const response = await consultantService.updateConsultant(id, data);
         dispatch({
             type: UPDATE_CONSULTANT,
             payload: response,

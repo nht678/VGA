@@ -217,7 +217,7 @@ export default function UserTableRow({
                   fullWidth
                   defaultValue={name}
                   name='name'
-                  label="Name"
+                  label="Tên"
                   onChange={handlechange}
 
                 />
@@ -236,7 +236,7 @@ export default function UserTableRow({
                   fullWidth
                   defaultValue={phone}
                   name='phone'
-                  label="Phone"
+                  label="Số điện thoại"
                   onChange={handlechange}
 
                 />
@@ -245,7 +245,7 @@ export default function UserTableRow({
                 <TextField
                   fullWidth
                   name='password'
-                  label="Password"
+                  label="Mật khẩu"
                   onChange={handlechange}
 
                 />
@@ -255,13 +255,13 @@ export default function UserTableRow({
                   fullWidth
                   defaultValue={address}
                   name='address'
-                  label="Address"
+                  label="Địa chỉ"
                   onChange={handlechange}
 
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
-                <textarea name='description' onChange={handlechange} placeholder="Description" style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                <textarea name='description' onChange={handlechange} placeholder="Hãy viết mô tả..." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                   defaultValue={description}
                 />
 
@@ -273,9 +273,9 @@ export default function UserTableRow({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
           <Button onClick={handleUpdateUniversity} autoFocus>
-            Create
+            Tạo mới
           </Button>
         </DialogActions>
       </Dialog>

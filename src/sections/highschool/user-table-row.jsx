@@ -205,7 +205,7 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-          {"Update HighSchool"}
+          Cập nhật trường cấp 3
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -215,7 +215,7 @@ export default function UserTableRow({
                   fullWidth
                   defaultValue={name}
                   name='name'
-                  label="Name"
+                  label="Tên"
                   onChange={handlechange}
 
                 />
@@ -234,7 +234,7 @@ export default function UserTableRow({
                   fullWidth
                   defaultValue={phone}
                   name='phone'
-                  label="Phone"
+                  label="Số điện thoại"
                   onChange={handlechange}
 
                 />
@@ -243,7 +243,7 @@ export default function UserTableRow({
                 <TextField
                   fullWidth
                   name='password'
-                  label="Password"
+                  label="Mật khẩu"
                   onChange={handlechange}
 
                 />
@@ -253,7 +253,7 @@ export default function UserTableRow({
                   fullWidth
                   defaultValue={locationDetail}
                   name='locationDetail'
-                  label="Address"
+                  label="Địa chỉ"
                   onChange={handlechange}
 
                 />
@@ -281,9 +281,9 @@ export default function UserTableRow({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
           <Button onClick={handleUpdateHighSchool} autoFocus>
-            Create
+            Cập nhật
           </Button>
         </DialogActions>
       </Dialog>
@@ -308,11 +308,11 @@ export default function UserTableRow({
       >
         <MenuItem onClick={() => handleClickOpenDialog('edit')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Chỉnh sửa
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Xóa
         </MenuItem>
       </Popover>
     </>

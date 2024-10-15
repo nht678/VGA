@@ -31,15 +31,15 @@ const user = {
         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-    { name: 'Homepage', href: '/', current: false },
-    { name: 'News', href: '/news', current: false },
-    { name: 'Managers', href: '/managers', current: false },
-    { name: 'Dashboard', href: '#', current: false },
+    { name: 'Trang chủ', href: '/', current: false },
+    { name: 'Tin tức', href: '/news', current: false },
+    { name: 'Quản lý', href: '/managers', current: false },
+    // { name: 'Thống ', href: '#', current: false },
 ]
 const userNavigation = [
-    { name: 'Your Profile', href: '/profile' },
-    { name: 'Sign in', href: '/signin' },
-    { name: 'Sign out', onClick: 'logout' },
+    { name: 'Hồ sơ của bạn', href: '/profile' },
+    { name: 'Đăng nhập', href: '/signin' },
+    { name: 'Đăng xuất', onClick: 'logout' },
 ]
 
 function classNames(...classes) {

@@ -8,15 +8,15 @@ const consultantService = {
         return response.data;
     },
     addConsultant: async (data) => {
-        const response = await BASE_API.post(`/consultant`, data);
+        const response = await BASE_API.post(`/consultants`, data);
         return response.data;
     },
-    updateConsultant: async (data) => {
-        const response = await BASE_API.put(`/consultant/${data.id}`, data.formData);
+    updateConsultant: async (id, data) => {
+        const response = await BASE_API.put(`/consultants/${id}`, data);
         return response.data;
     },
     deleteConsultant: async (id) => {
-        const response = await BASE_API.delete(`/consultant/${id}`);
+        const response = await BASE_API.delete(`/consultants/${id}`);
         return response.data;
     },
 };
