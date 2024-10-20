@@ -25,6 +25,7 @@
     }
   },
   "rules": {
+    "no-nested-ternary": "off",
     "object-shorthand": "off",
     "no-restricted-syntax": "off",
     "prefer-const": "off",

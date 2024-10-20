@@ -6,7 +6,7 @@ export default function University() {
     return (
         <>
             <Helmet>
-                <title>University | Minimal UI</title>
+                <title>Trường đại học</title>
             </Helmet>
             <UniversityView />
         </>

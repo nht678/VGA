@@ -27,10 +27,16 @@ export const Signin = lazy(() => import('src/pages/signin'));
 export const HighSchoolView = lazy(() => import('src/pages/highschool'));
 export const Logout = lazy(() => import('src/pages/logout'));
 export const ConsultantView = lazy(() => import('src/pages/consultant'));
+export const ConsultantLevelView = lazy(() => import('src/pages/consultantlevel'));
+export const Transaction = lazy(() => import('src/pages/transaction'));
+export const Wallet = lazy(() => import('src/pages/wallet'));
+
+export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  let role = localStorage.getItem('role');
   const routes = useRoutes([
     {
       element: (
@@ -40,6 +46,7 @@ export default function Router() {
       ),
       index: true
     },
+
     {
       element: (
         <DashboardLayout>
@@ -50,20 +57,23 @@ export default function Router() {
       ),
       children: [
         // { element: <IndexPage />, index: true },
-        { path: 'students', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
-        { path: 'upload', element: <UploadFile /> },
-        { path: 'counter', element: <CounterComponent /> },
-        // {path: 'homepage', element: <Homepage />},
-        { path: 'eventquiz', element: <EventQuiz /> },
-        { path: 'editquiz', element: <EditQuiz /> },
-        { path: 'myquiz', element: <MyQuiz /> },
-        { path: 'newsuniversity', element: <NewsUniversity /> },
-        { path: '/managers', element: <Dashboard /> },
-        { path: 'highschool', element: <HighSchoolView /> },
-        { path: 'consultants', element: <ConsultantView /> },
-        { path: 'unversity', element: <UniversityView /> }
+        { path: 'students', element: role === '2' ? <UserPage /> : <Navigate to="/404" replace /> },
+        // { path: 'products', element: <ProductsPage /> },
+        // { path: 'blog', element: <BlogPage /> },
+        // { path: 'upload', element: <UploadFile /> },
+        // { path: 'counter', element: <CounterComponent /> },
+        // { path: 'eventquiz', element: <EventQuiz /> },
+        // { path: 'editquiz', element: <EditQuiz /> },
+        // { path: 'myquiz', element: <MyQuiz /> },
+        // { path: 'newsuniversity', element: <NewsUniversity /> },
+        { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
+        { path: 'transactions', element: role === '2' ? <Transaction /> : <Navigate to="/404" replace /> },
+        { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
+        { path: 'highschool', element: role === '1' ? <HighSchoolView /> : <Navigate to="/404" replace /> },
+        { path: 'consultants', element: role === '1' ? <ConsultantView /> : <Navigate to="/404" replace /> },
+        { path: 'university', element: role === '1' ? <UniversityView /> : <Navigate to="/404" replace /> },
+        { path: 'consultantsLevel', element: role === '1' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
+        { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 
       ],
     },

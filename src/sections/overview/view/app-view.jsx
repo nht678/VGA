@@ -117,7 +117,7 @@ export default function AppView() {
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
             title="Tổng trường cấp 3"
-            total={714000}
+            total={128}
             color="success"
             icon={<SchoolIcon sx={{ width: 50, height: 50, color: '#86efac' }} />}
           />
@@ -127,7 +127,7 @@ export default function AppView() {
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
             title="Tổng sinh viên"
-            total={1352831}
+            total={3278}
             color="info"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" style={{ width: 50, height: 50 }} />}
           />
@@ -136,7 +136,7 @@ export default function AppView() {
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
             title="Tổng trường đại học"
-            total={1723315}
+            total={255}
             color="warning"
             icon={<SchoolIcon sx={{ width: 50, height: 50, color: '#15803d' }} />}
           />

@@ -5,12 +5,6 @@ import { Box } from '@mui/system';
 import Typography from '@mui/material/Typography';
 
 
-
-
-
-
-
-
 export default function ChartMix() {
     useEffect(() => {
         let options = {

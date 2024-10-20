@@ -35,10 +35,10 @@ export const resetUserSuccess = () => ({
 });
 
 
-export function actUserGetAsync({ page, pageSize, search, schoolYears }) {
+export function actUserGetAsync({ page, pageSize, highSchoolId, search, schoolYears }) {
     return async (dispatch) => {
         try {
-            const data = await userServices.getUsers({ page, pageSize, search, schoolYears });
+            const data = await userServices.getUsers({ page, pageSize, highSchoolId, search, schoolYears });
             dispatch(actUserGet(data));
         } catch (error) {
             console.log(error);

@@ -34,9 +34,9 @@ export const resetUniversitySuccess = () => ({
     type: 'RESET_UNIVERSITY_SUCCESS',
 });
 
-export const actUniversityGetAsync = ({ page, pageSize }) => async (dispatch) => {
+export const actUniversityGetAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
-        const response = await universityService.getUniversities(page, pageSize);
+        const response = await universityService.getUniversities({ page, pageSize, search });
         dispatch(actUniversityGet(response));
     } catch (error) {
         console.error(error);

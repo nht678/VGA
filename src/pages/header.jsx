@@ -1,21 +1,7 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
+
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import Badge from '@mui/material/Badge';
-// import MenuItem from '@mui/material/MenuItem';
-// import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import AdbIcon from '@mui/icons-material/Adb';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { Image, Button, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { signoutUser } from '../store/account/action';
+
 
 const user = {
     name: 'Tom Cook',
@@ -33,9 +20,26 @@ const user = {
 const navigation = [
     { name: 'Trang chủ', href: '/', current: false },
     { name: 'Tin tức', href: '/news', current: false },
+
     { name: 'Quản lý', href: '/managers', current: false },
-    // { name: 'Thống ', href: '#', current: false },
 ]
+// let role = localStorage.getItem('role');
+
+// const getNavigation = () => {
+//     const navItems = [
+//         { name: 'Trang chủ', href: '/', current: false },
+//         { name: 'Tin tức', href: '/news', current: false },
+//     ];
+
+//     if (role === '1' || role === '2') {
+//         navItems.push({ name: 'Quản lý', href: '/managers', current: false });
+//     }
+
+//     return navItems;
+// };
+
+// const navigation = getNavigation();
+
 const userNavigation = [
     { name: 'Hồ sơ của bạn', href: '/profile' },
     { name: 'Đăng nhập', href: '/signin' },
@@ -93,159 +97,21 @@ export default function Header() {
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
 
-    const handleLogout = () => {
+    const handleLogout = (e) => {
+        e.preventDefault();
         dispatch(signoutUser());
-        if (isAuthenticated) {
-            navigate('/signin', { replace: true });
-            message.success('Sign out successfully');
-        }
-    }
-    // React.useEffect(() => {
-    //     if (!isAuthenticated) {
-    //         navigate('/signin', { replace: true });
-    //         message.success('Sign out successfully');
-    //     }
-    // }, [isAuthenticated, navigate]);
+        message.success('Sign out successfully');
+        navigate('/signin');
+    };
     return (
-        // <Box>
-        //     <Box sx={{ flexGrow: 1 }}>
-        //         <AppBar position="static">
-        //             <Toolbar sx={{ justifyContent: "space-around" }}>
 
-        //                 <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-        //                     {/* AdbIcon vẫn sử dụng sx */}
-        //                     {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-
-        //                     {/* Đặt Image từ Ant Design với style */}
-        //                     {/* <Image
-        //                         style={{ marginRight: 10 }}
-        //                         width={30}
-        //                         height={30}
-        //                         src="/assets/images/avatars/Picture2.png" // Đảm bảo đây là một URL hợp lệ
-        //                         fallback="https://fallback-image-url.com/fallback.png" // Ảnh fallback nếu không load được
-        //                     /> */}
-        //                     <Link href='#'>
-        //                         <img
-        //                             style={{ width: 40, height: 40, marginRight: 10 }}
-        //                             src="/assets/images/avatars/Logo.png"
-        //                             alt="avatar"
-        //                         />
-        //                     </Link>
-
-
-        //                     <Typography
-        //                         variant="h6"
-        //                         noWrap
-        //                         component="div"
-        //                         sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 2 }} // Sửa marginLeft ra khỏi display
-        //                     >
-        //                         VGA
-        //                     </Typography>
-        //                 </Box>
-
-
-        //                 <Search>
-        //                     <SearchIconWrapper>
-        //                         <SearchIcon />
-        //                     </SearchIconWrapper>
-        //                     <StyledInputBase
-        //                         placeholder="Search…"
-        //                         inputProps={{ 'aria-label': 'search' }}
-        //                     />
-        //                 </Search>
-        //                 {/* <Box sx={{ flexGrow: 1 }} /> */}
-        //                 <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-        //                     <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-        //                         <Badge badgeContent={4} color="error">
-        //                             <MailIcon />
-        //                         </Badge>
-        //                     </IconButton>
-        //                     <IconButton
-        //                         size="large"
-        //                         aria-label="show 17 new notifications"
-        //                         color="inherit"
-        //                     >
-        //                         <Badge badgeContent={17} color="error">
-        //                             <NotificationsIcon />
-        //                         </Badge>
-        //                     </IconButton>
-        //                     <IconButton
-        //                         size="large"
-        //                         edge="end"
-        //                         aria-label="account of current user"
-        //                         aria-controls={menuId}
-        //                         aria-haspopup="true"
-        //                         onClick={handleProfileMenuOpen}
-        //                         color="inherit"
-        //                     >
-        //                         <AccountCircle />
-        //                     </IconButton>
-        //                 </Box>
-        //                 <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-        //                     <IconButton
-        //                         size="large"
-        //                         aria-label="show more"
-        //                         aria-controls={mobileMenuId}
-        //                         aria-haspopup="true"
-        //                         onClick={handleMobileMenuOpen}
-        //                         color="inherit"
-        //                     >
-        //                         <MoreIcon />
-        //                     </IconButton>
-        //                 </Box>
-        //             </Toolbar>
-        //         </AppBar>
-        //         {renderMobileMenu}
-        //         {renderMenu}
-        //     </Box>
-        //     <Box sx={{ flexGrow: 1 }}>
-        //         <AppBar position="static" >
-        //             <Box
-        //                 sx={{
-        //                     typography: 'body1',
-        //                     '& > :not(style) ~ :not(style)': {
-        //                         ml: 2,
-        //                     },
-        //                     display: { xs: 'none', md: 'flex' },
-        //                     justifyContent: 'center',
-        //                 }}
-        //                 onClick={preventDefault}
-        //             >
-        //                 <Link to="/homepage" style={{ textDecoration: 'none', color: 'inherit' }}>
-        //                     HomePage
-        //                 </Link>
-        //                 <Link to="/news" style={{ textDecoration: 'none', color: 'inherit' }}>
-        //                     News
-        //                 </Link>
-        //                 <Link to="/user" style={{ textDecoration: 'none', color: 'inherit' }}>
-        //                     Manages
-        //                 </Link>
-        //             </Box>
-        //         </AppBar>
-        //     </Box>
-        // </Box>
         <>
-            {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
             <div className=" w-full z-10   ">
                 <Disclosure as="nav" className="bg-gray-800">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 items-center justify-between">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    {/* <img
-                                        alt="Your Company"
-                                        src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
-                                        // src='/assets/images/avatars/Picture1.png'
-                                        className="h-8 w-8"
-                                    // style={{ filter: 'grayscale(100%)' }}
-                                    /> */}
                                     <Link to="/">
                                         <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 2, color: 'rgba(99,102,241,1)' }} >
                                             VGA
@@ -268,6 +134,19 @@ export default function Header() {
                                                 {item.name}
                                             </Link>
                                         ))}
+                                        {/* {navigation.map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                to={item.href}
+                                                aria-current={item.current ? 'page' : undefined}
+                                                className={classNames(
+                                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                    'rounded-md px-3 py-2 text-sm font-medium',
+                                                )}
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        ))} */}
                                     </div>
                                 </div>
                             </div>
@@ -296,7 +175,7 @@ export default function Header() {
                                             className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                                         >
                                             {userNavigation.map((item) => (
-                                                <MenuItem key={item.name}>
+                                                <MenuItem MenuItem key={item.name} >
                                                     {/* {item.onClick ? (
                                                         <Button
                                                             sx={{ border: 'none' }}
@@ -308,7 +187,7 @@ export default function Header() {
                                                     ) : ( */}
                                                     <Link
                                                         to={item.href}
-                                                        onClick={item.name === 'Sign out' ? handleLogout : null}
+                                                        onClick={item.name === 'Đăng xuất' ? handleLogout : null}
                                                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                                                     >
                                                         {item.name}
@@ -330,9 +209,9 @@ export default function Header() {
                                 </DisclosureButton>
                             </div>
                         </div>
-                    </div>
+                    </div >
 
-                    <DisclosurePanel className="md:hidden">
+                    {/* <DisclosurePanel className="md:hidden">
                         <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
                             {navigation.map((item) => (
                                 <DisclosureButton
@@ -380,18 +259,9 @@ export default function Header() {
                                 ))}
                             </div>
                         </div>
-                    </DisclosurePanel>
-                </Disclosure>
-
-                {/* <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-                    </div>
-                </header>
-                <main>
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">abc</div>
-                </main> */}
-            </div>
+                    </DisclosurePanel> */}
+                </Disclosure >
+            </div >
         </>
 
     );

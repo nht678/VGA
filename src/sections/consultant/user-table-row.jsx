@@ -62,7 +62,6 @@ export default function UserTableRow({
   consultantLevelId,
   gender
 }) {
-  console.log('id', id)
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -76,7 +75,6 @@ export default function UserTableRow({
     description: description,
     consultantLevelId: '',
   });
-  console.log('formData1', formData)
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const [inputValue, setInputValue] = useState(''); // Giá trị input
   const [value, setValue] = useState(null); // Giá trị đã chọn
@@ -235,7 +233,7 @@ export default function UserTableRow({
               </Grid>
 
               <Grid size={{ md: 6 }}>
-                <Typography variant="h6">Description</Typography>
+                <Typography variant="h6" component='span'>Description</Typography>
                 <textarea
                   style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
                   label="Mô tả"
@@ -246,7 +244,7 @@ export default function UserTableRow({
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
-                <Typography variant="h6">Level</Typography>
+                <Typography variant="h6">Cấp độ</Typography>
                 <Autocomplete
                   onChange={handleLevelChange}
                   inputValue={inputValue}

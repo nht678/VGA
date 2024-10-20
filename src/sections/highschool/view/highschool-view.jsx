@@ -90,17 +90,6 @@ export default function HighSchoolView() {
     setOptions(regions);
   }, [dispatch, page, rowsPerPage, successHighSchool]);
 
-
-
-  // useEffect(() => {
-  //   if (Array.isArray(regions) && regions.length > 0) {
-  //     setOptions(regions);
-  //   }
-  // }, [regions]);
-  // const ojbformData = new FormData();
-  // Object.keys(formData).forEach((key) => {
-  //   ojbformData.append(key, formData[key]);
-  // });
   const handleAddHighSchool = () => {
     dispatch(actAddHighSchoolAsync(formData));
     if (successHighSchool) {

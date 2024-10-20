@@ -21,11 +21,20 @@ import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
-import navConfig from './config-navigation';
+// import navConfig from './config-navigation';
+import NavConfigComponent from './config-navigation';
+// isauthenticated
+// import { useSelector } from 'react-redux';
+
 
 // ----------------------------------------------------------------------
 
 export default function Nav({ openNav, onCloseNav }) {
+  // if role chage then useeffect will be called
+
+  const role = localStorage.getItem('role');
+
+
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');
@@ -37,6 +46,10 @@ export default function Nav({ openNav, onCloseNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+
+
+
+
   const renderAccount = (
     <Box
       sx={{
@@ -47,27 +60,38 @@ export default function Nav({ openNav, onCloseNav }) {
         display: 'flex',
         borderRadius: 1.5,
         alignItems: 'center',
+        justifyContent: 'center',
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      {/* <Avatar src={account.photoURL} alt="photoURL" /> */}
+      {/* <Typography variant="subtitle2">{account.displayName}</Typography> */}
 
-      <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
-
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: role === '1' ? 'primary.main' : role === '2' ? 'secondary.main' : 'text.secondary',
+            fontWeight: role !== 'User' ? 'bold' : 'normal',
+            backgroundColor: role === '1' ? '#e3f2fd' : role === '2' ? '#f3e5f5' : '#f5f5f5',
+            borderRadius: '5px',
+            padding: '5px 10px',
+          }}
+        >
+          {role === '1' ? 'Admin' : role === '2' ? 'HighSchool' : 'User'}
         </Typography>
       </Box>
+
     </Box>
   );
 
   const renderMenu = (
-    <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
-        <NavItem key={item.title} item={item} />
-      ))}
-    </Stack>
+    // <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
+    //   {navConfig.map((item) => (
+    //     <NavItem key={item.title} item={item} />
+    //   ))}
+    // </Stack>
+    <NavConfigComponent />
   );
 
   const renderUpgrade = (
@@ -164,41 +188,3 @@ Nav.propTypes = {
 
 // ----------------------------------------------------------------------
 
-function NavItem({ item }) {
-  const pathname = usePathname();
-
-  const active = item.path === pathname;
-
-  return (
-    <ListItemButton
-      component={RouterLink}
-      href={item.path}
-      sx={{
-        minHeight: 44,
-        borderRadius: 0.75,
-        typography: 'body2',
-        color: 'text.secondary',
-        textTransform: 'capitalize',
-        fontWeight: 'fontWeightMedium',
-        ...(active && {
-          color: 'primary.main',
-          fontWeight: 'fontWeightSemiBold',
-          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-          '&:hover': {
-            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
-          },
-        }),
-      }}
-    >
-      <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
-        {item.icon}
-      </Box>
-
-      <Box component="span">{item.title} </Box>
-    </ListItemButton>
-  );
-}
-
-NavItem.propTypes = {
-  item: PropTypes.object,
-};

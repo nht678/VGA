@@ -29,10 +29,8 @@ export default function SigninView() {
         e.preventDefault();
         console.log('Form data', formData);
         dispatch(signinUser(formData));
-        if (isAuthenticated) {
-            message.success('Sign in successfully');
-            navigate('/', { replace: true });
-        }
+        message.success('Sign in successfully');
+        navigate('/', { replace: true });
     }
     // useEffect(() => {
     //     if (isAuthenticated) {

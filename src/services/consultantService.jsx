@@ -3,8 +3,22 @@ import axios from "axios";
 import { BASE_API } from "./api";
 
 const consultantService = {
-    getConsultants: async (page, pageSize) => {
-        const response = await BASE_API.get(`/consultants?page=${page}&pageSize=${pageSize}`);
+    getConsultants: async ({ page, pageSize, search, level }) => {
+        const params = {
+            'current-page': page,
+            'page-size': pageSize,
+        };
+
+        // Chỉ thêm các tham số nếu chúng có giá trị
+        if (search) {
+            params.name = search;
+        }
+
+        if (level) {
+            params['consultant-level-id'] = level;
+        }
+
+        const response = await BASE_API.get(`/consultants`, { params });
         return response.data;
     },
     addConsultant: async (data) => {

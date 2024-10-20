@@ -117,14 +117,7 @@ export default function UniversityView() {
       [e.target.name]: e.target.value,
     });
   };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
-  };
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -197,17 +190,17 @@ export default function UniversityView() {
     setOpen(false);
   };
 
-  // const handleFilterByName = async (event) => {
-  //   const filterValue = event.target.value;
-  //   setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+  const handleFilterByName = async (event) => {
+    const filterValue = event.target.value;
+    setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
-  //   if (filterValue.trim()) {
-  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
-  //   } else {
-  //     // Gọi lại API khi không có từ khóa tìm kiếm
-  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage }));
-  //   }
-  // };
+    if (filterValue.trim()) {
+      dispatch(actUniversityGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+    } else {
+      // Gọi lại API khi không có từ khóa tìm kiếm
+      dispatch(actUniversityGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+    }
+  };
 
 
 
@@ -224,8 +217,6 @@ export default function UniversityView() {
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
             Tạo trường đại học
           </Button>
-
-
           <Dialog
             open={open === 'Create'}
             onClose={handleClose}
@@ -300,9 +291,6 @@ export default function UniversityView() {
               </Button>
             </DialogActions>
           </Dialog>
-
-
-
         </Box>
       </Stack>
 
@@ -310,7 +298,7 @@ export default function UniversityView() {
         <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
-        // onFilterName={handleFilterByName}
+          onFilterName={handleFilterByName}
         />
 
         <Scrollbar>
@@ -336,7 +324,7 @@ export default function UniversityView() {
               <TableBody>
                 {universities.map((row) => (
                   <UserTableRow
-                    key={row.id}
+                    key={row?.id}
                     name={row?.name}
                     email={row?.account?.email}
                     phone={row?.account?.phone}

@@ -6,7 +6,7 @@ import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 
 export default function ProfileView() {
     return (
-        <div className='flex justify-center bg-emerald-50 py-20 '>
+        <div className='flex justify-center  py-20 '>
 
             <form>
                 <div className="space-y-12">

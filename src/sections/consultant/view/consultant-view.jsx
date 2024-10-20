@@ -47,7 +47,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 export default function ConsultantView() {
 
   const dispatch = useDispatch();
-  const { consultants, total, successConsultant } = useSelector((state) => state.consultantReducer);
+  const { consultants, total = 0, successConsultant } = useSelector((state) => state.consultantReducer);
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   console.log('consultantLevels', consultantLevels)
 
@@ -94,12 +94,12 @@ export default function ConsultantView() {
   };
 
   useEffect(() => {
-    dispatch(getConsultants(page + 1, rowsPerPage));
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
     // dispatch(actLevelGetAsync)
   }, [page, rowsPerPage]);
 
   useEffect(() => {
-    dispatch(actLevelGetAsync());
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
   }, []);
 
   const handleAddConsultant = () => {
@@ -171,10 +171,10 @@ export default function ConsultantView() {
   };
 
 
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
+  // const handleFilterByName = (event) => {
+  //   setPage(0);
+  //   setFilterName(event.target.value);
+  // };
 
   const dataFiltered = applyFilter({
     inputData: consultants,
@@ -201,7 +201,28 @@ export default function ConsultantView() {
   };
 
 
-  // write code here
+  const handleFilterByName = async (event) => {
+    const filterValue = event.target.value;
+    setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+
+    if (filterValue.trim()) {
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+    } else {
+      // Gọi lại API khi không có từ khóa tìm kiếm
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage }));
+    }
+  };
+  const handleFilterByLevel = async (Selectedlevel) => {
+    setFilterLevel(Selectedlevel);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+    setFilterLevelName(`Level ${Selectedlevel}`);
+
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: Selectedlevel }));
+  };
+
+  const [filterLevel, setFilterLevel] = useState('');
+  const [filterLevelName, setFilterLevelName] = useState('');
+
+
 
   return (
     <>
@@ -322,6 +343,10 @@ export default function ConsultantView() {
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
+          filterLevel={filterLevel}
+          filterLevelName={filterLevelName}
+          consultantLevels={consultantLevels}
+          handleFilterByLevel={handleFilterByLevel}
         />
 
         <Scrollbar>
@@ -348,14 +373,14 @@ export default function ConsultantView() {
               <TableBody>
                 {dataFiltered.map((row) => (
                   <UserTableRow
-                    key={row.id}
-                    id={row.id || ''}
+                    key={row?.id}
+                    id={row?.id || ''}
                     name={row.name || ''}
                     email={row?.email || ''}
                     phone={row?.phone || ''}
                     avatarUrl={row.avatarUrl || ''}
                     description={row.description || ''}
-                    consultantLevelId={row.consultantLevelId || ''}
+                    consultantLevelId={row?.consultantLevel?.id || ''}
                     gender={row?.gender || ''}
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
                     selected={selected.indexOf(row.name) !== -1}

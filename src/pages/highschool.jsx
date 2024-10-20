@@ -7,7 +7,7 @@ export default function HighSchoolPage() {
     return (
         <>
             <Helmet>
-                <title> High School | Minimal UI </title>
+                <title> Trường cấp ba</title>
             </Helmet>
 
             <HighSchoolView />

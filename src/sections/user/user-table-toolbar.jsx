@@ -64,7 +64,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Search user..."
+          placeholder="Tìm Kiếm học sinh..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify
@@ -88,9 +88,6 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
             {filterYear}
           </Typography>
           <Tooltip title="Filter list">
-            {/* <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton> */}
             <IconButton
               aria-label="more"
               id="long-button"

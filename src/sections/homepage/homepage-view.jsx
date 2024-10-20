@@ -154,7 +154,7 @@ export default function HomepageView() {
 
 
   return (
-    <Box className='bg-emerald-50 pb-20'>
+    <Box className=' pb-20'>
       <Carousel autoplay >
         <div>
           <h3 style={contentStyle}>

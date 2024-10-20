@@ -6,9 +6,9 @@ export const UPDATE_CONSULTANT = "UPDATE_CONSULTANT";
 export const DELETE_CONSULTANT = "DELETE_CONSULTANT";
 export const RESET_CONSULTANT_SUCCESS = "RESET_CONSULTANT_SUCCESS";
 
-export const getConsultants = (page, pageSize) => async (dispatch) => {
+export const getConsultants = ({ page, pageSize, search, level }) => async (dispatch) => {
     try {
-        const data = await consultantService.getConsultants(page, pageSize);
+        const data = await consultantService.getConsultants({ page, pageSize, search, level });
         dispatch({
             type: GET_CONSULTANTS_SUCCESS,
             payload: data,

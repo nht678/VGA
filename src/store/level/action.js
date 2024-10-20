@@ -34,12 +34,40 @@ export const resetLevelSuccess = () => ({
     type: 'RESET_LEVEL_SUCCESS',
 });
 
-export const actLevelGetAsync = () => async (dispatch) => {
+export const actLevelGetAsync = ({ page, pagesize, search }) => async (dispatch) => {
     try {
-        const response = await levelService.getLevels();
+        const response = await levelService.getLevels({ page, pagesize, search });
         dispatch(actLevelGet(response));
     } catch (error) {
         console.error(error);
     }
 };
+
+export const actLevelAddAsync = (data) => async (dispatch) => {
+    try {
+        const response = await levelService.addLevel(data);
+        dispatch(actAddLevel(response));
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const actLevelUpdateAsync = ({ formData, id }) => async (dispatch) => {
+    try {
+        const response = await levelService.updateLevel({ formData, id });
+        dispatch(actLevelUpdate(response));
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const actLevelDeleteAsync = (id) => async (dispatch) => {
+    try {
+        await levelService.deleteLevel(id);
+        dispatch(actLevelDelete(id));
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 

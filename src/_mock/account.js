@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------
 
 export const account = {
+  role: 'admin',
   displayName: 'Tom Cook',
   email: 'demo@minimals.cc',
   // photoURL: '/assets/images/avatars/avatar_25.jpg',

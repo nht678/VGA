@@ -76,6 +76,9 @@ export default function UserView() {
   const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
+  const nameHighSchool = localStorage.getItem('name');
+
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -199,14 +202,6 @@ export default function UserView() {
     setOpen(false);
   };
 
-  const Year = [
-    { label: '2017', year: 2017 },
-    { label: '2018', year: 2018 },
-    { label: '2019', year: 2019 },
-    { label: '2020', year: 2020 },
-    { label: '2021', year: 2021 },
-  ];
-
   const [selectedFile, setSelectedFile] = useState(null);
 
   const props = {
@@ -289,26 +284,26 @@ export default function UserView() {
 
 
   useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName, schoolYears: filterYear }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
   }, [page, rowsPerPage, usersSuccess]);
 
 
-  const [search, setSearch] = useState('');
   const getCurrentYear = () => new Date().getFullYear();
 
   // Gọi hàm
   console.log(getCurrentYear()); // Sẽ in ra năm hiện tại, ví dụ: 2024
   const [filterYear, setFilterYear] = useState(getCurrentYear);
+  console.log('filterYear', filterYear);
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue, schoolYears: filterYear }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
     }
   };
 
@@ -316,7 +311,7 @@ export default function UserView() {
     console.log('schoolYearsoption', selectedYear);
     setFilterYear(selectedYear);
     // Gọi API với giá trị filter
-    dispatch(actUserGetAsync({ page: 1, pageSize: rowsPerPage, schoolYears: selectedYear, search: filterName }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
     handleClose(); // Đóng menu sau khi chọn
   };
 
@@ -324,6 +319,7 @@ export default function UserView() {
   const handleYearChange = (event, newValue) => {
     setValue(newValue);
     setformData({ ...formData, schoolYears: newValue?.value });
+    console.log('newValue?.value', newValue?.value);
   };
 
 
@@ -333,7 +329,8 @@ export default function UserView() {
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Học sinh</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Danh sách học sinh năm:{filterYear}</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">{nameHighSchool}</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
             Tạo học sinh
@@ -341,9 +338,9 @@ export default function UserView() {
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
             Tạo học sinh từ file
           </Button>
-          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateGold')}>
+          {/* <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateGold')}>
             Phân phối vàng
-          </Button>
+          </Button> */}
 
           <Dialog
             open={open === 'CreateGold'}
@@ -532,9 +529,9 @@ export default function UserView() {
               <TableBody>
                 {dataFiltered.map((row) => (
                   <UserTableRow
-                    key={row.id}
+                    key={row?.id}
                     name={row.name || ''} // Kiểm tra row.name
-                    id={row.id || ''} // Kiểm tra row.id
+                    id={row?.id || ''} // Kiểm tra row.id
                     gender={row.gender || ''} // Kiểm tra row.gender
                     gold={row["gold-balance"] || 0} // Kiểm tra row["gold-balance"]
                     email={row.account?.email || ''} // Kiểm tra row.account?.email
