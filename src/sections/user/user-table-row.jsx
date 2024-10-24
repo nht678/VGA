@@ -23,6 +23,7 @@ import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Calendar, theme } from 'antd';
 import Autocomplete from '@mui/material/Autocomplete';
+import InfoIcon from '@mui/icons-material/Info';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync } from 'src/store/users/action';
@@ -64,8 +65,9 @@ export default function UserTableRow({
     dateOfBirth: dateOfBirth,
     gender: gender,
     schoolYears: ''
-
   });
+  const [errors, setErrors] = useState({});
+  const getCurrentYear = () => new Date().getFullYear();
 
   // handle change
   const handleChange = (e) => {
@@ -75,6 +77,36 @@ export default function UserTableRow({
     });
   };
 
+  // Hàm validate form
+  const validateForm = () => {
+    let newErrors = {};
+
+    // Kiểm tra các trường yêu cầu
+    if (!formData.name) newErrors.name = 'Tên là bắt buộc';
+    if (!formData.email) newErrors.email = 'Email là bắt buộc';
+    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
+    if (!formData.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
+
+    // Kiểm tra định dạng email (đơn giản)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    // Kiểm tra giới tính đã được chọn chưa
+    if (formData.gender === undefined) {
+      newErrors.gender = 'Vui lòng chọn giới tính';
+    }
+    setErrors(newErrors);
+
+    // Trả về true nếu không có lỗi
+    return Object.keys(newErrors).length === 0;
+  };
 
 
   const dispatch = useDispatch();
@@ -82,16 +114,13 @@ export default function UserTableRow({
 
 
   const handleUpdate = () => {
+    if (!validateForm()) {
+      // Nếu form không hợp lệ, dừng lại và không gửi request
+      return;
+    }
+
     dispatch(actUserUpdateAsync(formData, userId));
     if (usersSuccess) {
-      // setformData({
-      //   name: '',
-      //   email: '',
-      //   password: '',
-      //   phone: '',
-      //   dateOfBirth: '',
-      //   schoolYears: '',
-      // });
       dispatch(resetUserSuccess());
     }
     handleCloseDialog();
@@ -182,8 +211,8 @@ export default function UserTableRow({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-          {"Update student"}
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+          Cập nhật học sinh
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -195,6 +224,8 @@ export default function UserTableRow({
                   label="name"
                   defaultValue={name}
                   onChange={handleChange}
+                  error={!!errors.name} // Nếu có lỗi thì hiển thị lỗi
+                  helperText={errors.name} // Hiển thị thông báo lỗi
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -205,6 +236,8 @@ export default function UserTableRow({
                   label="Email"
                   defaultValue={email}
                   onChange={handleChange}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -213,6 +246,8 @@ export default function UserTableRow({
                   label="Password"
                   name='password'
                   onChange={handleChange}
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -222,6 +257,8 @@ export default function UserTableRow({
                   name='phone'
                   defaultValue={phone}
                   onChange={handleChange}
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -229,7 +266,9 @@ export default function UserTableRow({
                   onChange={handleYearChange}
                   id="controllable-states-demo"
                   options={options} // Truyền đúng mảng options
-                  getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
+                  getOptionLabel={(option) => option?.name || ''}
+                  // options={[getCurrentYear().toString()]}
+                  // getOptionLabel={(option) => option}
                   renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                 />
               </Grid>
@@ -249,15 +288,16 @@ export default function UserTableRow({
                   <FormControlLabel value control={<Radio />} label="Male" />
                   <FormControlLabel value={false} control={<Radio />} label="Female" />
                 </RadioGroup>
+                {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
               </Grid>
             </Grid>
 
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
           <Button onClick={handleUpdate} autoFocus>
-            Update
+            Cập nhật
           </Button>
         </DialogActions>
       </Dialog>
@@ -274,11 +314,15 @@ export default function UserTableRow({
       >
         <MenuItem onClick={() => handleClickOpenDialog('edit')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Cập nhật
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Xóa
+        </MenuItem>
+        <MenuItem onClick={handleCloseMenu}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
         </MenuItem>
       </Popover>
     </>

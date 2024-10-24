@@ -8,7 +8,7 @@ const regionReducer = (state = initialState, action) => {
         case 'ACT_REGION_GET':
             return {
                 ...state,
-                regions: action.payload,
+                regions: action.payload.regions,
             };
         default:
             return state;

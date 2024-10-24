@@ -10,6 +10,7 @@ import consultantReducer from './consultant/reducer';
 import reducerUniversity from './university/reducer';
 import levelReducer from './level/reducer';
 import transactionReducer from './transaction/reducer';
+import walletReducer from './wallet/reducer';
 
 
 const store = configureStore({
@@ -25,7 +26,8 @@ const store = configureStore({
         consultantReducer,
         reducerUniversity,
         levelReducer,
-        transactionReducer
+        transactionReducer,
+        walletReducer
     }
 });
 

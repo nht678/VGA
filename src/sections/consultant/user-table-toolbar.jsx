@@ -14,12 +14,12 @@ import Box from '@mui/material/Box';
 
 import Iconify from 'src/components/iconify';
 
-const options = [
-  'Level 1',
-  'Level 2',
-  'Level 3',
-  'Level 4',
-];
+// const options = [
+//   'Level 1',
+//   'Level 2',
+//   'Level 3',
+//   'Level 4',
+// ];
 
 const ITEM_HEIGHT = 48;
 
@@ -111,11 +111,28 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
                   },
                 }}
               >
-                {consultantLevels?.map((option) => (
+                {/* {consultantLevels?.map((option) => (
                   <MenuItem key={option?.id} selected={option === 'Pyxis'} onClick={() => handleFilterByLevel(option?.id)}>
                     {option?.name}
                   </MenuItem>
+                ))} */}
+                <MenuItem
+                  key="all"
+                  selected={filterLevel === ""}
+                  onClick={() => handleFilterByLevel("")} // Gửi chuỗi rỗng khi chọn "All"
+                >
+                  All
+                </MenuItem>
+                {consultantLevels?.map((option) => (
+                  <MenuItem
+                    key={option?.id}
+                    selected={filterLevel === option?.id}
+                    onClick={() => handleFilterByLevel(option?.id)}
+                  >
+                    {option?.name}
+                  </MenuItem>
                 ))}
+
               </Menu>
             </span>
           </Tooltip>

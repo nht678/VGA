@@ -67,6 +67,7 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
@@ -81,9 +82,23 @@ export default function UserTableRow({
     }
     handleCloseDialog();
   }
-  const onPanelChange = (value, mode) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
-  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Tên không được để trống';
+    }
+    if (!formData.priceOnSlot) {
+      newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
+    }
+    if (!formData.description) {
+      newErrors.description = 'Mô tả không được để trống';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
+
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -99,7 +114,7 @@ export default function UserTableRow({
   };
 
   const handleCloseDialog = () => {
-    setDialog(null);
+    setDialog('');
   };
   const [formData, setFormData] = useState({
     name: name,
@@ -116,10 +131,11 @@ export default function UserTableRow({
   }
 
   const handleUpdateLevel = () => {
+    if (!validateForm()) return;
     dispatch(actLevelUpdateAsync({ formData, id }));
     if (successLevel) {
       dispatch(resetLevelSuccess());
-
+      message.success('Update university success');
     }
     handleCloseDialog();
   }
@@ -129,7 +145,6 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  console.log('formData', formData)
 
   return (
     <>
@@ -141,7 +156,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" component='span' noWrap>
+            <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>
           </Stack>
@@ -173,8 +188,8 @@ export default function UserTableRow({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-          {"Cập nhật thông tin trường đại học"}
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+          {"Cập nhật thông tin cấp độ tư vấn viên"}
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -186,7 +201,8 @@ export default function UserTableRow({
                   name='name'
                   label="Tên"
                   onChange={handlechange}
-
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -196,15 +212,17 @@ export default function UserTableRow({
                   name='priceOnSlot'
                   label="Giá trên mỗi slot"
                   onChange={handlechange}
-
+                  error={!!errors.priceOnSlot}
+                  helperText={errors.priceOnSlot}
                 />
               </Grid>
 
 
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='span'>Mô tả</Typography>
+                <Typography variant="h6" component='div'>Mô tả</Typography>
                 <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
+                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
               </Grid>
             </Grid>
           </DialogContentText>
@@ -237,11 +255,11 @@ export default function UserTableRow({
       >
         <MenuItem onClick={() => handleClickOpenDialog('edit')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Cập nhật
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Xóa
         </MenuItem>
       </Popover>
     </>
@@ -253,8 +271,8 @@ UserTableRow.propTypes = {
   handleClick: PropTypes.func,
   name: PropTypes.string,
   selected: PropTypes.bool,
-  id: PropTypes.string,
-  status: PropTypes.number,
+  id: PropTypes.number,
+  status: PropTypes.bool,
   priceOnSlot: PropTypes.number,
   description: PropTypes.string,
 };

@@ -71,6 +71,7 @@ export default function UserTableRow({
   console.log('status', status)
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
   const { successHighSchool } = useSelector((state) => state.highschoolReducer);
@@ -81,13 +82,45 @@ export default function UserTableRow({
     dispatch(actHighSchoolDeleteAsync(id));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
-      message.success('Delete HighSchool Success');
+      message.success('Xóa trường cấp 3 thành công');
     }
     handleCloseDialog();
   }
-  const onPanelChange = (value, mode) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
-  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Vui lòng nhập tên trường cấp 3';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Vui lòng nhập email';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (!formData.phone) {
+      newErrors.phone = 'Vui lòng nhập số điện thoại';
+    }
+    if (!formData.locationDetail) {
+      newErrors.locationDetail = 'Vui lòng nhập địa chỉ';
+    }
+    if (!formData.regionId) {
+      newErrors.regionId = 'Vui lòng chọn tỉnh thành';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Vui lòng nhập mật khẩu';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -103,7 +136,7 @@ export default function UserTableRow({
   };
 
   const handleCloseDialog = () => {
-    setDialog(null);
+    setDialog('');
   };
   const [formData, setFormData] = useState({
     name: name,
@@ -111,7 +144,7 @@ export default function UserTableRow({
     phone: phone,
     password: '',
     locationDetail: locationDetail,
-    regionId: id,
+    regionId: '',
   });
 
   const handlechange = (event) => {
@@ -124,6 +157,7 @@ export default function UserTableRow({
   }
 
   const handleUpdateHighSchool = () => {
+    if (!validateForm()) return;
     dispatch(actHighSchoolUpdateAsync(formData, id));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
@@ -135,7 +169,7 @@ export default function UserTableRow({
         locationDetail: '',
         regionId: '',
       });
-      message.success('Update HighSchool Success');
+      message.success('Cập nhật trường cấp 3 thành công');
     }
     handleCloseDialog();
   }
@@ -170,7 +204,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" component="span" noWrap>
+            <Typography variant="subtitle2" component="div" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -204,7 +238,7 @@ export default function UserTableRow({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
           Cập nhật trường cấp 3
         </DialogTitle>
         <DialogContent >
@@ -217,7 +251,8 @@ export default function UserTableRow({
                   name='name'
                   label="Tên"
                   onChange={handlechange}
-
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -227,6 +262,8 @@ export default function UserTableRow({
                   name='email'
                   label="Email"
                   onChange={handlechange}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -236,7 +273,8 @@ export default function UserTableRow({
                   name='phone'
                   label="Số điện thoại"
                   onChange={handlechange}
-
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -245,7 +283,8 @@ export default function UserTableRow({
                   name='password'
                   label="Mật khẩu"
                   onChange={handlechange}
-
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -255,25 +294,20 @@ export default function UserTableRow({
                   name='locationDetail'
                   label="Địa chỉ"
                   onChange={handlechange}
-
+                  error={!!errors.locationDetail}
+                  helperText={errors.locationDetail}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
                 <Autocomplete
-                  // value={value}
-                  // onChange={(event, newValue) => {
-                  //   setValue(newValue);
-                  // }}
-                  // inputValue={inputValue}
-                  // onInputChange={(event, newInputValue) => {
-                  //   setInputValue(newInputValue);
-                  // }}
                   onChange={handleRegionChange}
                   id="controllable-states-demo"
-                  options={regions.regions || []} // Đảm bảo options luôn là một mảng
+                  defaultValue={regions.find((region) => region.id === id)}
+                  options={regions || []} // Đảm bảo options luôn là một mảng
                   getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
                   renderInput={(params) => <TextField {...params} label="Chọn tỉnh thành" />}
                 />
+                {errors.regionId && <Typography variant='caption' color="error">{errors.regionId}</Typography>}
               </Grid>
 
             </Grid>

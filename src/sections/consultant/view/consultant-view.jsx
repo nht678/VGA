@@ -49,7 +49,6 @@ export default function ConsultantView() {
   const dispatch = useDispatch();
   const { consultants, total = 0, successConsultant } = useSelector((state) => state.consultantReducer);
   const { consultantLevels } = useSelector((state) => state.levelReducer);
-  console.log('consultantLevels', consultantLevels)
 
   const [page, setPage] = useState(0);
 
@@ -74,9 +73,7 @@ export default function ConsultantView() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
   const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input
 
   const onPanelChange = (value1, mode) => {
@@ -84,7 +81,8 @@ export default function ConsultantView() {
 
   };
 
-  console.log('formData:', formData);
+  const [errors, setErrors] = useState({});
+
   // handlechange
   const handleChange = (e) => {
     setformData({
@@ -92,6 +90,49 @@ export default function ConsultantView() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Tên là bắt buộc';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Email là bắt buộc';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Mật khẩu là bắt buộc';
+    }
+    if (!formData.phone) {
+      newErrors.phone = 'Số điện thoại là bắt buộc';
+    }
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (!formData.doB) {
+      newErrors.doB = 'Ngày sinh là bắt buộc';
+    }
+    if (!formData.description) {
+      newErrors.description = 'Mô tả là bắt buộc';
+    }
+    if (!formData.consultantLevelId) {
+      newErrors.consultantLevelId = 'Level là bắt buộc';
+    }
+    if (formData.gender === undefined) {
+      newErrors.gender = 'Vui lòng chọn giới tính';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+
+
 
   useEffect(() => {
     dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
@@ -103,6 +144,7 @@ export default function ConsultantView() {
   }, []);
 
   const handleAddConsultant = () => {
+    if (!validateForm()) return;
     dispatch(addConsultant(formData));
     if (successConsultant) {
       // message.success('Add Consultant Success');
@@ -120,7 +162,7 @@ export default function ConsultantView() {
 
     setOpen(false);
   }
-
+  console.log('formData', formData)
 
 
 
@@ -220,7 +262,7 @@ export default function ConsultantView() {
   };
 
   const [filterLevel, setFilterLevel] = useState('');
-  const [filterLevelName, setFilterLevelName] = useState('');
+  const [filterLevelName, setFilterLevelName] = useState('Level');
 
 
 
@@ -239,7 +281,7 @@ export default function ConsultantView() {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
               Tạo người tư vấn
             </DialogTitle>
             <DialogContent>
@@ -251,6 +293,8 @@ export default function ConsultantView() {
                       name='name'
                       label="Tên"
                       onChange={handleChange}
+                      error={!!errors.name}
+                      helperText={errors.name}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -260,6 +304,8 @@ export default function ConsultantView() {
                       name='email'
                       label="Email"
                       onChange={handleChange}
+                      error={!!errors.email}
+                      helperText={errors.email}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -268,6 +314,8 @@ export default function ConsultantView() {
                       label="Mật khẩu"
                       name='password'
                       onChange={handleChange}
+                      error={!!errors.password}
+                      helperText={errors.password}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -276,6 +324,8 @@ export default function ConsultantView() {
                       label="Số điện thoại"
                       name='phone'
                       onChange={handleChange}
+                      error={!!errors.phone}
+                      helperText={errors.phone}
                     />
                   </Grid>
 
@@ -288,6 +338,7 @@ export default function ConsultantView() {
                       placeholder='Hãy viết mô tả...'
                       onChange={handleChange}
                     />
+                    {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <Typography variant="h6">Level</Typography>
@@ -301,13 +352,17 @@ export default function ConsultantView() {
                       options={consultantLevels || []} // Đảm bảo options luôn là một mảng
                       getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
                       renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
+                      error={!!errors.consultantLevelId}
+                      helperText={errors.consultantLevelId}
                     />
+                    {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
 
 
                   <Grid item xs={12}>
                     <Typography variant="h6">Ngày sinh</Typography>
                     <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+                    {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <RadioGroup
@@ -319,6 +374,7 @@ export default function ConsultantView() {
                       <FormControlLabel value control={<Radio />} label="Nam" />
                       <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
+                    {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
 
                 </Grid>
@@ -326,9 +382,9 @@ export default function ConsultantView() {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Disagree</Button>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
               <Button onClick={handleAddConsultant} autoFocus>
-                Agree
+                Tạo mới
               </Button>
             </DialogActions>
           </Dialog>
@@ -398,7 +454,7 @@ export default function ConsultantView() {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25]}
         />
 
 

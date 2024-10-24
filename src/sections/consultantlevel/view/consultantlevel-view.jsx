@@ -50,6 +50,8 @@ export default function ConsultantLevelView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [error, setError] = useState({});
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -57,6 +59,21 @@ export default function ConsultantLevelView() {
   });
 
   console.log('formData', formData);
+
+  const validateForm = () => {
+    let newError = {};
+    if (!formData.name) {
+      newError.name = 'Tên không được để trống';
+    }
+    if (!formData.priceOnSlot) {
+      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
+    }
+    if (!formData.description) {
+      newError.description = 'Mô tả không được để trống';
+    }
+    setError(newError);
+    return Object.keys(newError).length === 0;
+  };
 
 
   // write code here
@@ -79,7 +96,9 @@ export default function ConsultantLevelView() {
 
   const handleAddConsultant = () => {
 
+    if (!validateForm()) return;
     dispatch(actLevelAddAsync(formData));
+    message.success('Tạo cấp độ tư vấn viên thành công');
     dispatch((resetLevelSuccess()));
     setFormData({
       name: '',
@@ -212,7 +231,7 @@ export default function ConsultantLevelView() {
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Cấp độ tư vấn viên</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
-            Tạo tư vấn viên
+            Tạo cấp độ tư vấn viên
           </Button>
 
 
@@ -222,8 +241,8 @@ export default function ConsultantLevelView() {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              Tạo tư vấn viên
+            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+              Tạo cấp độ tư vấn viên
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
@@ -234,7 +253,8 @@ export default function ConsultantLevelView() {
                       name='name'
                       label="Tên"
                       onChange={handlechange}
-
+                      error={!!error.name}
+                      helperText={error.name}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -243,7 +263,8 @@ export default function ConsultantLevelView() {
                       name='priceOnSlot'
                       label="Giá trên mỗi slot"
                       onChange={handlechange}
-
+                      error={!!error.priceOnSlot}
+                      helperText={error.priceOnSlot}
                     />
                   </Grid>
 
@@ -252,6 +273,7 @@ export default function ConsultantLevelView() {
                     <Typography variant="h6">Mô tả</Typography>
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
                   </Grid>
 
 

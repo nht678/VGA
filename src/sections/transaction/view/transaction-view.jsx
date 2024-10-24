@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -212,8 +213,29 @@ export default function TransactionView() {
   return (
     <>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Giao dịch</Typography>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+        <Typography variant="h4">Giao dịch</Typography>
+        <Box>
+          <Card variant="outlined" sx={{ minWidth: 300, borderRadius: 2, boxShadow: 2 }}>
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h6" component="div" sx={{ mb: 2 }}>
+                Ví của bạn
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                Số điểm: <strong>1500</strong>
+              </Typography>
+              {/* <Typography variant="body1" sx={{ mb: 2 }}>
+                Điểm đã phân phối: <strong>500</strong>
+              </Typography> */}
+              {/* <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+                Xem số điểm
+              </Button> */}
+              <Button variant="outlined" color="secondary">
+                Phân phối điểm
+              </Button>
+            </CardContent>
+          </Card>
+        </Box>
       </Stack>
 
       <Card>
@@ -248,8 +270,8 @@ export default function TransactionView() {
                     id={row?.id}
                     name={row?.name}
                     goldAmount={row?.goldAmount}
-                    description={row?.description}
-                    transactionDateTime={row?.transactionDateTime}
+                    description={row?.description || ''}
+                    transactionDateTime={row?.transactionDateTime ? new Date(row.transactionDateTime).toISOString().split('T')[0] : ''}
                     avatarUrl={row?.avatarUrl}
                     selected={selected.indexOf(row?.name) !== -1}
                     handleClick={(event) => handleClick(event, row?.name)}

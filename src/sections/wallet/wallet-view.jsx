@@ -1,10 +1,34 @@
 import { Box, Typography, Button } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/system/Grid';
+import TextField from '@mui/material/TextField';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function WalletCard() {
+    const { highschools } = useSelector((state) => state.highschoolReducer);
+    console.log('highschools:', highschools);
+
+    const handleDistributeGold = () => {
+        alert('Phân phối Gold');
+    }
+    const handleClickOpen = (type) => {
+        setOpen(type);
+    };
+    const handleClose = () => {
+        setOpen(null);
+    };
+    const [open, setOpen] = useState(null);
+
+
+
     return (
         <Box
-            id="chartMix"
             sx={(theme) => ({
                 boxShadow: 10,
                 bgcolor: '#fff',
@@ -58,9 +82,44 @@ export default function WalletCard() {
                 variant="outlined"
                 color="secondary"
                 sx={{ mt: 1, width: '80%' }}
-                onClick={() => alert('Phân phối Gold')}>
+                onClick={() => handleClickOpen('DistributeGold')}>
                 Phân phối Gold
             </Button>
+            <Dialog
+                open={open === 'DistributeGold'}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                // sx={{ height: 400, width: 400 }}
+                // fullWidth
+                fullheight
+            >
+                <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+                    Phân phối vàng
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <Grid container spacing={2}>
+                            <Grid size={{ md: 12 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Gold"
+                                    name='Gold'
+                                // onchange setformdata
+                                // onChange={handleChange}
+                                />
+                            </Grid>
+                        </Grid>
+
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Hủy bỏ</Button>
+                    <Button onClick={() => handleDistributeGold()} autoFocus>
+                        Phân phối
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

@@ -73,6 +73,7 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
@@ -87,9 +88,37 @@ export default function UserTableRow({
     }
     handleCloseDialog();
   }
-  const onPanelChange = (value, mode) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
-  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Vui lòng nhập tên trường đại học';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Vui lòng nhập email';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (!formData.phone) {
+      newErrors.phone = 'Vui lòng nhập số điện thoại';
+    }
+    if (!formData.address) {
+      newErrors.address = 'Vui lòng nhập địa chỉ';
+    }
+    if (!formData.description) {
+      newErrors.description = 'Vui lòng nhập mô tả';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -125,6 +154,7 @@ export default function UserTableRow({
   }
 
   const handleUpdateUniversity = () => {
+    if (!validateForm()) return;
     dispatch(actUniversityUpdateAsync({ formData, id }));
     if (successUniversity) {
       dispatch(resetUniversitySuccess());
@@ -136,7 +166,7 @@ export default function UserTableRow({
         address: '',
         description: '',
       });
-      message.success('Update university success');
+      message.success('Cập nhật trường đại học thành công');
     }
     handleCloseDialog();
   }
@@ -169,7 +199,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" component='span' noWrap>
+            <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>
           </Stack>
@@ -206,7 +236,7 @@ export default function UserTableRow({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
           {"Cập nhật thông tin trường đại học"}
         </DialogTitle>
         <DialogContent >
@@ -219,7 +249,8 @@ export default function UserTableRow({
                   name='name'
                   label="Tên"
                   onChange={handlechange}
-
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -229,6 +260,8 @@ export default function UserTableRow({
                   name='email'
                   label="Email"
                   onChange={handlechange}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -238,7 +271,8 @@ export default function UserTableRow({
                   name='phone'
                   label="Số điện thoại"
                   onChange={handlechange}
-
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -247,7 +281,8 @@ export default function UserTableRow({
                   name='password'
                   label="Mật khẩu"
                   onChange={handlechange}
-
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -257,13 +292,15 @@ export default function UserTableRow({
                   name='address'
                   label="Địa chỉ"
                   onChange={handlechange}
-
+                  error={!!errors.address}
+                  helperText={errors.address}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
                 <textarea name='description' onChange={handlechange} placeholder="Hãy viết mô tả..." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                   defaultValue={description}
                 />
+                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
 
               </Grid>
 
@@ -275,7 +312,7 @@ export default function UserTableRow({
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
           <Button onClick={handleUpdateUniversity} autoFocus>
-            Tạo mới
+            Cập nhật
           </Button>
         </DialogActions>
       </Dialog>
@@ -300,11 +337,11 @@ export default function UserTableRow({
       >
         <MenuItem onClick={() => handleClickOpenDialog('edit')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Cập nhật
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Xóa
         </MenuItem>
       </Popover>
     </>

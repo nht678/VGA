@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const highschoolReducer = (state = initialState, action) => {
-    console.log('action:', action);
     switch (action.type) {
         case 'GET_HIGH_SCHOOLS_SUCCESS':
             return {

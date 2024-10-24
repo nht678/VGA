@@ -53,6 +53,9 @@ export default function UniversityView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [errors, setErrors] = useState({});
+
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,8 +65,7 @@ export default function UniversityView() {
     description: '',
   });
 
-  const [status, setStatus] = useState('false');
-  console.log('formData', formData);
+
 
 
   // write code here
@@ -84,7 +86,7 @@ export default function UniversityView() {
 
 
   const handleAddUniversity = () => {
-
+    if (!validateForm()) return;
     dispatch(actUniversityAddAsync(formData));
     if (successUniversity) {
       dispatch((resetUniversitySuccess()));
@@ -101,6 +103,41 @@ export default function UniversityView() {
 
     handleClose();
   };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Tên không được để trống';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Email không được để trống';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (!formData.phone) {
+      newErrors.phone = 'Số điện thoại không được để trống';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Mật khẩu không được để trống';
+    }
+    if (!formData.address) {
+      newErrors.address = 'Địa chỉ không được để trống';
+    }
+    if (!formData.description) {
+      newErrors.description = 'Mô tả không được để trống';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
 
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
@@ -223,8 +260,8 @@ export default function UniversityView() {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Create HighSchool"}
+            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+              Tạo trường đại học
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
@@ -235,7 +272,8 @@ export default function UniversityView() {
                       name='name'
                       label="Tên"
                       onChange={handlechange}
-
+                      error={!!errors.name}
+                      helperText={errors.name}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -244,6 +282,8 @@ export default function UniversityView() {
                       name='email'
                       label="Email"
                       onChange={handlechange}
+                      error={!!errors.email}
+                      helperText={errors.email}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -252,7 +292,8 @@ export default function UniversityView() {
                       name='phone'
                       label="Số điện thoại"
                       onChange={handlechange}
-
+                      error={!!errors.phone}
+                      helperText={errors.phone}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -261,7 +302,8 @@ export default function UniversityView() {
                       name='password'
                       label="Mật khẩu"
                       onChange={handlechange}
-
+                      error={!!errors.password}
+                      helperText={errors.password}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -270,13 +312,15 @@ export default function UniversityView() {
                       name='address'
                       label="Địa chỉ"
                       onChange={handlechange}
-
+                      error={!!errors.address}
+                      helperText={errors.address}
                     />
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
                   </Grid>
 
 

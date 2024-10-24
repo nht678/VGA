@@ -125,11 +125,11 @@ const NavConfigComponent = () => {
           path: '/transactions',
           icon: icon('ic_user'),
         },
-        {
-          title: 'Ví tiền',
-          path: '/wallet',
-          icon: icon('ic_user'),
-        },
+        // {
+        //   title: 'Ví tiền',
+        //   path: '/wallet',
+        //   icon: icon('ic_user'),
+        // },
 
       ] : [];
 

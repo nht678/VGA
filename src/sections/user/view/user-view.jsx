@@ -22,12 +22,8 @@ import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
 import { Calendar, theme, Button as AntButton, message, Upload } from 'antd';
 
 import Iconify from 'src/components/iconify';
@@ -69,8 +65,11 @@ export default function UserView() {
 
   const dispatch = useDispatch();
   const { students = [], total, usersSuccess } = useSelector((state) => state.usersReducer);
+  // const listChoolYear = students.map((item) => item.schoolYears);
+  // console.log('listChoolYear', listChoolYear);
+  const getCurrentYear = () => new Date().getFullYear();
 
-  console.log('usersSuccess', usersSuccess);
+  const [filterYear, setFilterYear] = useState(getCurrentYear);
   console.log('students', students);
 
   const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
@@ -80,25 +79,20 @@ export default function UserView() {
 
 
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
   const [year, setYear] = useState('');
-  console.log('year', year);
+  const [value, setValue] = useState('');
+  const [errors, setErrors] = useState({});
+  console.log('errors', errors);
+
 
   const [formData, setformData] = useState({
     highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
   });
-
-  const [value, setValue] = useState('');
 
   const onPanelChange = (value1, mode) => {
     setformData({ ...formData, dateOfBirth: value1.format('YYYY-MM-DD') });
@@ -113,7 +107,45 @@ export default function UserView() {
     });
   };
 
+
+  // Hàm validate form
+  const validateForm = () => {
+    let newErrors = {};
+
+    // Kiểm tra các trường yêu cầu
+    if (!formData.name) newErrors.name = 'Tên là bắt buộc';
+    if (!formData.email) newErrors.email = 'Email là bắt buộc';
+    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
+    if (!formData.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
+
+    // Kiểm tra định dạng email (đơn giản)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (formData.gender === undefined) {
+      newErrors.gender = 'Vui lòng chọn giới tính';
+    }
+
+    setErrors(newErrors);
+
+    // Trả về true nếu không có lỗi
+    return Object.keys(newErrors).length === 0;
+  };
+
+
   const handleAddUser = () => {
+    if (!validateForm()) {
+      // Nếu form không hợp lệ, dừng lại và không gửi request
+      return;
+    }
+
     try {
       dispatch(actAddUserAsync(formData));
       if (usersSuccess) {
@@ -288,12 +320,7 @@ export default function UserView() {
   }, [page, rowsPerPage, usersSuccess]);
 
 
-  const getCurrentYear = () => new Date().getFullYear();
 
-  // Gọi hàm
-  console.log(getCurrentYear()); // Sẽ in ra năm hiện tại, ví dụ: 2024
-  const [filterYear, setFilterYear] = useState(getCurrentYear);
-  console.log('filterYear', filterYear);
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
@@ -308,7 +335,6 @@ export default function UserView() {
   };
 
   const handleFilter = (selectedYear) => {
-    console.log('schoolYearsoption', selectedYear);
     setFilterYear(selectedYear);
     // Gọi API với giá trị filter
     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
@@ -319,7 +345,6 @@ export default function UserView() {
   const handleYearChange = (event, newValue) => {
     setValue(newValue);
     setformData({ ...formData, schoolYears: newValue?.value });
-    console.log('newValue?.value', newValue?.value);
   };
 
 
@@ -338,50 +363,13 @@ export default function UserView() {
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
             Tạo học sinh từ file
           </Button>
-          {/* <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateGold')}>
-            Phân phối vàng
-          </Button> */}
-
-          <Dialog
-            open={open === 'CreateGold'}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-              {"Distribute Gold"}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <Grid container spacing={2}>
-                  <Grid size={{ md: 12 }}>
-                    <TextField
-                      fullWidth
-                      label="Gold"
-                      name='Gold'
-                      // onchange setformdata
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                </Grid>
-
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Disagree</Button>
-              <Button onClick={handleAddUser} autoFocus>
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
-
           <Dialog
             open={open === 'CreateStudent'}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
               Tạo học sinh
             </DialogTitle>
             <DialogContent>
@@ -390,34 +378,42 @@ export default function UserView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      name='name'
+                      name="name"
                       label="Tên"
                       onChange={handleChange}
+                      error={!!errors.name} // Nếu có lỗi thì hiển thị lỗi
+                      helperText={errors.name} // Hiển thị thông báo lỗi
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      id='Email'
-                      name='email'
+                      id="Email"
+                      name="email"
                       label="Email"
                       onChange={handleChange}
+                      error={!!errors.email}
+                      helperText={errors.email}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
                       label="Mật khẩu"
-                      name='password'
+                      name="password"
                       onChange={handleChange}
+                      error={!!errors.password}
+                      helperText={errors.password}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
                       label="Số điện thoại"
-                      name='phone'
+                      name="phone"
                       onChange={handleChange}
+                      error={!!errors.phone}
+                      helperText={errors.phone}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -425,7 +421,9 @@ export default function UserView() {
                       onChange={handleYearChange}
                       id="controllable-states-demo"
                       options={options} // Truyền đúng mảng options
-                      getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
+                      getOptionLabel={(option) => option?.name || ''}
+                      // options={[getCurrentYear().toString()]}
+                      // getOptionLabel={(option) => option}
                       renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                     />
                   </Grid>
@@ -443,6 +441,7 @@ export default function UserView() {
                       <FormControlLabel value control={<Radio />} label="Nam" />
                       <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
+                    {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
                 </Grid>
 
@@ -478,8 +477,10 @@ export default function UserView() {
                   <Autocomplete
                     onChange={(event, value1) => setYear(value1?.value || '')}
                     id="controllable-states-demo"
-                    options={options}
-                    getOptionLabel={(option) => option?.name || ''}
+                    // options={options}
+                    // getOptionLabel={(option) => option?.name || ''}
+                    options={[getCurrentYear().toString()]} // Mảng chỉ chứa năm hiện tại
+                    getOptionLabel={(option) => option} // Hiển thị năm hiện tại
                     renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                   />
                 </Grid>
@@ -487,9 +488,9 @@ export default function UserView() {
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
               <Button onClick={handleUpload} autoFocus>
-                Upload
+                Tạo mới
               </Button>
             </DialogActions>
           </Dialog>
@@ -532,7 +533,7 @@ export default function UserView() {
                     key={row?.id}
                     name={row.name || ''} // Kiểm tra row.name
                     id={row?.id || ''} // Kiểm tra row.id
-                    gender={row.gender || ''} // Kiểm tra row.gender
+                    gender={row?.gender} // Kiểm tra row.gender
                     gold={row["gold-balance"] || 0} // Kiểm tra row["gold-balance"]
                     email={row.account?.email || ''} // Kiểm tra row.account?.email
                     phone={row.account?.phone || ''} // Kiểm tra row.account?.phone

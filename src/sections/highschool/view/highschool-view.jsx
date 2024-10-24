@@ -65,8 +65,6 @@ export default function HighSchoolView() {
     regionId: '',
   });
 
-  const [status, setStatus] = useState('false');
-  console.log('formData', formData);
 
 
   // write code here
@@ -91,9 +89,12 @@ export default function HighSchoolView() {
   }, [dispatch, page, rowsPerPage, successHighSchool]);
 
   const handleAddHighSchool = () => {
+    if (!validateForm()) {
+      return;
+    }
     dispatch(actAddHighSchoolAsync(formData));
     if (successHighSchool) {
-      message.success('Create HighSchool Success');
+      message.success('Thêm trường cấp 3 thành công');
       dispatch(resetHighSchoolSuccess());
       setFormData({
         name: '',
@@ -109,11 +110,9 @@ export default function HighSchoolView() {
 
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
   const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
+  const [errors, setErrors] = useState({}); // Lỗi khi validate form
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -123,6 +122,42 @@ export default function HighSchoolView() {
       regionId: value?.id || '', // Đảm bảo regionId nhận id nếu value có giá trị
     });
   };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Tên không được để trống';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Email không được để trống';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (!formData.phone) {
+      newErrors.phone = 'Số điện thoại không được để trống';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Mật khẩu không được để trống';
+    }
+    if (!formData.locationDetail) {
+      newErrors.locationDetail = 'Địa chỉ không được để trống';
+    }
+    if (!formData.regionId) {
+      newErrors.regionId = 'Tỉnh thành không được để trống';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
   // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
   const handleRegionChange = (event, newValue) => {
     setValue(newValue);
@@ -239,7 +274,7 @@ export default function HighSchoolView() {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
+            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
               Tạo trường cấp 3
             </DialogTitle>
             <DialogContent >
@@ -249,9 +284,10 @@ export default function HighSchoolView() {
                     <TextField
                       fullWidth
                       name='name'
-                      label="tên"
+                      label="Tên"
                       onChange={handlechange}
-
+                      error={!!errors.name}
+                      helperText={errors.name}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -260,6 +296,8 @@ export default function HighSchoolView() {
                       name='email'
                       label="Email"
                       onChange={handlechange}
+                      error={!!errors.email}
+                      helperText={errors.email}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -268,7 +306,8 @@ export default function HighSchoolView() {
                       name='phone'
                       label="Số điện thoại"
                       onChange={handlechange}
-
+                      error={!!errors.phone}
+                      helperText={errors.phone}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -277,7 +316,8 @@ export default function HighSchoolView() {
                       name='password'
                       label="Mật khẩu"
                       onChange={handlechange}
-
+                      error={!!errors.password}
+                      helperText={errors.password}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -286,7 +326,8 @@ export default function HighSchoolView() {
                       name='locationDetail'
                       label="Địa chỉ"
                       onChange={handlechange}
-
+                      error={!!errors.locationDetail}
+                      helperText={errors.locationDetail}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -297,10 +338,11 @@ export default function HighSchoolView() {
                       //   setInputValue(newInputValue);
                       // }}
                       id="controllable-states-demo"
-                      options={regions.regions} // Truyền đúng mảng options
+                      options={regions} // Truyền đúng mảng options
                       getOptionLabel={(option) => option?.name || ''} // Hiển thị tên tỉnh thành
                       renderInput={(params) => <TextField {...params} label="Chọn tỉnh thành" />}
                     />
+                    {errors.regionId && <Typography variant='caption' color="error">{errors.regionId}</Typography>}
                   </Grid>
 
                 </Grid>
@@ -318,7 +360,7 @@ export default function HighSchoolView() {
 
 
         </Box>
-      </Stack>
+      </Stack >
 
       <Card>
         <UserTableToolbar

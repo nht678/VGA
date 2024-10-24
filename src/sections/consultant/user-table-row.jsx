@@ -22,7 +22,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Autocomplete from '@mui/material/Autocomplete';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/system/Grid';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import Label from 'src/components/label';
@@ -65,6 +65,7 @@ export default function UserTableRow({
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
+  const [errors, setErrors] = useState({});
   const [formData, setformData] = useState({
     name: name,
     email: email,
@@ -94,19 +95,63 @@ export default function UserTableRow({
   // if not onchange then onchange will take value default
   // use useEffect not onchange then onchange will take value default
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) {
+      newErrors.name = 'Tên là bắt buộc';
+    }
+    if (!formData.email) {
+      newErrors.email = 'Email là bắt buộc';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+    debugger
+    if (!formData.password) {
+      newErrors.password = 'Mật khẩu là bắt buộc';
+    }
+    if (!formData.phone) {
+      newErrors.phone = 'Số điện thoại là bắt buộc';
+    }
+    // Kiểm tra định dạng số điện thoại (đơn giản)
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+    if (!formData.doB) {
+      newErrors.doB = 'Ngày sinh là bắt buộc';
+    }
+    if (!formData.description) {
+      newErrors.description = 'Mô tả là bắt buộc';
+    }
+    if (!formData.consultantLevelId) {
+      newErrors.consultantLevelId = 'Level là bắt buộc';
+    }
+    if (formData.gender === undefined) {
+      newErrors.gender = 'Vui lòng chọn giới tính';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
+    debugger
+    if (!validateForm()) return;
 
     dispatch(updateConsultant(id, formData));
+    debugger
     handleCloseDialog();
   };
+  console.log('formData1', formData);
   const handleDelete = () => {
     dispatch(deleteConsultant(id));
     handleCloseDialog();
   }
   const onPanelChange = (value1, mode) => {
+    debugger
     setformData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();
@@ -151,7 +196,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
-            <Typography variant="subtitle2" component='span' noWrap>
+            <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>
           </Stack>
@@ -189,8 +234,8 @@ export default function UserTableRow({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1 }}>
-          Tạo người tư vấn
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+          Cập nhật tư vấn viên
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -198,20 +243,24 @@ export default function UserTableRow({
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
-                  value={name}
+                  defaultValue={name}
                   name='name'
                   label="Tên"
                   onChange={handleChange}
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
-                  value={email}
+                  defaultValue={email}
                   id='Email'
                   name='email'
                   label="Email"
                   onChange={handleChange}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -220,31 +269,36 @@ export default function UserTableRow({
                   label="Mật khẩu"
                   name='password'
                   onChange={handleChange}
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
-                  value={phone}
+                  defaultValue={phone}
                   label="Số điện thoại"
                   name='phone'
                   onChange={handleChange}
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                 />
               </Grid>
 
               <Grid size={{ md: 6 }}>
-                <Typography variant="h6" component='span'>Description</Typography>
+                <Typography variant="h6" component='div'>Description</Typography>
                 <textarea
                   style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
                   label="Mô tả"
-                  value={description}
+                  defaultValue={description}
                   name='description'
                   placeholder='Hãy viết mô tả...'
                   onChange={handleChange}
                 />
+                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>
-                <Typography variant="h6">Cấp độ</Typography>
+                <Typography variant="h6" component='div'>Cấp độ</Typography>
                 <Autocomplete
                   onChange={handleLevelChange}
                   inputValue={inputValue}
@@ -256,12 +310,14 @@ export default function UserTableRow({
                   getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
                   renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
                 />
+                {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>}
               </Grid>
 
 
               <Grid item xs={12}>
-                <Typography variant="h6">Ngày sinh</Typography>
+                <Typography variant="h6" component='div'>Ngày sinh</Typography>
                 <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+                {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>
                 <RadioGroup
@@ -273,6 +329,7 @@ export default function UserTableRow({
                   <FormControlLabel value control={<Radio />} label="Nam" />
                   <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                 </RadioGroup>
+                {errors.gender && <Typography variant='caption' color="error">{errors.gender}</Typography>}
               </Grid>
 
             </Grid>
@@ -300,11 +357,11 @@ export default function UserTableRow({
       >
         <MenuItem onClick={() => handleClickOpenDialog('edit')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Cập nhật
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Xóa
         </MenuItem>
       </Popover>
     </>

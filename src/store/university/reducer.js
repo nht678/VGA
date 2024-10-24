@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const reducerUniversity = (state = initialState, action) => {
-    console.log('action', action);
     switch (action.type) {
         case 'ACT_UNIVERSITY_GET':
             return {
