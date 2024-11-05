@@ -107,7 +107,6 @@ export default function UserTableRow({
     if (formData.email && !emailRegex.test(formData.email)) {
       newErrors.email = 'Email không hợp lệ';
     }
-    debugger
     if (!formData.password) {
       newErrors.password = 'Mật khẩu là bắt buộc';
     }
@@ -138,11 +137,9 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
-    debugger
     if (!validateForm()) return;
 
     dispatch(updateConsultant(id, formData));
-    debugger
     handleCloseDialog();
   };
   console.log('formData1', formData);
@@ -151,7 +148,6 @@ export default function UserTableRow({
     handleCloseDialog();
   }
   const onPanelChange = (value1, mode) => {
-    debugger
     setformData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();

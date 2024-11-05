@@ -74,6 +74,7 @@ export default function UserView() {
 
   const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  console.log('userInfo1', userInfo?.userId);
 
   const nameHighSchool = localStorage.getItem('name');
 
@@ -85,13 +86,14 @@ export default function UserView() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [year, setYear] = useState('');
+  console.log('year', year);
   const [value, setValue] = useState('');
   const [errors, setErrors] = useState({});
   console.log('errors', errors);
 
 
   const [formData, setformData] = useState({
-    highSchoolId: userInfo ? userInfo.highSchoolId : '', // Đảm bảo userInfo đã được xác định
+    highSchoolId: userInfo ? userInfo.userId : '', // Đảm bảo userInfo đã được xác định
   });
 
   const onPanelChange = (value1, mode) => {
@@ -157,7 +159,7 @@ export default function UserView() {
           phone: '',
           dateOfBirth: '',
           schoolYears: '',
-          highSchoolId: userInfo ? userInfo.highSchoolId : '',
+          highSchoolId: userInfo ? userInfo.userId : '',
         });
       }
     } catch (e) {
@@ -215,13 +217,13 @@ export default function UserView() {
     dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
-  const dataFiltered = applyFilter({
-    inputData: students,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
+  // const dataFiltered = applyFilter({
+  //   inputData: students,
+  //   comparator: getComparator(order, orderBy),
+  //   filterName,
+  // });
 
-  const notFound = !dataFiltered.length && !!filterName;
+  // const notFound = !dataFiltered.length && !!filterName;
 
   // write code here
   const [open, setOpen] = useState('');
@@ -293,7 +295,7 @@ export default function UserView() {
       const payloadString = JSON.stringify(payload);
       const formUpload = new FormData();
       formUpload.append('stringJson', payloadString);
-      formUpload.append('highschoolId', userInfo.highSchoolId);
+      formUpload.append('highschoolId', userInfo.userId);
       formUpload.append('schoolYear', year);
       // Log FormData entries to console
       // formUpload.forEach((value1, key) => {
@@ -301,6 +303,7 @@ export default function UserView() {
       // });
 
       dispatch(uploadFileAsync(formUpload));
+      dispatch(resetUserSuccess());
       // if (uploadSuccess) {
       //   message.success(`${selectedFile.name} file uploaded and converted successfully`);
       //   setOpen(false);
@@ -316,7 +319,7 @@ export default function UserView() {
 
 
   useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
   }, [page, rowsPerPage, usersSuccess]);
 
 
@@ -327,17 +330,17 @@ export default function UserView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterValue, schoolYears: filterYear }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterValue, schoolYears: filterYear }));
     }
   };
 
   const handleFilter = (selectedYear) => {
     setFilterYear(selectedYear);
     // Gọi API với giá trị filter
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.highSchoolId, search: filterName, schoolYears: filterYear }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
     handleClose(); // Đóng menu sau khi chọn
   };
 
@@ -477,10 +480,10 @@ export default function UserView() {
                   <Autocomplete
                     onChange={(event, value1) => setYear(value1?.value || '')}
                     id="controllable-states-demo"
-                    // options={options}
-                    // getOptionLabel={(option) => option?.name || ''}
-                    options={[getCurrentYear().toString()]} // Mảng chỉ chứa năm hiện tại
-                    getOptionLabel={(option) => option} // Hiển thị năm hiện tại
+                    options={options}
+                    getOptionLabel={(option) => option?.name || ''}
+                    // options={[getCurrentYear().toString()]} // Mảng chỉ chứa năm hiện tại
+                    // getOptionLabel={(option) => option} // Hiển thị năm hiện tại
                     renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                   />
                 </Grid>
@@ -522,19 +525,19 @@ export default function UserView() {
                   { id: 'email', label: 'Email', align: 'center' },
                   { id: 'phone', label: 'Số điện thoại', align: 'center' },
                   { id: 'gender', label: 'Giới tính' },
-                  { id: 'gold', label: 'Vàng' },
+                  { id: 'gold', label: 'Điểm' },
                   { id: 'dateOfBirth', label: 'Ngày sinh' },
                   { id: '' },
                 ]}
               />
               <TableBody>
-                {dataFiltered.map((row) => (
+                {students.map((row) => (
                   <UserTableRow
                     key={row?.id}
-                    name={row.name || ''} // Kiểm tra row.name
+                    name={row?.account?.name || ''} // Kiểm tra row.name
                     id={row?.id || ''} // Kiểm tra row.id
                     gender={row?.gender} // Kiểm tra row.gender
-                    gold={row["gold-balance"] || 0} // Kiểm tra row["gold-balance"]
+                    gold={row?.account?.goldBalance || 0} // Kiểm tra row["gold-balance"]
                     email={row.account?.email || ''} // Kiểm tra row.account?.email
                     phone={row.account?.phone || ''} // Kiểm tra row.account?.phone
                     avatarUrl={row.avatarUrl || ''} // Kiểm tra row.avatarUrl

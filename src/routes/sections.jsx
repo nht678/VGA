@@ -57,7 +57,7 @@ export default function Router() {
       ),
       children: [
         // { element: <IndexPage />, index: true },
-        { path: 'students', element: role === '2' ? <UserPage /> : <Navigate to="/404" replace /> },
+        { path: 'students', element: role === '3' ? <UserPage /> : <Navigate to="/404" replace /> },
         // { path: 'products', element: <ProductsPage /> },
         // { path: 'blog', element: <BlogPage /> },
         // { path: 'upload', element: <UploadFile /> },
@@ -67,13 +67,13 @@ export default function Router() {
         // { path: 'myquiz', element: <MyQuiz /> },
         // { path: 'newsuniversity', element: <NewsUniversity /> },
         { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
-        { path: 'transactions', element: role === '2' ? <Transaction /> : <Navigate to="/404" replace /> },
+        { path: 'transactions', element: role === '3' ? <Transaction /> : <Navigate to="/404" replace /> },
         { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
         { path: 'highschool', element: role === '1' ? <HighSchoolView /> : <Navigate to="/404" replace /> },
         { path: 'consultants', element: role === '1' ? <ConsultantView /> : <Navigate to="/404" replace /> },
         { path: 'university', element: role === '1' ? <UniversityView /> : <Navigate to="/404" replace /> },
         { path: 'consultantsLevel', element: role === '1' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
-        { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
+        // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 
       ],
     },

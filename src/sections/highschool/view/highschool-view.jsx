@@ -61,7 +61,7 @@ export default function HighSchoolView() {
     email: '',
     phone: '',
     password: '',
-    locationDetail: '',
+    address: '',
     regionId: '',
   });
 
@@ -101,7 +101,7 @@ export default function HighSchoolView() {
         email: '',
         phone: '',
         password: '',
-        locationDetail: '',
+        address: '',
         regionId: '',
       });
     }
@@ -147,8 +147,8 @@ export default function HighSchoolView() {
     if (!formData.password) {
       newErrors.password = 'Mật khẩu không được để trống';
     }
-    if (!formData.locationDetail) {
-      newErrors.locationDetail = 'Địa chỉ không được để trống';
+    if (!formData.address) {
+      newErrors.address = 'Địa chỉ không được để trống';
     }
     if (!formData.regionId) {
       newErrors.regionId = 'Tỉnh thành không được để trống';
@@ -251,6 +251,7 @@ export default function HighSchoolView() {
     }
   };
 
+  console.log('formData', formData);
 
 
 
@@ -323,11 +324,11 @@ export default function HighSchoolView() {
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
-                      name='locationDetail'
+                      name='address'
                       label="Địa chỉ"
                       onChange={handlechange}
-                      error={!!errors.locationDetail}
-                      helperText={errors.locationDetail}
+                      error={!!errors.address}
+                      helperText={errors.address}
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -392,10 +393,10 @@ export default function HighSchoolView() {
                 {highschools.map((row) => (
                   <UserTableRow
                     key={row.id}
-                    name={row.name}
+                    name={row?.account?.name}
                     email={row.account?.email}
                     phone={row.account?.phone}
-                    locationDetail={row?.locationDetail}
+                    address={row?.address}
                     id={row?.id}
                     status={row?.account?.status}
                     avatarUrl={row?.avatarUrl}

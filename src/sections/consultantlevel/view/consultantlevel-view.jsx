@@ -80,7 +80,7 @@ export default function ConsultantLevelView() {
 
   const dispatch = useDispatch();
 
-  const { consultantLevels, successLevel, total } = useSelector((state) => state.levelReducer);
+  const { consultantLevels, successLevel, total = 0 } = useSelector((state) => state.levelReducer);
   console.log('consultantLevels', consultantLevels)
   // console.log('levels', levels);
 

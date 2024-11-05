@@ -69,6 +69,7 @@ import { RouterLink } from 'src/routes/components';
 
 const NavConfigComponent = () => {
   const [navConfig, setNavConfig] = useState([]);
+  const [expandedAccount, setExpandedAccount] = useState(false);
 
   const icon = (name) => (
     <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
@@ -104,12 +105,28 @@ const NavConfigComponent = () => {
           path: '/university', // đã sửa chính tả
           icon: icon('ic_user'),
         },
+        // {
+        //   title: 'Account',
+        //   icon: icon('ic_user'), // Biểu tượng cho mục Account
+        //   children: [ // Các mục con
+        //     {
+        //       title: 'Cấp độ tư vấn viên',
+        //       path: '/consultantsLevel',
+        //       icon: icon('ic_user'),
+        //     },
+        //     {
+        //       title: 'Trường đại học',
+        //       path: '/university',
+        //       icon: icon('ic_user'),
+        //     },
+        //   ],
+        // },
         {
           title: 'Trường cấp 3',
           path: '/highschool',
           icon: icon('ic_user'),
         },
-      ] : role === '2' ? [
+      ] : role === '3' ? [
         // {
         //   title: 'Thống kê',
         //   path: '/dashboard',
@@ -136,12 +153,32 @@ const NavConfigComponent = () => {
     setNavConfig(config);
   }, [token, role]); // Chạy một lần khi component mount
 
+  const handleAccountClick = () => {
+    setExpandedAccount((prev) => !prev); // Chuyển đổi trạng thái mở rộng
+  };
   return (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
       {navConfig.map((item) => (
         <NavItem key={item.title} item={item} />
       ))}
     </Stack>
+    // <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
+    //   {navConfig.map((item) => (
+    //     <div key={item.title}>
+    //       <div onClick={item.title === 'Account' ? handleAccountClick : null}>
+    //         <Typography>{item.title}</Typography>
+    //         {item.children && expandedAccount && (
+    //           <Stack sx={{ pl: 2 }}>
+    //             {item.children.map((child) => (
+    //               <NavItem key={child.title} item={child} />
+    //             ))}
+    //           </Stack>
+    //         )}
+    //       </div>
+    //     </div>
+    //   ))}
+    // </Stack>
+
   );
 };
 

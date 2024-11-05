@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ export default function SigninView() {
     console.log('isAuthenticated', isAuthenticated);
 
 
-    const [formData, setFormData] = React.useState({
+    const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
@@ -24,20 +24,24 @@ export default function SigninView() {
             [e.target.name]: e.target.value
         });
     }
+    console.log('formData', formData);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Form data', formData);
         dispatch(signinUser(formData));
-        message.success('Sign in successfully');
-        navigate('/', { replace: true });
+        // if (isAuthenticated)
+        // {
+        // message.success('Sign in successfully');
+        // }
+        // navigate('/', { replace: true });
     }
-    // useEffect(() => {
-    //     if (isAuthenticated) {
-    //         navigate('/', { replace: true });
-    //         message.success('Sign in successfully');
-    //     }
-    // }, [error]);
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/', { replace: true });
+            message.success('Đăng nhập thành công');
+        }
+    }, [isAuthenticated]);
 
 
 

@@ -71,14 +71,14 @@ export default function Nav({ openNav, onCloseNav }) {
         <Typography
           variant="body2"
           sx={{
-            color: role === '1' ? 'primary.main' : role === '2' ? 'secondary.main' : 'text.secondary',
+            color: role === '1' ? 'primary.main' : role === '3' ? 'secondary.main' : 'text.secondary',
             fontWeight: role !== 'User' ? 'bold' : 'normal',
-            backgroundColor: role === '1' ? '#e3f2fd' : role === '2' ? '#f3e5f5' : '#f5f5f5',
+            backgroundColor: role === '1' ? '#e3f2fd' : role === '3' ? '#f3e5f5' : '#f5f5f5',
             borderRadius: '5px',
             padding: '5px 10px',
           }}
         >
-          {role === '1' ? 'Admin' : role === '2' ? 'HighSchool' : 'User'}
+          {role === '1' ? 'Admin' : role === '3' ? 'HighSchool' : 'User'}
         </Typography>
       </Box>
 

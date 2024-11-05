@@ -136,12 +136,11 @@ export default function ConsultantView() {
 
   useEffect(() => {
     dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
+    dispatch(actLevelGetAsync({ page: page + 1, pageSize: rowsPerPage }));
     // dispatch(actLevelGetAsync)
   }, [page, rowsPerPage]);
 
-  useEffect(() => {
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
-  }, []);
+
 
   const handleAddConsultant = () => {
     if (!validateForm()) return;

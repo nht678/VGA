@@ -40,6 +40,8 @@ import UserTableToolbar from '../user-table-toolbar';
 
 // ----------------------------------------------------------------------
 
+const options = ['1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+
 export default function UniversityView() {
   const [page, setPage] = useState(0);
 
@@ -57,12 +59,14 @@ export default function UniversityView() {
 
 
   const [formData, setFormData] = useState({
+    code: '',
     name: '',
     email: '',
     phone: '',
     password: '',
     address: '',
     description: '',
+    establishedYear: '',
   });
 
 
@@ -106,6 +110,12 @@ export default function UniversityView() {
 
   const validateForm = () => {
     let newErrors = {};
+    if (!formData.code) {
+      newErrors.code = 'Mã trường không được để trống';
+    }
+    if (!formData.establishedYear) {
+      newErrors.establishedYear = 'Năm thành lập không được để trống';
+    }
     if (!formData.name) {
       newErrors.name = 'Tên không được để trống';
     }
@@ -140,12 +150,19 @@ export default function UniversityView() {
 
 
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
+  // const [options, setOptions] = useState([]); // Danh sách options cho Autocomplete
   console.log('option', options)
   const [value, setValue] = useState(null); // Giá trị đã chọn
   console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
   console.log('inputValue', inputValue);
+
+  const handleYearChange = (event, newValue) => {
+    setValue(newValue);
+    setFormData({ ...formData, establishedYear: newValue });
+  };
+
+
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -244,7 +261,6 @@ export default function UniversityView() {
 
 
 
-
   return (
     <>
 
@@ -266,6 +282,16 @@ export default function UniversityView() {
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
                 <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 6 }}>
+                    <TextField
+                      fullWidth
+                      name='code'
+                      label="Mã trường"
+                      onChange={handlechange}
+                      error={!!errors.code}
+                      helperText={errors.code}
+                    />
+                  </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
@@ -316,6 +342,19 @@ export default function UniversityView() {
                       helperText={errors.address}
                     />
                   </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Autocomplete
+                      value={value}
+                      onChange={handleYearChange}
+                      inputValue={inputValue}
+                      onInputChange={(event, newInputValue) => {
+                        setInputValue(newInputValue);
+                      }}
+                      options={options}
+                      renderInput={(params) => <TextField {...params} label="Năm thành lập" />}
+                    />
+                    {errors.establishedYear && <Typography variant='caption' color="error">{errors.establishedYear}</Typography>}
+                  </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
@@ -361,6 +400,8 @@ export default function UniversityView() {
                   { id: 'phone', label: 'Số điện thoại', align: 'center' },
                   { id: 'address', label: 'Địa chỉ', align: 'center' },
                   { id: 'description', label: 'Mô tả', align: 'center' },
+                  { id: 'establishedYear', label: 'Năm thành lập', align: 'center' },
+                  { id: 'goldBalance', label: 'Số điểm', align: 'center' },
                   { id: 'status', label: 'Tình trạng', align: 'center' },
                   { id: '' },
                 ]}
@@ -369,7 +410,7 @@ export default function UniversityView() {
                 {universities.map((row) => (
                   <UserTableRow
                     key={row?.id}
-                    name={row?.name}
+                    name={row?.account?.name}
                     email={row?.account?.email}
                     phone={row?.account?.phone}
                     address={row?.address}
@@ -377,6 +418,9 @@ export default function UniversityView() {
                     id={row?.id}
                     status={row?.account?.status}
                     avatarUrl={row?.avatarUrl}
+                    goldBalance={row?.account?.wallet?.goldBalance}
+                    code={row?.code}
+                    establishedYear={row?.establishedYear}
                     selected={selected.indexOf(row?.name) !== -1}
                     handleClick={(event) => handleClick(event, row?.name)}
                   />

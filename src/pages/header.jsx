@@ -1,4 +1,5 @@
-import * as React from 'react';
+// import * as React from 'react';
+import { useEffect } from 'react';
 
 import Typography from '@mui/material/Typography';
 
@@ -96,13 +97,24 @@ export default function Header() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
+    console.log('isAuthenticated1', isAuthenticated);
 
     const handleLogout = (e) => {
         e.preventDefault();
         dispatch(signoutUser());
-        message.success('Sign out successfully');
-        navigate('/signin');
+        navigate('/signin', { replace: true });
+        message.success('Đăng xuất thành công');
+
     };
+    // useEffect(() => {
+    //     debugger
+    //     if (!isAuthenticated) {
+    //         navigate('/signin', { replace: true });
+    //         message.success('Đăng xuất thành công');
+    //     }
+    // }, [isAuthenticated]);
+
+
     return (
 
         <>

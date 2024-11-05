@@ -63,12 +63,11 @@ export default function UserTableRow({
   id,
   email,
   phone,
-  locationDetail,
+  address,
   status,
 }) {
 
 
-  console.log('status', status)
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -108,8 +107,8 @@ export default function UserTableRow({
     if (!formData.phone) {
       newErrors.phone = 'Vui lòng nhập số điện thoại';
     }
-    if (!formData.locationDetail) {
-      newErrors.locationDetail = 'Vui lòng nhập địa chỉ';
+    if (!formData.address) {
+      newErrors.address = 'Vui lòng nhập địa chỉ';
     }
     if (!formData.regionId) {
       newErrors.regionId = 'Vui lòng chọn tỉnh thành';
@@ -143,7 +142,7 @@ export default function UserTableRow({
     email: email,
     phone: phone,
     password: '',
-    locationDetail: locationDetail,
+    address: address,
     regionId: '',
   });
 
@@ -166,7 +165,7 @@ export default function UserTableRow({
         email: '',
         phone: '',
         password: '',
-        locationDetail: '',
+        address: '',
         regionId: '',
       });
       message.success('Cập nhật trường cấp 3 thành công');
@@ -193,7 +192,6 @@ export default function UserTableRow({
 
 
 
-  console.log('formdata:', formData);
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -215,7 +213,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
         <TableCell sx={{ textAlign: 'center' }}>
-          {locationDetail}
+          {address}
         </TableCell>
         <TableCell align="center">
           <Chip
@@ -290,12 +288,12 @@ export default function UserTableRow({
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
-                  defaultValue={locationDetail}
-                  name='locationDetail'
+                  defaultValue={address}
+                  name='address'
                   label="Địa chỉ"
                   onChange={handlechange}
-                  error={!!errors.locationDetail}
-                  helperText={errors.locationDetail}
+                  error={!!errors.address}
+                  helperText={errors.address}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -361,6 +359,6 @@ UserTableRow.propTypes = {
   id: PropTypes.string,
   email: PropTypes.string,
   phone: PropTypes.string,
-  locationDetail: PropTypes.string,
+  address: PropTypes.string,
   status: PropTypes.number,
 };
