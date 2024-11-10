@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import universityService from "src/services/universityService";
 
 export const ACT_UNIVERSITY_GET = 'ACT_UNIVERSITY_GET';
@@ -47,27 +48,44 @@ export const actUniversityGetAsync = ({ page, pageSize, search }) => async (disp
 export const actUniversityAddAsync = (data) => async (dispatch) => {
     try {
         const response = await universityService.addUniversity(data);
-        dispatch(actAddUniversity(response));
+        if (response.status === 200 || response.status === 201) {
+            dispatch(actAddUniversity(response));
+            message.success('Thêm mới thành công');
+        } else {
+            message.error('Thêm mới thất bại');
+        }
     } catch (error) {
         console.error(error);
+        message.error('Thêm mới thất bại');
     }
 }
 
-export const actUniversityUpdateAsync = (data) => (dispatch) => {
+export const actUniversityUpdateAsync = (data) => async (dispatch) => {
     try {
-        const response = universityService.updateUniversity(data);
-        dispatch(actUniversityUpdate(response));
+        const response = await universityService.updateUniversity(data);
+        console.log('response:', response);
+        if (response.status === 200 || response.status === 201) {
+            message.success('Cập nhật thành công');
+            dispatch(actUniversityUpdate(response));
+        } else {
+            message.error('Cập nhật thất bại');
+        }
     } catch (error) {
         console.error(error);
+        message.error('Cập nhật thất bại');
     }
 }
 
-export const actUniversityDeleteAsync = (id) => (dispatch) => {
+export const actUniversityDeleteAsync = (id) => async (dispatch) => {
     try {
-        universityService.deleteUniversity(id);
-        dispatch(actUniversityDelete(id));
+        const response = await universityService.deleteUniversity(id);
+        if (response.status === 200 || response.status === 201) {
+            dispatch(actUniversityDelete(id));
+            message.success('Xóa thành công');
+        }
     } catch (error) {
         console.error(error);
+        message.error('Xóa thất bại');
     }
 }
 

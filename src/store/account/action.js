@@ -25,7 +25,7 @@ export function signinUser(data) {
             localStorage.setItem('userInfo', JSON.stringify(response));
             localStorage.setItem('token', response.accessToken);
             localStorage.setItem('userId', response.userId);
-            // localStorage.setItem('name', response.name);
+            localStorage.setItem('name', response.name);
             localStorage.setItem('role', response.role);
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             console.log('userInfo', userInfo);
@@ -48,7 +48,7 @@ export function signoutUser() {
             localStorage.removeItem('userInfo');
             localStorage.removeItem('token');
             localStorage.removeItem('userId');
-            // localStorage.removeItem('name');
+            localStorage.removeItem('name');
             localStorage.removeItem('role');
         } catch (error) {
             console.log('Error:', error);

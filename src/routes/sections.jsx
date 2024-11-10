@@ -30,6 +30,15 @@ export const ConsultantView = lazy(() => import('src/pages/consultant'));
 export const ConsultantLevelView = lazy(() => import('src/pages/consultantlevel'));
 export const Transaction = lazy(() => import('src/pages/transaction'));
 export const Wallet = lazy(() => import('src/pages/wallet'));
+export const AdmissionInformationsPage = lazy(() => import('src/pages/admissionInformations'));
+export const MajorPage = lazy(() => import('src/pages/major'));
+export const OccupationPage = lazy(() => import('src/pages/occupation'));
+export const AdmissionMethodPage = lazy(() => import('src/pages/admissionMethod'));
+export const EntryLevelEducationPage = lazy(() => import('src/pages/entryLevelEducation'));
+export const MajorCategoryPage = lazy(() => import('src/pages/majorCategory'));
+export const OccupationalGroupPage = lazy(() => import('src/pages/occupationalGroup'));
+export const WorkSkillPage = lazy(() => import('src/pages/workSkill'));
+export const NewsForUniversity = lazy(() => import('src/pages/newsforUniversity'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -70,7 +79,16 @@ export default function Router() {
         { path: 'transactions', element: role === '3' ? <Transaction /> : <Navigate to="/404" replace /> },
         { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
         { path: 'highschool', element: role === '1' ? <HighSchoolView /> : <Navigate to="/404" replace /> },
-        { path: 'consultants', element: role === '1' ? <ConsultantView /> : <Navigate to="/404" replace /> },
+        { path: 'major', element: role === '1' ? <MajorPage /> : <Navigate to="/404" replace /> },
+        { path: 'admissionMedthod', element: role === '1' ? <AdmissionMethodPage /> : <Navigate to="/404" replace /> },
+        { path: 'entryLevelEducation', element: role === '1' ? <EntryLevelEducationPage /> : <Navigate to="/404" replace /> },
+        { path: 'MajorCategory', element: role === '1' ? <MajorCategoryPage /> : <Navigate to="/404" replace /> },
+        { path: 'occupationgroup', element: role === '1' ? <OccupationalGroupPage /> : <Navigate to="/404" replace /> },
+        { path: 'workSkill', element: role === '1' ? <WorkSkillPage /> : <Navigate to="/404" replace /> },
+        { path: 'consultants', element: role === '5' ? <ConsultantView /> : <Navigate to="/404" replace /> },
+        { path: 'news', element: role === '5' ? <NewsForUniversity /> : <Navigate to="/404" replace /> },
+        { path: 'occupation', element: role === '1' ? <OccupationPage /> : <Navigate to="/404" replace /> },
+        { path: 'admissionInformations', element: role === '5' ? <AdmissionInformationsPage /> : <Navigate to="/404" replace /> },
         { path: 'university', element: role === '1' ? <UniversityView /> : <Navigate to="/404" replace /> },
         { path: 'consultantsLevel', element: role === '1' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }

@@ -89,11 +89,7 @@ const NavConfigComponent = () => {
           path: '/dashboard',
           icon: icon('ic_analytics'),
         },
-        {
-          title: 'Tư vấn viên',
-          path: '/consultants',
-          icon: icon('ic_user'),
-        },
+
         {
           title: 'Cấp độ tư vấn viên',
           path: '/consultantsLevel',
@@ -105,6 +101,43 @@ const NavConfigComponent = () => {
           path: '/university', // đã sửa chính tả
           icon: icon('ic_user'),
         },
+        {
+          title: 'Ngành học',
+          path: '/major', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Nghề nghiệp',
+          path: '/occupation', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Phương thức tuyển sinh',
+          path: '/admissionMedthod', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Trình độ học vấn đầu vào',
+          path: '/entryLevelEducation', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Nhóm ngành chính',
+          path: '/MajorCategory', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Nhóm nghề nghiệp',
+          path: '/occupationgroup', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Nhóm nghề nghiệp',
+          path: '/workSkill', // đã sửa chính tả
+          icon: icon('ic_user'),
+        },
+
+
         // {
         //   title: 'Account',
         //   icon: icon('ic_user'), // Biểu tượng cho mục Account
@@ -148,6 +181,22 @@ const NavConfigComponent = () => {
         //   icon: icon('ic_user'),
         // },
 
+      ] : role === '5' ? [
+        {
+          title: 'Tư vấn viên',
+          path: '/consultants',
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Thông tin tuyển sinh',
+          path: '/admissionInformations',
+          icon: icon('ic_user'),
+        },
+        {
+          title: 'Tin tức',
+          path: '/news',
+          icon: icon('ic_user'),
+        },
       ] : [];
 
     setNavConfig(config);

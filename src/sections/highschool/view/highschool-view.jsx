@@ -94,7 +94,7 @@ export default function HighSchoolView() {
     }
     dispatch(actAddHighSchoolAsync(formData));
     if (successHighSchool) {
-      message.success('Thêm trường cấp 3 thành công');
+      // message.success('Thêm trường cấp 3 thành công');
       dispatch(resetHighSchoolSuccess());
       setFormData({
         name: '',

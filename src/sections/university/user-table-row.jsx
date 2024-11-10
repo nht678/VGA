@@ -20,12 +20,14 @@ import Grid from '@mui/material/Grid2';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Chip } from '@mui/material';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUniversityUpdateAsync, actUniversityDeleteAsync, resetUniversitySuccess } from 'src/store/university/action';
 import { propTypes } from 'react-bootstrap/esm/Image';
-import { message } from 'antd';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -65,7 +67,7 @@ export default function UserTableRow({
   id,
   email,
   phone,
-  address,
+  typeUniversity,
   status,
   description,
   goldBalance,
@@ -73,22 +75,21 @@ export default function UserTableRow({
   establishedYear
 }) {
 
-  console.log('goldBalance', goldBalance);
 
-  const [open, setOpen] = useState(null);
+  const [open, setOpen] = useState(false);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const dispatch = useDispatch();
 
   const { successUniversity } = useSelector((state) => state.reducerUniversity);
 
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actUniversityDeleteAsync(id));
     if (successUniversity) {
       dispatch(resetUniversitySuccess());
-      message.success('Delete university success');
     }
     handleCloseDialog();
   }
@@ -123,8 +124,8 @@ export default function UserTableRow({
     if (!formData.phone) {
       newErrors.phone = 'Vui lòng nhập số điện thoại';
     }
-    if (!formData.address) {
-      newErrors.address = 'Vui lòng nhập địa chỉ';
+    if (!formData.type) {
+      newErrors.type = 'Vui lòng chọn loại trường';
     }
     if (!formData.description) {
       newErrors.description = 'Vui lòng nhập mô tả';
@@ -134,31 +135,35 @@ export default function UserTableRow({
   }
 
   const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+    setOpenMenu(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
-    setOpen(null);
+    setOpenMenu(null);
   };
 
   const handleClickOpenDialog = (type) => {
     setDialog(type);
-    setOpen(null);
+    setOpenDialog(null);
   };
 
   const handleCloseDialog = () => {
-    setDialog(null);
+    setDialog('');
+    setOpenMenu(null);
+    setOpenDialog(false);
   };
+
   const [formData, setFormData] = useState({
     code: code,
     name: name,
     email: email,
     phone: phone,
     password: '',
-    address: address,
     description: description,
     establishedYear: '',
+    type: typeUniversity,
   });
+
 
   const handlechange = (event) => {
     setFormData({
@@ -167,6 +172,18 @@ export default function UserTableRow({
 
     });
   }
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+
+  const handlechangeType = (e) => {
+    setFormData({
+      ...formData,
+      type: e.target.value,
+    });
+  };
 
 
   const handleYearChange = (event, newValue) => {
@@ -190,7 +207,6 @@ export default function UserTableRow({
       //   description: '',
       //   establishedYear: '',
       // });
-      message.success('Cập nhật trường đại học thành công');
     }
     handleCloseDialog();
   }
@@ -205,13 +221,14 @@ export default function UserTableRow({
   // };
 
   const handleClose = () => {
-    setDialog(null);
+    setOpen(false);
   };
 
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
-  console.log('formData', formData);
+  console.log('formData', formData)
+
 
 
   return (
@@ -235,7 +252,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
 
         <TableCell sx={{ textAlign: 'center' }}>
-          {address}
+          {typeUniversity === 1 ? 'Trường công lập' : 'Trường tư thục'}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
           {description}
@@ -328,16 +345,27 @@ export default function UserTableRow({
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={address}
-                  name='address'
-                  label="Địa chỉ"
-                  onChange={handlechange}
-                  error={!!errors.address}
-                  helperText={errors.address}
-                />
+                <FormControl fullWidth sx={{ m: 1 }}>
+                  <InputLabel id="demo-controlled-open-select-label">Trường</InputLabel>
+                  <Select
+                    labelId="demo-controlled-open-select-label"
+                    id="demo-controlled-open-select"
+                    open={open}
+                    onClose={handleClose}
+                    onOpen={handleOpen}
+                    // value={age}
+                    label="Trường"
+                    onChange={handlechangeType}
+                  >
+                    <MenuItem value={1}>Trường công lập</MenuItem>
+                    <MenuItem value={2}>Trường tư</MenuItem>
+                  </Select>
+                </FormControl>
+                {errors.type && <Typography variant='caption' color="error">{errors.type}</Typography>}
               </Grid>
+
+
+
               <Grid size={{ md: 6 }}>
                 <Autocomplete
                   value={value}
@@ -366,7 +394,7 @@ export default function UserTableRow({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Hủy bỏ</Button>
+          <Button onClick={handleCloseDialog}>Hủy bỏ</Button>
           <Button onClick={handleUpdateUniversity} autoFocus>
             Cập nhật
           </Button>
@@ -382,8 +410,8 @@ export default function UserTableRow({
       />
 
       <Popover
-        open={!!open}
-        anchorEl={open}
+        open={!!openMenu}
+        anchorEl={openMenu}
         onClose={handleCloseMenu}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -412,10 +440,11 @@ UserTableRow.propTypes = {
   id: PropTypes.string,
   email: PropTypes.string,
   phone: PropTypes.string,
-  address: PropTypes.string,
+  // address: PropTypes.string,
   status: PropTypes.number,
   description: propTypes.string,
   goldBalance: PropTypes.number,
   code: PropTypes.number,
   establishedYear: PropTypes.string,
+  typeUniversity: PropTypes.number,
 };

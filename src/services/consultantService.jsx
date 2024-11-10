@@ -26,11 +26,11 @@ const consultantService = {
         return response.data;
     },
     updateConsultant: async (id, data) => {
-        const response = await BASE_API.put(`/consultants/${id}`, data);
+        const response = await BASE_API.put(`/consultant/${id}`, data);
         return response.data;
     },
     deleteConsultant: async (id) => {
-        const response = await BASE_API.delete(`/consultants/${id}`);
+        const response = await BASE_API.delete(`/consultant/${id}`);
         return response.data;
     },
 };

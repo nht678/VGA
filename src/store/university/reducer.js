@@ -25,12 +25,9 @@ const reducerUniversity = (state = initialState, action) => {
         case 'UPDATE_UNIVERSITY':
             return {
                 ...state,
-                universities: state.universities.map((university) => {
-                    if (university.id === action.payload._universities.id) {
-                        return action.payload._universities;
-                    }
-                    return university;
-                }),
+                universities: state.universities.map((university) =>
+                    university.id === action.payload.id ? action.payload : university,
+                ),
                 successUniversity: true,
             };
         case 'DELETE_UNIVERSITY':

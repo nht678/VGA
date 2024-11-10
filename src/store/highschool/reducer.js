@@ -8,7 +8,7 @@ const initialState = {
 
 const highschoolReducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'GET_HIGH_SCHOOLS_SUCCESS':
+        case 'ACT_HIGH_SCHOOL_GET':
             return {
                 ...state,
                 highschools: action.payload.highschools,

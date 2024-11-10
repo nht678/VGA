@@ -1,3 +1,4 @@
+import { message } from "antd";
 import consultantService from "../../services/consultantService";
 
 export const GET_CONSULTANTS_SUCCESS = "GET_CONSULTANTS_SUCCESS";
@@ -20,37 +21,57 @@ export const getConsultants = ({ page, pageSize, search, level }) => async (disp
 
 export const addConsultant = (data) => async (dispatch) => {
     try {
+        debugger
         const response = await consultantService.addConsultant(data);
-        dispatch({
-            type: ADD_CONSULTANT,
-            payload: response,
-        });
+        debugger
+        if (response) {
+            dispatch({
+                type: ADD_CONSULTANT,
+                payload: response,
+            });
+            message.success('Thêm mới thành công');
+        } else {
+            message.error('Thêm mới thất bại');
+        }
     } catch (error) {
         console.log(error);
+        message.error('Thêm mới thất bại');
     }
 }
 
 export const updateConsultant = (id, data) => async (dispatch) => {
     try {
         const response = await consultantService.updateConsultant(id, data);
-        dispatch({
-            type: UPDATE_CONSULTANT,
-            payload: response,
-        });
+        if (response) {
+            message.success('Cập nhật thành công');
+            dispatch({
+                type: UPDATE_CONSULTANT,
+                payload: response,
+            });
+        } else {
+            message.error('Cập nhật thất bại');
+        }
     } catch (error) {
         console.log(error);
+        message.error('Cập nhật thất bại');
     }
 }
 
 export const deleteConsultant = (id) => async (dispatch) => {
     try {
         const response = await consultantService.deleteConsultant(id);
-        dispatch({
-            type: DELETE_CONSULTANT,
-            payload: id,
-        });
+        if (response) {
+            message.success('Xóa thành công');
+            dispatch({
+                type: DELETE_CONSULTANT,
+                payload: id,
+            });
+        } else {
+            message.error('Xóa thất bại');
+        }
     } catch (error) {
         console.log(error);
+        message.error('Xóa thất bại');
     }
 }
 

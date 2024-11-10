@@ -77,6 +77,7 @@ export default function UserView() {
   console.log('userInfo1', userInfo?.userId);
 
   const nameHighSchool = localStorage.getItem('name');
+  console.log('nameHighSchool', nameHighSchool);
 
 
   const [page, setPage] = useState(0);
@@ -531,9 +532,9 @@ export default function UserView() {
                 ]}
               />
               <TableBody>
-                {students.map((row) => (
+                {students.map((row, key) => (
                   <UserTableRow
-                    key={row?.id}
+                    key={key}
                     name={row?.account?.name || ''} // Kiểm tra row.name
                     id={row?.id || ''} // Kiểm tra row.id
                     gender={row?.gender} // Kiểm tra row.gender

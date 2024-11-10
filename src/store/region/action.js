@@ -1,23 +1,47 @@
-import { apiRegion } from "../../services/regionService";
+import { message } from 'antd';
+import regionService from '../../services/regionService';
+
 // Action types
-export const ACT_REGION_GET = 'ACT_REGION_GET';
+// export const ACT_REGION_GET = 'ACT_REGION_GET';
 
 export function actRegionGet(data) {
     return {
-        type: ACT_REGION_GET,
+        type: 'ACT_REGION_GET',
         payload: data,
     };
 }
 
+// export function actRegionGet(data) {
+//     return {
+//         type: ACT_REGION_GET,
+//         payload: data,
+//     };
+// }
 
-export function actGetRegionAsync() {
-    return async (dispatch) => {
-        try {
-            const response = await apiRegion.get('');
-            console.log('response:', response);
-            dispatch(actRegionGet(response.data));
-        } catch (error) {
-            console.log('error:', error);
+
+// export function actGetRegionAsync() {
+//     return async (dispatch) => {
+//         try {
+//             const response = await apiRegion.get('');
+//             console.log('response:', response);
+//             dispatch(actRegionGet(response.data));
+//         } catch (error) {
+//             console.log('error:', error);
+//         }
+//     };
+// }
+
+export const actGetRegionAsync = () => async (dispatch) => {
+    try {
+        const response = await regionService.getRegions();
+        if (response) {
+            dispatch(actRegionGet(response));
+            message.success('Lấy dữ liệu thành công');
         }
-    };
+    } catch (error) {
+        console.error(error);
+        message.error('Lấy dữ liệu thất bại');
+    }
 }
+
+

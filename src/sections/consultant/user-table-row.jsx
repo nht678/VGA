@@ -62,7 +62,8 @@ export default function UserTableRow({
   consultantLevelId,
   gender
 }) {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  let userId = localStorage.getItem('userId');
+
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -75,6 +76,7 @@ export default function UserTableRow({
     doB: dateOfBirth,
     description: description,
     consultantLevelId: '',
+    universityId: userId,
   });
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const [inputValue, setInputValue] = useState(''); // Giá trị input

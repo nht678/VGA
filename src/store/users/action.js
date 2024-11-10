@@ -1,4 +1,6 @@
 
+import message from 'antd/lib/message';
+
 import userServices from '../../services/userServices';
 
 export const ACT_USER_GET = 'ACT_USER_GET';
@@ -50,7 +52,15 @@ export function actAddUserAsync(data) {
     return async (dispatch) => {
         try {
             const response = await userServices.addUser(data);
-            dispatch(actAddUser(response));
+            console.log('response.status:', response.status);
+            debugger
+            if (response) {
+                debugger
+                dispatch(actAddUser(response));
+                message.success('Thêm mới thành công');
+            } else {
+                message.error('Thêm mới thất bại');
+            }
         } catch (error) {
             console.log(error);
         }
@@ -61,7 +71,12 @@ export function actUserUpdateAsync(data, userId) {
     return async (dispatch) => {
         try {
             const response = await userServices.updateUser(data, userId);
-            dispatch(actUserUpdate(response));
+            if (response) {
+                dispatch(actUserUpdate(response));
+                message.success('Cập nhật thành công');
+            } else {
+                message.error('Cập nhật thất bại');
+            }
         } catch (error) {
             console.log(error);
         }
@@ -71,7 +86,12 @@ export function actUserDeleteAsync(id) {
     return async (dispatch) => {
         try {
             const response = await userServices.deleteUser(id);
-            dispatch(actUserDelete(id));
+            if (response) {
+                dispatch(actUserDelete(id));
+                message.success('Xóa thành công');
+            } else {
+                message.error('Xóa thất bại');
+            }
         } catch (error) {
             console.log(error);
         }

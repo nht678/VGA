@@ -1,3 +1,4 @@
+import { message } from "antd";
 import levelService from "src/services/levelService";
 
 export const ACT_LEVEL_GET = 'ACT_LEVEL_GET';
@@ -46,27 +47,47 @@ export const actLevelGetAsync = ({ page, pagesize, search }) => async (dispatch)
 export const actLevelAddAsync = (data) => async (dispatch) => {
     try {
         const response = await levelService.addLevel(data);
-        dispatch(actAddLevel(response));
+        debugger
+        if (response) {
+            dispatch(actAddLevel(response));
+            message.success('Thêm mới thành công');
+        } else {
+            message.error('Thêm mới thất bại');
+        }
     } catch (error) {
         console.error(error);
+        message.error('Thêm mới thất bại');
     }
 };
 
 export const actLevelUpdateAsync = ({ formData, id }) => async (dispatch) => {
     try {
         const response = await levelService.updateLevel({ formData, id });
-        dispatch(actLevelUpdate(response));
+        if (response) {
+            message.success('Cập nhật thành công');
+            dispatch(actLevelUpdate(response));
+        } else {
+            message.error('Cập nhật thất bại');
+        }
     } catch (error) {
         console.error(error);
+        message.error('Cập nhật thất bại');
     }
 };
 
 export const actLevelDeleteAsync = (id) => async (dispatch) => {
     try {
-        await levelService.deleteLevel(id);
-        dispatch(actLevelDelete(id));
+        const response = await levelService.deleteLevel(id);
+        if (response) {
+            message.success('Xóa thành công');
+            dispatch(actLevelDelete(id));
+        } else {
+            message.error('Xóa thất bại');
+        }
     } catch (error) {
         console.error(error);
+        message.error('Xóa thất bại');
+
     }
 };
 

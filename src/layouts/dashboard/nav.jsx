@@ -32,7 +32,7 @@ import NavConfigComponent from './config-navigation';
 export default function Nav({ openNav, onCloseNav }) {
   // if role chage then useeffect will be called
 
-  const role = localStorage.getItem('role');
+  let role = localStorage.getItem('role');
 
 
   const pathname = usePathname();
@@ -73,12 +73,12 @@ export default function Nav({ openNav, onCloseNav }) {
           sx={{
             color: role === '1' ? 'primary.main' : role === '3' ? 'secondary.main' : 'text.secondary',
             fontWeight: role !== 'User' ? 'bold' : 'normal',
-            backgroundColor: role === '1' ? '#e3f2fd' : role === '3' ? '#f3e5f5' : '#f5f5f5',
+            backgroundColor: role === '1' ? '#e3f2fd' : role === '3' ? '#f3e5f5' : role === '5' ? '#e3f2fd' : '#f5f5f5',
             borderRadius: '5px',
             padding: '5px 10px',
           }}
         >
-          {role === '1' ? 'Admin' : role === '3' ? 'HighSchool' : 'User'}
+          {role === '1' ? 'Admin' : role === '3' ? 'HighSchool' : role === '5' ? 'University' : 'User'}
         </Typography>
       </Box>
 

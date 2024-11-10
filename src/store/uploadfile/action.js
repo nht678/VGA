@@ -1,3 +1,4 @@
+import { message } from 'antd';
 
 import uploadfileService from '../../services/uploadfileService';
 // Action types
@@ -13,7 +14,12 @@ export function uploadFileAsync(data) {
     return async (dispatch) => {
         try {
             const response = await uploadfileService.uploadFile(data);
-            dispatch(uploadFileSuccess(response));
+            if (response) {
+                dispatch(uploadFileSuccess(response));
+                message.success('Thêm mới thành công');
+            } else {
+                message.error('Thêm mới thất bại');
+            }
         } catch (error) {
             console.log(error);
         }

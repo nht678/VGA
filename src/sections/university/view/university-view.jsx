@@ -8,6 +8,10 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 // import { users } from 'src/_mock/user';
 
@@ -57,6 +61,11 @@ export default function UniversityView() {
 
   const [errors, setErrors] = useState({});
 
+  const [open, setOpen] = useState(false);
+  console.log('open', open)
+
+  const [openDialog, setOpenDialog] = useState('');
+
 
   const [formData, setFormData] = useState({
     code: '',
@@ -64,9 +73,9 @@ export default function UniversityView() {
     email: '',
     phone: '',
     password: '',
-    address: '',
     description: '',
     establishedYear: '',
+    type: '',
   });
 
 
@@ -99,13 +108,17 @@ export default function UniversityView() {
         email: '',
         phone: '',
         password: '',
-        address: '',
         description: '',
+        establishedYear: '',
+        type: '',
       });
-      message.success('Thêm trường đại học thành công');
     }
 
-    handleClose();
+    handleCloseDialog();
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
   };
 
   const validateForm = () => {
@@ -138,8 +151,8 @@ export default function UniversityView() {
     if (!formData.password) {
       newErrors.password = 'Mật khẩu không được để trống';
     }
-    if (!formData.address) {
-      newErrors.address = 'Địa chỉ không được để trống';
+    if (!formData.type) {
+      newErrors.type = 'Trường không được để trống';
     }
     if (!formData.description) {
       newErrors.description = 'Mô tả không được để trống';
@@ -169,6 +182,13 @@ export default function UniversityView() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handlechangeType = (e) => {
+    setFormData({
+      ...formData,
+      type: e.target.value,
     });
   };
 
@@ -219,29 +239,15 @@ export default function UniversityView() {
     dispatch(actUniversityGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
-
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
-
-  // const dataFiltered = applyFilter({
-  //   inputData: highschools,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  // const notFound = !dataFiltered.length && !!filterName;
-
-  // write code here
-  const [open, setOpen] = useState('');
-
   const handleClickOpen = (Typedialog) => {
-    setOpen(Typedialog);
+    setOpenDialog(Typedialog);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog('');
   };
 
   const handleFilterByName = async (event) => {
@@ -260,10 +266,8 @@ export default function UniversityView() {
 
 
 
-
   return (
     <>
-
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Trường đại học</Typography>
         <Box>
@@ -271,8 +275,8 @@ export default function UniversityView() {
             Tạo trường đại học
           </Button>
           <Dialog
-            open={open === 'Create'}
-            onClose={handleClose}
+            open={openDialog === 'Create'}
+            onClose={handleCloseDialog}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
@@ -333,15 +337,26 @@ export default function UniversityView() {
                     />
                   </Grid>
                   <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='address'
-                      label="Địa chỉ"
-                      onChange={handlechange}
-                      error={!!errors.address}
-                      helperText={errors.address}
-                    />
+                    <FormControl fullWidth sx={{ m: 1 }}>
+                      <InputLabel id="demo-controlled-open-select-label">Trường</InputLabel>
+                      <Select
+                        labelId="demo-controlled-open-select-label"
+                        id="demo-controlled-open-select"
+                        open={open}
+                        onClose={handleClose}
+                        onOpen={handleOpen}
+                        // value={age}
+                        label="Trường"
+                        onChange={handlechangeType}
+                      >
+                        <MenuItem value={1}>Trường công lập</MenuItem>
+                        <MenuItem value={2}>Trường tư</MenuItem>
+                      </Select>
+                    </FormControl>
+                    {errors.type && <Typography variant='caption' color="error">{errors.type}</Typography>}
                   </Grid>
+
+
                   <Grid size={{ md: 6 }}>
                     <Autocomplete
                       value={value}
@@ -368,7 +383,7 @@ export default function UniversityView() {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>Hủy bỏ</Button>
+              <Button onClick={handleCloseDialog}>Hủy bỏ</Button>
               <Button onClick={handleAddUniversity} autoFocus>
                 Tạo mới
               </Button>
@@ -398,7 +413,7 @@ export default function UniversityView() {
                   { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
                   { id: 'phone', label: 'Số điện thoại', align: 'center' },
-                  { id: 'address', label: 'Địa chỉ', align: 'center' },
+                  { id: 'Type', label: 'Trường', align: 'center' },
                   { id: 'description', label: 'Mô tả', align: 'center' },
                   { id: 'establishedYear', label: 'Năm thành lập', align: 'center' },
                   { id: 'goldBalance', label: 'Số điểm', align: 'center' },
@@ -413,7 +428,7 @@ export default function UniversityView() {
                     name={row?.account?.name}
                     email={row?.account?.email}
                     phone={row?.account?.phone}
-                    address={row?.address}
+                    typeUniversity={row?.type}
                     description={row?.description}
                     id={row?.id}
                     status={row?.account?.status}

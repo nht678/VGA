@@ -344,7 +344,7 @@ export default function UserTableRow({
               <Grid size={{ md: 4 }}>
                 <Image
                   width={200}
-                  src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
                   style={{ zIndex: 2 }}
                 />
               </Grid>

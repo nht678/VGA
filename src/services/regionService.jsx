@@ -1,6 +1,10 @@
+import { BASE_API } from "./api";
 
-import axios from "axios";
+const regionService = {
+    getRegions: async () => {
+        const response = await BASE_API.get(`/regions`);
+        return response.data;
+    },
 
-export const apiRegion = axios.create({
-    baseURL: 'https://localhost:7182/api/v1/regions'
-});
+};
+export default regionService;

@@ -14,18 +14,15 @@ const universityService = {
         console.log('response', response);
         return response.data;
     },
-    addUniversity: async (data) => {
-        const response = await BASE_API.post(`/university`, data);
-        return response.data;
-    },
-    updateUniversity: async (data) => {
-        const response = await BASE_API.put(`/university/${data.id}`, data.formData);
-        return response.data;
-    },
-    deleteUniversity: async (id) => {
-        const response = await BASE_API.delete(`/university/${id}`);
-        return response.data;
-    },
+    addUniversity: (data) =>
+        BASE_API.post(`/university`, data)
+    ,
+    updateUniversity: (data) =>
+        BASE_API.put(`/university/${data.id}`, data.formData)
+    ,
+    deleteUniversity: (id) =>
+        BASE_API.delete(`/university/${id}`)
+    ,
 
 };
 export default universityService;

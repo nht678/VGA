@@ -15,8 +15,10 @@ const userServices = {
         return response.data;
     },
     addUser: async (data) => {
+        // return BASE_API.post(`/student`, data);
         const response = await BASE_API.post(`/student`, data);
         return response.data;
+
     },
     updateUser: async (data, userId) => {
         const response = await BASE_API.put(`/student/${userId}`, data);

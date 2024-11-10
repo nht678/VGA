@@ -81,7 +81,6 @@ export default function UserTableRow({
     dispatch(actHighSchoolDeleteAsync(id));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
-      message.success('Xóa trường cấp 3 thành công');
     }
     handleCloseDialog();
   }
@@ -157,18 +156,17 @@ export default function UserTableRow({
 
   const handleUpdateHighSchool = () => {
     if (!validateForm()) return;
-    dispatch(actHighSchoolUpdateAsync(formData, id));
+    dispatch(actHighSchoolUpdateAsync({ formData, id }));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        password: '',
-        address: '',
-        regionId: '',
-      });
-      message.success('Cập nhật trường cấp 3 thành công');
+      // setFormData({
+      //   name: '',
+      //   email: '',
+      //   phone: '',
+      //   password: '',
+      //   address: '',
+      //   regionId: '',
+      // });
     }
     handleCloseDialog();
   }

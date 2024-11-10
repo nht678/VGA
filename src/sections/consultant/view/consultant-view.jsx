@@ -50,6 +50,8 @@ export default function ConsultantView() {
   const { consultants, total = 0, successConsultant } = useSelector((state) => state.consultantReducer);
   const { consultantLevels } = useSelector((state) => state.levelReducer);
 
+  let userId = localStorage.getItem('userId');
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -62,6 +64,7 @@ export default function ConsultantView() {
     doB: '',
     description: '',
     consultantLevelId: '',
+    universityId: userId,
   });
 
   const [selected, setSelected] = useState([]);
