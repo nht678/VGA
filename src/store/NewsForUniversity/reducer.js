@@ -1,8 +1,9 @@
-import { GET_NEWS, ADD_NEWS, UPDATE_NEWS, DELETE_NEWS } from './action';
+import { GET_NEWS, ADD_NEWS, UPDATE_NEWS, DELETE_NEWS, UPDATE_NEWS_CONTENT } from './action';
 
 const initialState = {
     news: [],
     total: 0,
+    success: false,
 };
 
 const newsForUniversityReducer = (state = initialState, action) => {
@@ -12,23 +13,41 @@ const newsForUniversityReducer = (state = initialState, action) => {
                 ...state,
                 news: action.payload._news,
                 total: action.payload.total,
+                success: true,
             };
         case ADD_NEWS:
             return {
                 ...state,
                 news: [action.payload, ...state.news],
+                success: true,
             };
         case UPDATE_NEWS:
             return {
                 ...state,
-                news: state.news.map((news) =>
+                news: state?.news.map((news) =>
                     news.id === action.payload.id ? action.payload : news
                 ),
+                success: true,
             };
         case DELETE_NEWS:
             return {
                 ...state,
-                news: state.news.filter((news) => news.id !== action.payload),
+                news: state?.news?.filter((news) => news?.id !== action?.payload),
+                success: true,
+            };
+
+        case UPDATE_NEWS_CONTENT:
+            return {
+                ...state,
+                news: state?.news.map((news) =>
+                    news.id === action.payload.id ? action.payload : news
+                ),
+                success: true,
+            };
+        case 'RESET_NEWS_SUCCESS':
+            return {
+                ...state,
+                success: false,
             };
         default:
             return state;

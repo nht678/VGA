@@ -139,9 +139,7 @@ export const actAddHighSchoolAsync = (data) => async (dispatch) => {
 
 export const actHighSchoolUpdateAsync = ({ formData, id }) => async (dispatch) => {
     try {
-        debugger
         const response = await highschoolService.updateHighSchool({ id, formData });
-        debugger
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
             dispatch(actHighSchoolUpdate(response));
@@ -156,7 +154,6 @@ export const actHighSchoolUpdateAsync = ({ formData, id }) => async (dispatch) =
 
 export const actHighSchoolDeleteAsync = (id) => async (dispatch) => {
     try {
-        debugger
         const response = await highschoolService.deleteHighSchool(id);
         if (response.status === 200 || response.status === 201) {
             message.success('Xóa thành công');

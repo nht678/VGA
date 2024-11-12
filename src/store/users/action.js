@@ -53,9 +53,7 @@ export function actAddUserAsync(data) {
         try {
             const response = await userServices.addUser(data);
             console.log('response.status:', response.status);
-            debugger
             if (response) {
-                debugger
                 dispatch(actAddUser(response));
                 message.success('Thêm mới thành công');
             } else {

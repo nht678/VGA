@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -23,32 +26,13 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
-import { message } from 'antd';
+import { actUpdateNewsContentAsync, actCreateNewsImageAsync, actDeleteNewsImageAsync, resetNewsSuccess, actDeleteNewsAsync } from 'src/store/NewsForUniversity/action';
+import { UploadOutlined } from '@ant-design/icons';
+import { Button as ButtonAnt, message, Upload } from 'antd';
+
 
 // Hàm lấy nhãn trạng thái
-const getStatusLabel = (status) => {
-  switch (status) {
-    case true:
-      return 'Active';
-    case false:
-      return 'Blocked';
-    default:
-      return 'Unknown';
-  }
-};
 
-// Hàm lấy màu cho Chip dựa trên trạng thái
-const getStatusColor = (status) => {
-  switch (status) {
-    case true:
-      return 'success'; // Xanh lá
-    case false:
-      return 'error';   // Đỏ
-    default:
-      return 'default';
-  }
-};
 
 export default function UserTableRow({
   selected,
@@ -61,6 +45,8 @@ export default function UserTableRow({
   imageNews,
 }) {
   console.log('id', id)
+  console.log('title', title)
+  console.log('content', content)
 
 
   const [open, setOpen] = useState(null);
@@ -68,19 +54,17 @@ export default function UserTableRow({
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
+  const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
 
-  const { successLevel } = useSelector((state) => state.levelReducer);
+  const handleDelete = async () => {
+    await dispatch(actDeleteNewsAsync(id)); // Đảm bảo hàm này hoàn tất
 
-  const handleDelete = () => {
-    // console.log("id",id);
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Delete university success');
+    if (success) { // Kiểm tra lại giá trị success sau khi dispatch hoàn tất
+      dispatch(resetNewsSuccess());
     }
-    handleCloseDialog();
-  }
 
+    handleCloseDialog();
+  };
   // const validateForm = () => {
   //   let newErrors = {};
   //   if (!formData.name) {
@@ -114,12 +98,6 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const [formData, setFormData] = useState({
-    // name: name,
-    // description: description,
-    // priceOnSlot: priceOnSlot,
-  });
-
   const handlechange = (event) => {
     setFormData({
       ...formData,
@@ -128,21 +106,166 @@ export default function UserTableRow({
     });
   }
 
-  // const handleUpdateLevel = () => {
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelUpdateAsync({ formData, id }));
-  //   if (successLevel) {
-  //     dispatch(resetLevelSuccess());
-  //     message.success('Update university success');
-  //   }
-  //   handleCloseDialog();
-  // }
-
-
   const handleClose = () => {
     setDialog(null);
   };
+  // const [imageNews, setImageNews] = useState([]); // Lưu thông tin hình ảnh
+  const [fileList, setFileList] = useState([]); // Lưu danh sách file cho upload component
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [imageToUpdate, setImageToUpdate] = useState(null); // Hình ảnh cần cập nhật
+  const [formData, setFormData] = useState({
+    title: title,
+    content: content,
+    imageNews: [],
+  });
 
+  useEffect(() => {
+    if (imageNews && imageNews.length > 0) {
+      const initialFileList = imageNews.map((item) => ({
+        uid: item.id, // Dùng id của từng item làm uid
+        name: item.descriptionTitle, // Lấy tên mô tả làm tên file
+        status: 'done',
+        url: item.imageUrl, // Lấy URL của ảnh
+      }));
+      setFileList(initialFileList);
+    }
+  }, [imageNews]);
+
+  const handleFileChange = (fileList1) => {
+    setFileList(fileList1);
+  };
+
+  // // Hàm upload ảnh
+  // const uploadImage = async (file) => {
+  //   const storageRef = ref(storage, `images/${file.name}`);
+  //   await uploadBytes(storageRef, file);
+  //   return getDownloadURL(storageRef);
+  // };
+
+  // const initiateUpdate = (url) => {
+  //   setImageToUpdate(url);
+  // };
+
+  // const handleUpdateImage = async (e) => {
+  //   const newFile = e.target.files[0];
+  //   if (newFile && imageToUpdate) {
+  //     // Xóa ảnh cũ
+  //     const oldRef = ref(storage, imageToUpdate);
+  //     await deleteObject(oldRef);
+
+  //     // Upload ảnh mới
+  //     const updatedUrl = await uploadImage(newFile);
+
+  //     // Cập nhật lại state với URL mới
+  //     setImageNews(prevImageNews =>
+  //       prevImageNews.map(item =>
+  //         item.imageUrl === imageToUpdate
+  //           ? { ...item, imageUrl: updatedUrl }
+  //           : item
+  //       )
+  //     );
+  //     setImageToUpdate(null); // Reset imageToUpdate
+  //   }
+  // };
+  // Các props cho component Upload
+  // Hàm upload từng ảnh và gửi dữ liệu về backend
+  const handleUploadSingle = async (file) => {
+    const storageRef = ref(storage, `images/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    const imageData = [{ imageUrl: url, descriptionTitle: file.name }];
+
+    // Gửi dữ liệu `{ imageUrl, descriptionTitle }` đến backend
+    // await sendImageToBackend(imageData, id);
+    console.log("Đang gửi dữ liệu ảnh lên backend:", imageData, id);
+    dispatch(actCreateNewsImageAsync({ imageData, id }));
+    // Cập nhật formData với dữ liệu ảnh đã upload
+    setFormData((prevData) => ({
+      ...prevData,
+      imageNews: [...prevData.imageNews, imageData],
+    }));
+  };
+
+  // Hàm gửi hình ảnh lên backend
+  // const sendImageToBackend = async (imageData, id1) => {
+  //   // Gọi API hoặc phương thức backend để gửi imageData
+  //   console.log("Đang gửi dữ liệu ảnh lên backend:", imageData, id1);
+  //   dispatch(actCreateNewsImageAsync({ imageData, id1 }));
+  //   // await api.uploadImage(imageData);
+  // };
+
+  // Cấu hình Upload của Ant Design
+  const uploadProps = {
+    name: 'file',
+    multiple: true,
+    beforeUpload(file) {
+      setSelectedFiles((prevFiles) => [...prevFiles, file]);
+      setFileList((prevList) => [
+        ...prevList,
+        {
+          uid: file.uid,
+          name: file.name,
+          status: 'done',
+          url: URL.createObjectURL(file),
+        },
+      ]);
+      handleUploadSingle(file); // Gọi hàm upload ngay khi file được chọn
+      return false;
+    },
+    onRemove(file) {
+      // Loại bỏ file khỏi selectedFiles và fileList
+      setSelectedFiles((prevFiles) => prevFiles.filter((f) => f.uid !== file.uid));
+      setFileList((prevList) => prevList.filter((item) => item.uid !== file.uid));
+
+      // Gọi API xóa hình ảnh khỏi backend dựa trên ID hoặc URL
+      handleDeleteImage(file.uid);
+    },
+  };
+
+  // Hàm xóa ảnh qua API
+  const handleDeleteImage = async (imageId) => {
+    // Gọi API xóa hình ảnh tại backend dựa trên imageId
+    console.log("Đang xóa ảnh với ID:", imageId);
+    dispatch(actDeleteNewsImageAsync(imageId));
+    // await api.deleteImage(imageId);
+  };
+
+  const handleUpdateNews = async () => {
+    // Chuỗi 1: Cập nhật nội dung (title, content)
+    const updatedContent = {
+      title: formData.title,
+      content: formData.content,
+    };
+
+    console.log("Dữ liệu cập nhật nội dung:", updatedContent);
+    dispatch(actUpdateNewsContentAsync({ formData: updatedContent, id }));
+
+    handleCloseDialog();
+
+    // Chuỗi 2: Upload và cập nhật hình ảnh nếu có thay đổi
+    // const uploadedImages = await Promise.all(
+    //   selectedFiles.map(async (file) => {
+    //     const storageRef = ref(storage, `images/${file.name}`);
+    //     await uploadBytes(storageRef, file);
+    //     const url = await getDownloadURL(storageRef);
+    //     return {
+    //       imageUrl: url,
+    //       descriptionTitle: file.name,
+    //     };
+    //   })
+    // );
+
+    // // Gộp ảnh đã upload mới vào imageNews hiện tại để tạo updatedImages
+    // const updatedImages = [
+    //   ...imageNews, // Giữ lại những ảnh cũ
+    //   ...uploadedImages, // Thêm những ảnh mới upload
+    // ];
+
+    // console.log("Dữ liệu cập nhật ảnh:", updatedImages);
+
+    // Gửi dữ liệu lên backend (cả content và imageNews)
+    // Có thể gửi cả `updatedContent` và `updatedImages` lên API backend
+  };
 
   return (
     <>
@@ -162,7 +285,7 @@ export default function UserTableRow({
 
 
         <TableCell sx={{ textAlign: 'center' }}>
-          {content.length > 150 ? `${content.slice(0, 150)}...` : content}
+          {content?.length > 150 ? `${content.slice(0, 150)}...` : content}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{createAt}</TableCell>
         {/* <TableCell sx={{ textAlign: 'center' }}>{imageNews}</TableCell> */}
@@ -183,58 +306,61 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      {/* <Dialog
+      <Dialog
         open={dialog === 'edit'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          {"Cập nhật tin tức"}
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={name}
-                  name='name'
-                  label="Tên"
-                  onChange={handlechange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
-                  onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
-                />
-              </Grid>
-
-
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
-                <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                <Typography variant="h6">Tiêu đề</Typography>
+                <textarea
+                  name="title"
+                  defaultValue={title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Hãy viết tiêu đề....."
+                  style={{ width: '100%', height: '50px', borderRadius: '5px', border: '1px solid black' }}
                 />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
+              </Grid>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Nội dung</Typography>
+                <textarea
+                  name="content"
+                  defaultValue={content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  placeholder="Hãy viết nội dung....."
+                  style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                />
+              </Grid>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Ảnh</Typography>
+                <Upload
+                  listType="picture"
+                  fileList={fileList} // Sử dụng fileList từ state
+                  {...uploadProps}
+                  onChange={(info) => handleFileChange(info.fileList)} // Đồng bộ fileList nếu cần
+                >
+                  <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                    Upload
+                  </ButtonAnt>
+                </Upload>
               </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateLevel} autoFocus>
+          <Button onClick={handleUpdateNews} autoFocus>
             Cập nhật
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog >
 
 
 
@@ -271,7 +397,7 @@ UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   handleClick: PropTypes.func,
   selected: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.string,
   title: PropTypes.string,
   content: PropTypes.string,
   createAt: PropTypes.string,

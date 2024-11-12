@@ -5,6 +5,10 @@ export const GET_NEWS = 'GET_NEWS';
 export const ADD_NEWS = 'ADD_NEWS';
 export const UPDATE_NEWS = 'UPDATE_NEWS';
 export const DELETE_NEWS = 'DELETE_NEWS';
+export const DELETE_NEWS_IMAGE = 'DELETE_NEWS_IMAGE';
+export const CREATE_NEWS_IMAGE = 'CREATE_NEWS_IMAGE';
+export const UPDATE_NEWS_CONTENT = 'UPDATE_NEWS_CONTENT';
+
 
 export function actGetNews(data) {
     return {
@@ -34,20 +38,42 @@ export function actDeleteNews(id) {
     };
 }
 
-export const actGetNewsAsync = ({ page, pageSize, search }) => async (dispatch) => {
+export function actDeleteNewsImage(id) {
+    return {
+        type: DELETE_NEWS_IMAGE,
+        payload: id,
+    };
+}
+
+export function actCreateNewsImage(data) {
+    return {
+        type: CREATE_NEWS_IMAGE,
+        payload: data,
+    };
+}
+
+export function actUpdateNewsContent(data) {
+    return {
+        type: UPDATE_NEWS_CONTENT,
+        payload: data,
+    };
+}
+
+
+export const actGetNewsAsync = ({ page, pageSize, search, universityid }) => async (dispatch) => {
     try {
-        const response = await newsForUniversityService.getNewsForUniversity({ page, pageSize, search });
+        const response = await newsForUniversityService.getNewsForUniversity({ page, pageSize, search, universityid });
         dispatch(actGetNews(response.data));
     } catch (error) {
         console.error(error);
     }
 };
 
-export const actAddNewsAsync = (data) => async (dispatch) => {
+export const actAddNewsAsync = (formData) => async (dispatch) => {
     try {
-        const response = await newsForUniversityService.addNewsForUniversity(data);
+        const response = await newsForUniversityService.addNewsForUniversity(formData);
         if (response.status === 200 || response.status === 201) {
-            dispatch(actAddNews(response));
+            dispatch(actAddNews(response.data));
             message.success('Thêm mới thành công');
         } else {
             message.error('Thêm mới thất bại');
@@ -73,12 +99,57 @@ export const actUpdateNewsAsync = ({ formData, id }) => async (dispatch) => {
     }
 };
 
-export const actDeleteNewsAsync = (id) => async (dispatch) => {
+export const actUpdateNewsContentAsync = ({ formData, id }) => async (dispatch) => {
     try {
-        const response = await newsForUniversityService.deleteNewsForUniversity(id);
+        const response = await newsForUniversityService.updateNewsContentForUniversity({ id, formData });
+        if (response.status === 200 || response.status === 201) {
+            message.success('Cập nhật thành công');
+            dispatch(actUpdateNewsContent(response));
+        } else {
+            message.error('Cập nhật thất bại');
+        }
+    } catch (error) {
+        console.error(error);
+        message.error('Cập nhật thất bại');
+    }
+};
+
+// export const actUpdateNewsImageAsync = ({ formData, id }) => async (dispatch) => {
+//     try {
+//         const response = await newsForUniversityService.updateNewsImageForUniversity({ id, formData });
+//         if (response.status === 200 || response.status === 201) {
+//             message.success('Cập nhật thành công');
+//             dispatch(actUpdateNews(response));
+//         } else {
+//             message.error('Cập nhật thất bại');
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         message.error('Cập nhật thất bại');
+//     }
+// }
+
+export const actCreateNewsImageAsync = ({ imageData, id }) => async (dispatch) => {
+    try {
+        const response = await newsForUniversityService.createNewsImageForUniversity({ id, imageData });
+        if (response.status === 200 || response.status === 201) {
+            message.success('Cập nhật thành công');
+            dispatch(actCreateNewsImage(response));
+        } else {
+            message.error('Cập nhật thất bại');
+        }
+    } catch (error) {
+        console.error(error);
+        message.error('Cập nhật thất bại');
+    }
+}
+
+export const actDeleteNewsImageAsync = (id) => async (dispatch) => {
+    try {
+        const response = await newsForUniversityService.deleteNewsImageForUniversity(id);
         if (response.status === 200 || response.status === 201) {
             message.success('Xóa thành công');
-            dispatch(actDeleteNews(id));
+            dispatch(actDeleteNewsImage(id));
         } else {
             message.error('Xóa thất bại');
         }
@@ -86,5 +157,25 @@ export const actDeleteNewsAsync = (id) => async (dispatch) => {
         console.error(error);
         message.error('Xóa thất bại');
     }
+}
+
+
+export const actDeleteNewsAsync = (id) => async (dispatch) => {
+    try {
+        const response = await newsForUniversityService.deleteNewsForUniversity(id);
+        if (response.status === 200 || response.status === 201) {
+            message.success('Xóa thành công');
+            // dispatch(actDeleteNews(id));  // Sử dụng action creator đã khai báo trước đó
+        } else {
+            message.error('Xóa thất bại');
+        }
+    } catch (error) {
+        console.error(error);
+        // message.error('Xóa thất bại');
+    }
+};
+
+export const resetNewsSuccess = () => async (dispatch) => {
+    dispatch({ type: 'RESET_NEWS_SUCCESS' });
 };
 

@@ -47,7 +47,6 @@ export const actLevelGetAsync = ({ page, pagesize, search }) => async (dispatch)
 export const actLevelAddAsync = (data) => async (dispatch) => {
     try {
         const response = await levelService.addLevel(data);
-        debugger
         if (response) {
             dispatch(actAddLevel(response));
             message.success('Thêm mới thành công');

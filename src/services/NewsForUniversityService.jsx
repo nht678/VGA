@@ -1,10 +1,11 @@
 import { BASE_API } from "./api";
 
 const newsForUniversityService = {
-    getNewsForUniversity: ({ page, pageSize, search }) => {
+    getNewsForUniversity: ({ page, pageSize, search, universityid }) => {
         const params = {
             'current-page': page,
             'page-size': pageSize,
+            'university-id': universityid,
         };
         if (search) {
             params.name = search;
@@ -20,5 +21,16 @@ const newsForUniversityService = {
     deleteNewsForUniversity: (id) =>
         BASE_API.delete(`/news/${id}`)
     ,
+    updateNewsContentForUniversity: ({ id, formData }) =>
+        BASE_API.put(`/news/${id}/`, formData)
+    ,
+    updateNewsImageForUniversity: ({ id, formData }) =>
+        BASE_API.put(`/news/${id}/image`, formData)
+    ,
+    createNewsImageForUniversity: ({ id, imageData }) =>
+        BASE_API.post(`/image-news/?NewsId=${id}`, imageData)
+    ,
+    deleteNewsImageForUniversity: (id) =>
+        BASE_API.delete(`/image-news/${id}`)
 }
 export default newsForUniversityService

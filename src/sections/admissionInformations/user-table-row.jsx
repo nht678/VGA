@@ -23,7 +23,7 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
+import { actUpdateAdmissionInformationAsync, actDeleteAdmissionInformationAsync, actResetAdmissionInformation } from 'src/store/admissionInformation/action';
 import { propTypes } from 'react-bootstrap/esm/Image';
 import { message } from 'antd';
 
@@ -74,32 +74,101 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
 
-  const { successLevel } = useSelector((state) => state.levelReducer);
+
+  const { admissionInformation, total = 0, success } = useSelector((state) => state.admissionInformationReducer);
+  console.log('admissionInformation', admissionInformation)
+
+  let userId = localStorage.getItem('userId');
+
+  // useSelector: Lấy state từ store thông qua key
+  const majors = useSelector((state) => state.majorReducer.majors);
+  console.log('majors', majors);
+  const admissionMethods = useSelector((state) => state.admissionMethodReducer.admissionMethods);
+  console.log('admissionMethods', admissionMethods);
+
 
   const handleDelete = () => {
     // console.log("id",id);
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Delete university success');
+    dispatch(actDeleteAdmissionInformationAsync(id));
+    if (success) {
+      dispatch(actResetAdmissionInformation());
     }
     handleCloseDialog();
   }
 
+
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
+    let newError = {};
+    if (!formData.majorId) {
+      newError.majorId = 'Vui lòng chọn ngành';
     }
-    if (!formData.priceOnSlot) {
-      newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
+    if (!formData.admissionMethodId) {
+      newError.admissionMethodId = 'Vui lòng chọn phương thức tuyển sinh';
     }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
+    if (!formData.tuitionFee) {
+      newError.tuitionFee = 'Vui lòng nhập học phí';
     }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
+    if (!formData.year) {
+      newError.year = 'Vui lòng nhập năm';
+    }
+    if (!formData.quantityTarget) {
+      newError.quantityTarget = 'Vui lòng nhập số lượng mục tiêu';
+    }
+
+    setError(newError);
+    return Object.keys(newError).length === 0;
+  };
+
+
+  const [majorInputValue, setMajorInputValue] = useState(''); // Input của trường ngành học
+  const [majorValue, setMajorValue] = useState(null); // Giá trị đã chọn cho ngành học
+
+  const [admissionMethodInputValue, setAdmissionMethodInputValue] = useState(''); // Input của trường phương thức tuyển sinh
+  const [admissionMethodValue, setAdmissionMethodValue] = useState(null); // Giá trị đã chọn cho phương thức tuyển sinh
+
+  const [yearInputValue, setYearInputValue] = useState(''); // Input của trường năm
+  const [yearValue, setYearValue] = useState(null); // Giá trị đã chọn cho năm
+
+  const [error, setError] = useState({});
+
+  const handleMajorChange = (event, newValue) => {
+    setMajorValue(newValue?.id);
+    setFormData({
+      ...formData,
+      majorId: newValue?.id
+    });
+  };
+
+  const handleAdmissionMethodChange = (event, newValue) => {
+    setAdmissionMethodValue(newValue?.id);
+    setFormData({
+      ...formData,
+      admissionMethodId: newValue?.id
+    });
+  };
+
+
+  const handleYearChange = (event, newValue) => {
+    setYearValue(newValue?.value);
+    setFormData({
+      ...formData,
+      year: newValue?.value
+    });
+  };
+
+
+  const options = [
+    { name: '2017', value: 2017 },
+    { name: '2018', value: 2018 },
+    { name: '2019', value: 2019 },
+    { name: '2020', value: 2020 },
+    { name: '2021', value: 2021 },
+    { name: '2022', value: 2022 },
+    { name: '2023', value: 2023 },
+    { name: '2024', value: 2024 },
+  ];
+
+
 
 
 
@@ -120,9 +189,11 @@ export default function UserTableRow({
     setDialog('');
   };
   const [formData, setFormData] = useState({
-    // name: name,
-    // description: description,
-    // priceOnSlot: priceOnSlot,
+    majorId: '',
+    admissionMethodId: '',
+    quantityTarget: quantityTarget,
+    tuitionFee: tuitionFee,
+    year: year,
   });
 
   const handlechange = (event) => {
@@ -132,17 +203,15 @@ export default function UserTableRow({
 
     });
   }
-
-  const handleUpdateLevel = () => {
-    if (!validateForm()) return;
-    dispatch(actLevelUpdateAsync({ formData, id }));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Update university success');
+  const handleUpdate = () => {
+    if (validateForm()) {
+      dispatch(actUpdateAdmissionInformationAsync({ formData, id }));
+      if (success) {
+        dispatch(actResetAdmissionInformation());
+      }
+      handleClose();
     }
-    handleCloseDialog();
-  }
-
+  };
 
   const handleClose = () => {
     setDialog(null);
@@ -196,45 +265,86 @@ export default function UserTableRow({
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
           Cập nhật thông tin tuyển sinh
         </DialogTitle>
-        {/* <DialogContent >
+        <DialogContent >
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid size={{ md: 6 }}>
-                <TextField
+                <Autocomplete
+                  defaultValue={majorName}
                   fullWidth
-                  defaultValue={name}
-                  name='name'
-                  label="Tên"
-                  onChange={handlechange}
-                  error={!!errors.name}
-                  helperText={errors.name}
+                  onChange={handleMajorChange}
+                  inputValue={majorInputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setMajorInputValue(newInputValue);
+                  }}
+                  id="controllable-states-demo-major"
+                  options={majors || []}
+                  getOptionLabel={(option) => option?.name || ''}
+                  renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
                 />
+                {error.majorId && <Typography variant='caption' color="error">{error.majorId}</Typography>}
+              </Grid>
+
+              <Grid size={{ md: 6 }}>
+                <Autocomplete
+                  defaultValue={admissionMethodName}
+                  onChange={handleAdmissionMethodChange}
+                  inputValue={admissionMethodInputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setAdmissionMethodInputValue(newInputValue);
+                  }}
+                  id="controllable-states-demo-admission"
+                  options={admissionMethods || []}
+                  getOptionLabel={(option) => option?.name || ''}
+                  renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
+                />
+                {error.admissionMethodId && <Typography variant='caption' color="error">{error.admissionMethodId}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>
                 <TextField
+                  defaultValue={tuitionFee}
                   fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
+                  label="Học phí"
+                  name="tuitionFee"
+                  // value={formData.tuitionFee}
                   onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
                 />
+                {error.tuitionFee && <Typography variant='caption' color="error">{error.tuitionFee}</Typography>}
               </Grid>
-
-
-              <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
-                <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+              <Grid size={{ md: 6 }}>
+                <Autocomplete
+                  defaultValue={year}
+                  fullWidth
+                  onChange={handleYearChange}
+                  inputValue={yearInputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setYearInputValue(newInputValue);
+                  }}
+                  id="controllable-states-demo-year"
+                  options={options || []}
+                  getOptionLabel={(option) => option?.name || ''}
+                  renderInput={(params) => <TextField {...params} label="Chọn năm" />}
                 />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
+                {error.year && <Typography variant='caption' color="error">{error.year}</Typography>}
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  defaultValue={quantityTarget}
+                  fullWidth
+                  label="Số lượng mục tiêu"
+                  name="quantityTarget"
+                  // value={formData.quantityTarget}
+                  onChange={handlechange}
+                />
+                {error.quantityTarget && <Typography variant='caption' color="error">{error.quantityTarget}</Typography>}
               </Grid>
             </Grid>
+
           </DialogContentText>
-        </DialogContent> */}
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateLevel} autoFocus>
+          <Button onClick={handleUpdate} autoFocus>
             Cập nhật
           </Button>
         </DialogActions>

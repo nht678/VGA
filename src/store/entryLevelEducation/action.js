@@ -36,7 +36,6 @@ export function actDeleteEntryLevelEducation(id) {
 
 export const actGetEntryLevelEducationsAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
-        debugger
         const response = await entryLevelEducationService.getEntryLevelEducations({ page, pageSize, search });
         dispatch(actGetEntryLevelEducations(response.data));
     } catch (error) {

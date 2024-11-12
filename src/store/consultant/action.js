@@ -21,9 +21,7 @@ export const getConsultants = ({ page, pageSize, search, level }) => async (disp
 
 export const addConsultant = (data) => async (dispatch) => {
     try {
-        debugger
         const response = await consultantService.addConsultant(data);
-        debugger
         if (response) {
             dispatch({
                 type: ADD_CONSULTANT,

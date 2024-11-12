@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -18,8 +20,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
+import { UploadOutlined } from '@ant-design/icons';
+import { Button as ButtonAnt, message, Upload } from 'antd';
+
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
 
 
 
@@ -28,7 +32,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actGetNewsAsync, actAddNewsAsync } from 'src/store/NewsForUniversity/action';
+import { actGetNewsAsync, actAddNewsAsync, resetNewsSuccess } from 'src/store/NewsForUniversity/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -52,45 +56,35 @@ export default function NewsForUniversityView() {
 
   const [error, setError] = useState({});
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    priceOnSlot: '',
-  });
+  let userId = localStorage.getItem('userId');
+
+  const [formData, setFormData] = useState(
+    {
+      title: '',
+      content: '',
+      imageNews: [],
+    }
+  );
 
   console.log('formData', formData);
 
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
 
 
   // write code here
 
   const dispatch = useDispatch();
 
-  const { news, total = 0 } = useSelector((state) => state.newsForUniversityReducer);
+  const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
   console.log('news', news)
   // console.log('levels', levels);
 
 
   // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
   useEffect(() => {
-    dispatch(actGetNewsAsync({ page: page + 1, pageSize: rowsPerPage }));
+    dispatch(actGetNewsAsync({ page: page + 1, pageSize: rowsPerPage, universityid: userId, search: '' }));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, success]);
 
 
 
@@ -217,11 +211,89 @@ export default function NewsForUniversityView() {
       dispatch(actGetNewsAsync({ page: 1, pageSize: rowsPerPage }));
     }
   };
+  // const [selectedFile, setSelectedFile] = useState(null);
+
+  // const props = {
+  //   name: 'file',
+  //   beforeUpload(file) {
+  //     // Lưu file đã chọn vào state
+  //     setSelectedFile(file);
+  //     return false;  // Ngăn chặn upload mặc định của antd
+  //   },
+  // };
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [imageUrls, setImageUrls] = useState([]);
+
+  // Hàm lưu file đã chọn vào state và ngăn upload mặc định của antd
+  const uploadProps = {
+    name: 'file',
+    multiple: true,  // Cho phép chọn nhiều file
+    beforeUpload(file) {
+      setSelectedFiles(prevFiles => [...prevFiles, file]);  // Thêm file vào danh sách
+      return false;  // Ngăn chặn upload mặc định của antd
+    },
+    onRemove(file) {
+      setSelectedFiles(prevFiles => prevFiles.filter(f => f.uid !== file.uid)); // Remove file from list
+    },
+  };
+
+  // Hàm upload từng file và lấy URL sau khi upload
+  // const uploadImage = async (file) => {
+  //   const storageRef = ref(storage, `images/${file.name}`);
+  //   await uploadBytes(storageRef, file);
+  //   return getDownloadURL(storageRef);
+  // };
+
+  // Hàm upload tất cả ảnh đã chọn lên Firebase và lấy URL
+  const handleUpload = async () => {
+    const uploadedUrls = await Promise.all(
+      selectedFiles.map(async (file) => {
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        setImageUrls((prevUrls) => [...prevUrls, url]);
+        return { imageUrl: url, descriptionTitle: file.name };
+      })
+    );
+
+    // Cập nhật `formData.imageNews` với các URL đã upload
+    setFormData((prevData) => ({
+      ...prevData,
+      imageNews: [...prevData.imageNews, ...uploadedUrls],
+    }));
+
+    // Trả về các URL đã upload để sử dụng nếu cần
+    return uploadedUrls;
+  };
 
 
 
+  // Hàm xử lý khi nhấn nút Tạo mới
+  const handleAddNews = async () => {
+    // Chờ hoàn thành upload và lấy dữ liệu các URL đã upload
+    const uploadedUrls = await handleUpload();
+    const newsData = {
+      universityId: userId,
+      title: formData.title,
+      content: formData.content,
+      imageNews: uploadedUrls,
+    };
+    console.log("Dữ liệu gửi đi:", newsData);
+    dispatch(actAddNewsAsync(newsData));
 
-
+    setFormData({
+      title: '',
+      content: '',
+      imageNews: [],
+    });
+    setSelectedFiles([]);
+    dispatch(resetNewsSuccess());
+    handleClose();
+    // setImageUrls([]);
+    // Gửi `newsData` tới server hoặc thực hiện hành động tiếp theo
+  };
+  // dispatch(actAddNewsAsync(newsData));
 
 
   return (
@@ -246,18 +318,39 @@ export default function NewsForUniversityView() {
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
-                {/* <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='name'
-                      label="Tên"
-                      onChange={handlechange}
-                      error={!!error.name}
-                      helperText={error.name}
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Tiêu đề</Typography>
+                    <textarea name='title' onChange={handlechange} placeholder="Hãy viết tiêu đề....." style={{ width: '100%', height: '50px', borderRadius: '5px', border: '1px solid black' }}
                     />
                   </Grid>
-                  <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Nội dung</Typography>
+                    <textarea name='content' onChange={handlechange} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                    />
+                  </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Ảnh</Typography>
+                    <Upload
+                      listType="picture"
+                      {...uploadProps}
+                    >
+                      <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                        Upload
+                      </ButtonAnt>
+                    </Upload>
+                  </Grid>
+
+                </Grid>
+
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
+              <Button onClick={handleAddNews} autoFocus>
+                Tạo mới
+              </Button>
+              {/* <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
                       name='priceOnSlot'
@@ -274,18 +367,7 @@ export default function NewsForUniversityView() {
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
                     {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
-                  </Grid>
-
-
-                </Grid> */}
-
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Hủy bỏ</Button>
-              {/* <Button onClick={handleAddConsultant} autoFocus>
-                Tạo mới
-              </Button> */}
+                  </Grid> */}
             </DialogActions>
           </Dialog>
 
@@ -320,9 +402,9 @@ export default function NewsForUniversityView() {
                 ]}
               />
               <TableBody>
-                {news.map((row) => (
+                {news.map((row, index) => (
                   <UserTableRow
-                    key={row?.id}
+                    key={index}
                     id={row?.id}
                     title={row?.title}
                     content={row?.content}

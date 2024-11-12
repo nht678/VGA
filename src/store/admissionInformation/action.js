@@ -29,18 +29,18 @@ export function actDeleteAdmissionInformation(id) {
     };
 }
 
-export const actGetAdmissionInformationAsync = ({ page, pageSize, search }) => async (dispatch) => {
+export const actGetAdmissionInformationAsync = ({ page, pageSize, search, universityid }) => async (dispatch) => {
     try {
-        const response = await admissionInformationService.getAdmissionInformation({ page, pageSize, search });
+        const response = await admissionInformationService.getAdmissionInformation({ page, pageSize, search, universityid });
         dispatch(actGetAdmissionInformation(response.data));
     } catch (error) {
         console.error(error);
     }
 };
 
-export const actAddAdmissionInformationAsync = (data) => async (dispatch) => {
+export const actAddAdmissionInformationAsync = ({ formData, universityId }) => async (dispatch) => {
     try {
-        const response = await admissionInformationService.addAdmissionInformation(data);
+        const response = await admissionInformationService.addAdmissionInformation({ formData, universityId });
         if (response.status === 200 || response.status === 201) {
             dispatch(actAddAdmissionInformation(response));
             message.success('Thêm mới thành công');
@@ -82,4 +82,12 @@ export const actDeleteAdmissionInformationAsync = (id) => async (dispatch) => {
         message.error('Xóa thất bại');
     }
 };
+
+// reset
+
+export function actResetAdmissionInformation() {
+    return {
+        type: "RESET_ADMISSION_INFORMATION",
+    };
+}
 
