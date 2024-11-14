@@ -63,7 +63,7 @@ export const actUpdateEntryLevelEducationAsync = ({ formData, id }) => async (di
         const response = await entryLevelEducationService.updateEntryLevelEducation({ id, formData });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actUpdateEntryLevelEducation(response));
+            dispatch(actUpdateEntryLevelEducation(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }
@@ -88,3 +88,8 @@ export const actDeleteEntryLevelEducationAsync = (id) => async (dispatch) => {
     }
 };
 
+export function resetEntryLevelEducationSuccess() {
+    return {
+        type: 'RESET_ENTRY_LEVEL_EDUCATION_SUCCESS',
+    };
+}

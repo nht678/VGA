@@ -28,7 +28,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actGetWorkSkillsAsync, actAddWorkSkillAsync } from 'src/store/workSkill/action';
+import { actGetWorkSkillsAsync, actAddWorkSkillAsync, actResetSuccess } from 'src/store/workSkill/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -54,8 +54,6 @@ export default function WorkSkillView() {
 
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
-    priceOnSlot: '',
   });
 
   console.log('formData', formData);
@@ -64,12 +62,6 @@ export default function WorkSkillView() {
     let newError = {};
     if (!formData.name) {
       newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
     }
     setError(newError);
     return Object.keys(newError).length === 0;
@@ -80,7 +72,7 @@ export default function WorkSkillView() {
 
   const dispatch = useDispatch();
 
-  const { workSkills, total = 0 } = useSelector((state) => state.workSkillReducer);
+  const { workSkills, total = 0, success } = useSelector((state) => state.workSkillReducer);
   console.log('workSkills', workSkills)
   // console.log('levels', levels);
 
@@ -90,25 +82,21 @@ export default function WorkSkillView() {
     dispatch(actGetWorkSkillsAsync({ page: page + 1, pageSize: rowsPerPage }));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, success]);
 
 
 
-  // const handleAddConsultant = () => {
+  const handleAddWorkSkill = async () => {
+    if (validateForm()) {
+      dispatch(actAddWorkSkillAsync(formData));
+      dispatch(actResetSuccess());
+      setFormData({
+        name: '',
+      });
+      handleClose();
+    }
+  };
 
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   message.success('Tạo cấp độ tư vấn viên thành công');
-  //   dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
-
-  // console.log('formData', formData)
 
 
 
@@ -125,14 +113,6 @@ export default function WorkSkillView() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
   };
 
   const handleSort = (event, id) => {
@@ -246,8 +226,8 @@ export default function WorkSkillView() {
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
-                {/* <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 12 }}>
                     <TextField
                       fullWidth
                       name='name'
@@ -257,35 +237,15 @@ export default function WorkSkillView() {
                       helperText={error.name}
                     />
                   </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='priceOnSlot'
-                      label="Giá trên mỗi slot"
-                      onChange={handlechange}
-                      error={!!error.priceOnSlot}
-                      helperText={error.priceOnSlot}
-                    />
-                  </Grid>
-
-
-                  <Grid size={{ md: 12 }}>
-                    <Typography variant="h6">Mô tả</Typography>
-                    <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
-                    />
-                    {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
-                  </Grid>
-
-
-                </Grid> */}
+                </Grid>
 
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Hủy bỏ</Button>
-              {/* <Button onClick={handleAddConsultant} autoFocus>
+              <Button onClick={handleAddWorkSkill} autoFocus>
                 Tạo mới
-              </Button> */}
+              </Button>
             </DialogActions>
           </Dialog>
 

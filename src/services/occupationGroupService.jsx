@@ -12,7 +12,7 @@ const occupationGroupService = {
         return BASE_API.get(`/occupational-groups`, { params });
     },
     addOccupationGroup: (data) =>
-        BASE_API.post(`/occupational-group`, data)
+        BASE_API.post(`/occupational-groups`, data)
     ,
     updateOccupationGroup: (data) =>
         BASE_API.put(`/occupational-group/${data.id}`, data.formData)

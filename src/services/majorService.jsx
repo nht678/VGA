@@ -12,10 +12,10 @@ const majorService = {
         return BASE_API.get(`/majors`, { params });
     },
     addMajor: (data) =>
-        BASE_API.post(`/major`, data)
+        BASE_API.post(`/majors`, data)
     ,
-    updateMajor: (data) =>
-        BASE_API.put(`/major/${data.id}`, data.formData)
+    updateMajor: ({ formData, id }) =>
+        BASE_API.put(`/major/${id}`, formData)
     ,
     deleteMajor: (id) =>
         BASE_API.delete(`/major/${id}`)

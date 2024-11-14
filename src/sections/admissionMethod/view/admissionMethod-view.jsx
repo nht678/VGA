@@ -28,7 +28,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actGetAdmissionMethodsAsync, actAddAdmissionMethodAsync } from 'src/store/admissionMethod/action';
+import { actGetAdmissionMethodsAsync, actAddAdmissionMethodAsync, resetAdmissionMethod } from 'src/store/admissionMethod/action';
 
 
 import UserTableRow from '../user-table-row';
@@ -54,9 +54,9 @@ export default function AdmissionMethodView() {
   const [error, setError] = useState({});
 
   const [formData, setFormData] = useState({
-    // name: '',
-    // description: '',
-    // priceOnSlot: '',
+    name: '',
+    description: '',
+    status: true,
   });
 
   console.log('formData', formData);
@@ -64,13 +64,10 @@ export default function AdmissionMethodView() {
   const validateForm = () => {
     let newError = {};
     if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
+      newError.name = 'Vui lòng nhập tên';
     }
     if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
+      newError.description = 'Vui lòng nhập mô tả';
     }
     setError(newError);
     return Object.keys(newError).length === 0;
@@ -81,7 +78,7 @@ export default function AdmissionMethodView() {
 
   const dispatch = useDispatch();
 
-  const { admissionMethods, total = 0 } = useSelector((state) => state.admissionMethodReducer);
+  const { admissionMethods, total = 0, success } = useSelector((state) => state.admissionMethodReducer);
   console.log('admissionMethods', admissionMethods)
   // console.log('levels', levels);
 
@@ -91,22 +88,23 @@ export default function AdmissionMethodView() {
     dispatch(actGetAdmissionMethodsAsync({ page: page + 1, pageSize: rowsPerPage }));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, success]);
 
 
 
-  // const handleAddConsultant = () => {
+  const handleAddAdmissionMethod = async () => {
+    if (validateForm()) {
+      dispatch(actAddAdmissionMethodAsync(formData));
+      dispatch(resetAdmissionMethod());
+      setFormData({
+        name: '',
+        description: '',
+        status: true,
+      });
+      handleClose();
+    }
+  };
 
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
 
   console.log('formData', formData)
 
@@ -246,8 +244,8 @@ export default function AdmissionMethodView() {
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
-                {/* <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 12 }}>
                     <TextField
                       fullWidth
                       name='name'
@@ -257,18 +255,6 @@ export default function AdmissionMethodView() {
                       helperText={error.name}
                     />
                   </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='priceOnSlot'
-                      label="Giá trên mỗi slot"
-                      onChange={handlechange}
-                      error={!!error.priceOnSlot}
-                      helperText={error.priceOnSlot}
-                    />
-                  </Grid>
-
-
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
@@ -277,15 +263,15 @@ export default function AdmissionMethodView() {
                   </Grid>
 
 
-                </Grid> */}
+                </Grid>
 
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Hủy bỏ</Button>
-              {/* <Button onClick={handleAddConsultant} autoFocus>
+              <Button onClick={handleAddAdmissionMethod} autoFocus>
                 Tạo mới
-              </Button> */}
+              </Button>
             </DialogActions>
           </Dialog>
 

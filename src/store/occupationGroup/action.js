@@ -34,6 +34,12 @@ export function actDeleteOccupationGroup(id) {
     };
 }
 
+export function resetOccupationGroupSuccess() {
+    return {
+        type: "RESET_OCCUPATION_GROUP",
+    };
+}
+
 export const actGetOccupationGroupAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
         const response = await occupationGroupService.getOccupationGroups({ page, pageSize, search });

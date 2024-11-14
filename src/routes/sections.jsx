@@ -76,7 +76,7 @@ export default function Router() {
         // { path: 'myquiz', element: <MyQuiz /> },
         // { path: 'newsuniversity', element: <NewsUniversity /> },
         { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
-        { path: 'transactions', element: role === '3' ? <Transaction /> : <Navigate to="/404" replace /> },
+        { path: 'transactions', element: role === '3' || role === "1" || role === "5" ? <Transaction /> : <Navigate to="/404" replace /> },
         { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
         { path: 'highschool', element: role === '1' ? <HighSchoolView /> : <Navigate to="/404" replace /> },
         { path: 'major', element: role === '1' ? <MajorPage /> : <Navigate to="/404" replace /> },

@@ -23,8 +23,7 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
-import { propTypes } from 'react-bootstrap/esm/Image';
+import { actUpdateMajorAsync, resetMajor, actDeleteMajorAsync } from 'src/store/major/action';
 import { message } from 'antd';
 
 // Hàm lấy nhãn trạng thái
@@ -61,6 +60,7 @@ export default function UserTableRow({
   status,
   description,
   code,
+  majorCategoryId
 }) {
   console.log('id', id)
   console.log('status', status)
@@ -68,34 +68,49 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState({});
 
   const dispatch = useDispatch();
 
-  const { successLevel } = useSelector((state) => state.levelReducer);
+  const { majors, total = 0, success } = useSelector((state) => state.majorReducer);
+  console.log('majors', majors)
+  const { majorCategories } = useSelector((state) => state.majorCategoryReducer);
+  console.log('majorCategories', majorCategories);
+  // console.log('levels', levels);
+
+  const [majorCategoriesValue, setMajorCategoriesValue] = useState(
+    majorCategories.find((item) => item.id === majorCategoryId) || null
+  );
+  const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input
+
+  const handleMajorCategoriesChange = (event, newValue) => {
+    setMajorCategoriesValue(newValue);
+    setFormData((prevData) => ({
+      ...prevData,
+      majorCategoryId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
+    }));
+  };
 
   const handleDelete = () => {
-    // console.log("id",id);
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Delete university success');
-    }
+    dispatch(actDeleteMajorAsync(id));
     handleCloseDialog();
   }
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
+    if (!formData.code) {
+      newErrors.code = 'Mã ngành không được để trống';
     }
-    if (!formData.priceOnSlot) {
-      newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
+    if (!formData.name) {
+      newErrors.name = 'Tên ngành không được để trống';
+    }
+    if (!formData.majorCategoryId) {
+      newErrors.majorCategoryId = 'Thể loại ngành không được để trống';
     }
     if (!formData.description) {
       newErrors.description = 'Mô tả không được để trống';
     }
-    setErrors(newErrors);
+    setError(newErrors);
     return Object.keys(newErrors).length === 0;
   }
 
@@ -118,9 +133,10 @@ export default function UserTableRow({
     setDialog('');
   };
   const [formData, setFormData] = useState({
-    // name: name,
-    // description: description,
-    // priceOnSlot: priceOnSlot,
+    code: code,
+    name: name,
+    majorCategoryId: majorCategoryId,
+    description
   });
 
   const handlechange = (event) => {
@@ -130,16 +146,16 @@ export default function UserTableRow({
 
     });
   }
+  const handleUpdateMajor = () => {
+    if (validateForm()) {
+      dispatch(actUpdateMajorAsync({ formData, id }));
+      if (success) {
+        dispatch(resetMajor());
+      }
+      handleClose();
+    }
+  }
 
-  // const handleUpdateLevel = () => {
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelUpdateAsync({ formData, id }));
-  //   if (successLevel) {
-  //     dispatch(resetLevelSuccess());
-  //     message.success('Update university success');
-  //   }
-  //   handleCloseDialog();
-  // }
 
 
   const handleClose = () => {
@@ -167,7 +183,7 @@ export default function UserTableRow({
 
         <TableCell sx={{ textAlign: 'center' }}>{majorCategoryName}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
-          {description.length > 50 ? `${description.slice(0, 100)}...` : description}
+          {description?.length > 50 ? `${description.slice(0, 100)}...` : description}
         </TableCell>
 
 
@@ -197,7 +213,18 @@ export default function UserTableRow({
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
-            {/* <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  defaultValue={code}
+                  name='code'
+                  label="Mã ngành"
+                  onChange={handlechange}
+                  error={!!error.code}
+                  helperText={error.code}
+                />
+              </Grid>
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
@@ -205,37 +232,43 @@ export default function UserTableRow({
                   name='name'
                   label="Tên"
                   onChange={handlechange}
-                  error={!!errors.name}
-                  helperText={errors.name}
+                  error={!!error.name}
+                  helperText={error.name}
                 />
               </Grid>
+
               <Grid size={{ md: 6 }}>
-                <TextField
+                <Autocomplete
                   fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
-                  onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
+                  value={majorCategoriesValue}
+                  onChange={handleMajorCategoriesChange}
+                  inputValue={majorCategoriesInputValue}
+                  onInputChange={(event, newInputValue) => {
+                    setMajorCategoriesInputValue(newInputValue);
+                  }}
+                  id="majorCategories"
+                  options={majorCategories}
+                  getOptionLabel={(option) => option.name}
+                  renderInput={(params) => <TextField {...params} label="Thể loại ngành" />}
                 />
+                {error.majorCategoryId && <Typography variant='caption' color="error" >{error.majorCategoryId}</Typography>}
               </Grid>
-
-
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
+                <Typography variant="h6">Mô tả</Typography>
                 <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
+                {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
               </Grid>
-            </Grid> */}
+
+
+            </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          {/* <Button onClick={handleUpdateLevel} autoFocus>
+          <Button onClick={handleUpdateMajor} autoFocus>
             Cập nhật
-          </Button> */}
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -280,4 +313,5 @@ UserTableRow.propTypes = {
   status: PropTypes.bool,
   description: PropTypes.string,
   code: PropTypes.string,
+  majorCategoryId: PropTypes.string,
 };

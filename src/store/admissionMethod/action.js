@@ -47,7 +47,7 @@ export const actAddAdmissionMethodAsync = (data) => async (dispatch) => {
     try {
         const response = await admissionmethodService.addAdmissionMethod(data);
         if (response.status === 200 || response.status === 201) {
-            dispatch(actAddAdmissionMethod(response));
+            dispatch(actAddAdmissionMethod(response.data));
             message.success('Thêm mới thành công');
         } else {
             message.error('Thêm mới thất bại');
@@ -63,7 +63,7 @@ export const actUpdateAdmissionMethodAsync = ({ formData, id }) => async (dispat
         const response = await admissionmethodService.updateAdmissionMethod({ id, formData });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actUpdateAdmissionMethod(response));
+            dispatch(actUpdateAdmissionMethod(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }
@@ -87,4 +87,11 @@ export const actDeleteAdmissionMethodAsync = (id) => async (dispatch) => {
         message.error('Xóa thất bại');
     }
 };
+
+export function resetAdmissionMethod() {
+    return {
+        type: 'RESET_ADMISSION_METHOD',
+    }
+}
+
 

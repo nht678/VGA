@@ -28,7 +28,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actGetEntryLevelEducationsAsync, actAddEntryLevelEducationAsync } from 'src/store/entryLevelEducation/action';
+import { actGetEntryLevelEducationsAsync, actAddEntryLevelEducationAsync, resetEntryLevelEducationSuccess } from 'src/store/entryLevelEducation/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -54,8 +54,6 @@ export default function EntryLevelEducationView() {
 
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
-    priceOnSlot: '',
   });
 
   console.log('formData', formData);
@@ -65,12 +63,7 @@ export default function EntryLevelEducationView() {
     if (!formData.name) {
       newError.name = 'Tên không được để trống';
     }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
-    }
+
     setError(newError);
     return Object.keys(newError).length === 0;
   };
@@ -80,7 +73,7 @@ export default function EntryLevelEducationView() {
 
   const dispatch = useDispatch();
 
-  const { entryLevelEducations, total = 0 } = useSelector((state) => state.entryLevelEducationReducer);
+  const { entryLevelEducations, total = 0, success } = useSelector((state) => state.entryLevelEducationReducer);
   console.log('entryLevelEducations', entryLevelEducations)
   // console.log('levels', levels);
 
@@ -90,25 +83,21 @@ export default function EntryLevelEducationView() {
     dispatch(actGetEntryLevelEducationsAsync({ page: page + 1, pageSize: rowsPerPage }));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, success]);
+
+
+  const handleAddEntrylevelEducation = () => {
+    if (validateForm()) {
+      dispatch(actAddEntryLevelEducationAsync(formData));
+      if (success) {
+        dispatch(resetEntryLevelEducationSuccess());
+        handleClose();
+      }
+    }
+  };
 
 
 
-  // const handleAddConsultant = () => {
-
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   message.success('Tạo cấp độ tư vấn viên thành công');
-  //   dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
-
-  // console.log('formData', formData)
 
 
 
@@ -126,14 +115,7 @@ export default function EntryLevelEducationView() {
       [e.target.name]: e.target.value,
     });
   };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
-  };
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -231,7 +213,7 @@ export default function EntryLevelEducationView() {
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Trình độ học vấn đầu vào</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
-            Tạo trình độ học vấn
+            Tạo trình độ học vấn đầu vào
           </Button>
 
 
@@ -242,12 +224,12 @@ export default function EntryLevelEducationView() {
             aria-describedby="alert-dialog-description"
           >
             <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-              Tạo trình độ học vấn mới
+              Tạo trình độ học vấn đầu vào
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
-                {/* <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 12 }}>
                     <TextField
                       fullWidth
                       name='name'
@@ -257,35 +239,16 @@ export default function EntryLevelEducationView() {
                       helperText={error.name}
                     />
                   </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='priceOnSlot'
-                      label="Giá trên mỗi slot"
-                      onChange={handlechange}
-                      error={!!error.priceOnSlot}
-                      helperText={error.priceOnSlot}
-                    />
-                  </Grid>
 
-
-                  <Grid size={{ md: 12 }}>
-                    <Typography variant="h6">Mô tả</Typography>
-                    <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
-                    />
-                    {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
-                  </Grid>
-
-
-                </Grid> */}
+                </Grid>
 
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Hủy bỏ</Button>
-              {/* <Button onClick={handleAddConsultant} autoFocus>
+              <Button onClick={handleAddEntrylevelEducation} autoFocus>
                 Tạo mới
-              </Button> */}
+              </Button>
             </DialogActions>
           </Dialog>
 

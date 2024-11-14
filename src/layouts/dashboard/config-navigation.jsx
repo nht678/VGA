@@ -132,7 +132,7 @@ const NavConfigComponent = () => {
           icon: icon('ic_user'),
         },
         {
-          title: 'Nhóm nghề nghiệp',
+          title: 'Kĩ năng nghề nghiệp',
           path: '/workSkill', // đã sửa chính tả
           icon: icon('ic_user'),
         },

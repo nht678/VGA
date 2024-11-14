@@ -350,24 +350,6 @@ export default function NewsForUniversityView() {
               <Button onClick={handleAddNews} autoFocus>
                 Tạo mới
               </Button>
-              {/* <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='priceOnSlot'
-                      label="Giá trên mỗi slot"
-                      onChange={handlechange}
-                      error={!!error.priceOnSlot}
-                      helperText={error.priceOnSlot}
-                    />
-                  </Grid>
-
-
-                  <Grid size={{ md: 12 }}>
-                    <Typography variant="h6">Mô tả</Typography>
-                    <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
-                    />
-                    {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
-                  </Grid> */}
             </DialogActions>
           </Dialog>
 

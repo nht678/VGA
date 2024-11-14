@@ -12,7 +12,7 @@ const workSkillService = {
         return BASE_API.get(`/work-skills`, { params });
     },
     addWorkSkill: (data) =>
-        BASE_API.post(`/work-skill`, data)
+        BASE_API.post(`/work-skills`, data)
     ,
     updateWorkSkill: (data) =>
         BASE_API.put(`/work-skill/${data.id}`, data.formData)

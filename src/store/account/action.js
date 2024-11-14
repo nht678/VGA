@@ -27,6 +27,7 @@ export function signinUser(data) {
             localStorage.setItem('userId', response.userId);
             localStorage.setItem('name', response.name);
             localStorage.setItem('role', response.role);
+            localStorage.setItem('accountId', response.accountId);
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             console.log('userInfo', userInfo);
         }
@@ -50,6 +51,7 @@ export function signoutUser() {
             localStorage.removeItem('userId');
             localStorage.removeItem('name');
             localStorage.removeItem('role');
+            localStorage.removeItem('accountId');
         } catch (error) {
             console.log('Error:', error);
         }

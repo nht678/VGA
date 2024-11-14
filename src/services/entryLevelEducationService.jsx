@@ -12,10 +12,10 @@ const entryLevelEducationService = {
         return BASE_API.get(`/entry-level-educations`, { params });
     },
     addEntryLevelEducation: (data) =>
-        BASE_API.post(`/entry-level-education`, data)
+        BASE_API.post(`/entry-level-educations`, data)
     ,
-    updateEntryLevelEducation: (data) =>
-        BASE_API.put(`/entry-level-education/${data.id}`, data.formData)
+    updateEntryLevelEducation: ({ formData, id }) =>
+        BASE_API.put(`/entry-level-education/${id}`, formData)
     ,
     deleteEntryLevelEducation: (id) =>
         BASE_API.delete(`/entry-level-education/${id}`)

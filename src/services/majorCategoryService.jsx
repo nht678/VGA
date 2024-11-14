@@ -12,7 +12,7 @@ const majorCategoryService = {
         return BASE_API.get(`/major-categories`, { params });
     },
     addMajorCategory: (data) =>
-        BASE_API.post(`/major-category`, data)
+        BASE_API.post(`/major-categories`, data)
     ,
     updateMajorCategory: (data) =>
         BASE_API.put(`/major-category/${data.id}`, data.formData)

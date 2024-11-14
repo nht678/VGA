@@ -17,6 +17,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import Grid from '@mui/system/Grid';
 import { message } from 'antd';
@@ -28,7 +29,8 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actAddMajorAsync, actGetMajorsAsync } from 'src/store/major/action';
+import { actAddMajorAsync, actGetMajorsAsync, resetMajor } from 'src/store/major/action';
+import { actGetMajorCategoriesAsync } from 'src/store/majorCategory/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -53,24 +55,29 @@ export default function MajorView() {
   const [error, setError] = useState({});
 
   const [formData, setFormData] = useState({
+    code: '',
     name: '',
     description: '',
-    priceOnSlot: '',
+    majorCategoryId: '',
   });
 
   console.log('formData', formData);
 
   const validateForm = () => {
     let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
+    if (!formData.code) {
+      newError.code = 'Mã ngành không được để trống';
     }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
+    if (!formData.name) {
+      newError.name = 'Tên ngành không được để trống';
     }
     if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
+      newError.description = 'Mô tả ngành không được để trống';
     }
+    if (!formData.majorCategoryId) {
+      newError.majorCategoryId = 'Thể loại ngành không được để trống';
+    }
+
     setError(newError);
     return Object.keys(newError).length === 0;
   };
@@ -80,33 +87,49 @@ export default function MajorView() {
 
   const dispatch = useDispatch();
 
-  const { majors, total = 0 } = useSelector((state) => state.majorReducer);
+  const { majors, total = 0, success } = useSelector((state) => state.majorReducer);
   console.log('majors', majors)
+  const { majorCategories } = useSelector((state) => state.majorCategoryReducer);
+  console.log('majorCategories', majorCategories);
   // console.log('levels', levels);
 
+  const [majorCategoriesValue, setMajorCategoriesValue] = useState(null); // Giá trị đã chọn
+  const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input
+
+  const handleMajorCategoriesChange = (event, newValue) => {
+    setMajorCategoriesValue(newValue);
+    setFormData((prevData) => ({
+      ...prevData,
+      majorCategoryId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
+    }));
+  };
 
   // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
   useEffect(() => {
     dispatch(actGetMajorsAsync({ page: page + 1, pageSize: rowsPerPage }));
+    dispatch(actGetMajorCategoriesAsync({ page: 1, pageSize: 1000, search: '' }));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, success]);
 
 
 
-  // const handleAddConsultant = () => {
+  const handleAddMajor = async () => {
+    if (validateForm()) {
+      dispatch(actAddMajorAsync(formData));
+      setFormData({
+        code: '',
+        name: '',
+        description: '',
+        majorCategoryId: '',
+      });
+      setMajorCategoriesValue(null);
+      dispatch(resetMajor());
+      handleClose();
+    }
+  };
 
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   message.success('Tạo cấp độ tư vấn viên thành công');
-  //   dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
+
 
   console.log('formData', formData)
 
@@ -125,14 +148,6 @@ export default function MajorView() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
   };
 
   const handleSort = (event, id) => {
@@ -232,8 +247,18 @@ export default function MajorView() {
               Tạo ngành học
             </DialogTitle>
             <DialogContent >
-              {/* <DialogContentText id="alert-dialog-description">
+              <DialogContentText id="alert-dialog-description">
                 <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 6 }}>
+                    <TextField
+                      fullWidth
+                      name='code'
+                      label="Mã ngành"
+                      onChange={handlechange}
+                      error={!!error.code}
+                      helperText={error.code}
+                    />
+                  </Grid>
                   <Grid size={{ md: 6 }}>
                     <TextField
                       fullWidth
@@ -244,18 +269,23 @@ export default function MajorView() {
                       helperText={error.name}
                     />
                   </Grid>
+
                   <Grid size={{ md: 6 }}>
-                    <TextField
+                    <Autocomplete
                       fullWidth
-                      name='priceOnSlot'
-                      label="Giá trên mỗi slot"
-                      onChange={handlechange}
-                      error={!!error.priceOnSlot}
-                      helperText={error.priceOnSlot}
+                      value={majorCategoriesValue}
+                      onChange={handleMajorCategoriesChange}
+                      inputValue={majorCategoriesInputValue}
+                      onInputChange={(event, newInputValue) => {
+                        setMajorCategoriesInputValue(newInputValue);
+                      }}
+                      id="majorCategories"
+                      options={majorCategories}
+                      getOptionLabel={(option) => option.name}
+                      renderInput={(params) => <TextField {...params} label="Thể loại ngành" />}
                     />
+                    {error.majorCategoryId && <Typography variant='caption' color="error" >{error.majorCategoryId}</Typography>}
                   </Grid>
-
-
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
@@ -266,13 +296,13 @@ export default function MajorView() {
 
                 </Grid>
 
-              </DialogContentText> */}
+              </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Hủy bỏ</Button>
-              {/* <Button onClick={handleAddConsultant} autoFocus>
+              <Button onClick={handleAddMajor} autoFocus>
                 Tạo mới
-              </Button> */}
+              </Button>
             </DialogActions>
           </Dialog>
 
@@ -315,6 +345,7 @@ export default function MajorView() {
                     code={row?.code}
                     name={row?.name}
                     majorCategoryName={row?.majorCategoryName}
+                    majorCategoryId={row?.majorCategoryId}
                     description={row?.description}
                     status={row?.status}
                     avatarUrl={row?.avatarUrl}

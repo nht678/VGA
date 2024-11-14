@@ -34,6 +34,12 @@ export function actDeleteWorkSkill(id) {
     };
 }
 
+export function actResetSuccess() {
+    return {
+        type: "RESET_SUCCESS",
+    };
+}
+
 export const actGetWorkSkillsAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
         const response = await workSkillService.getWorkSkills({ page, pageSize, search });

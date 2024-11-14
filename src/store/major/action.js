@@ -63,7 +63,7 @@ export const actUpdateMajorAsync = ({ formData, id }) => async (dispatch) => {
         const response = await majorService.updateMajor({ id, formData });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actUpdateMajor(response));
+            dispatch(actUpdateMajor(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }
@@ -87,4 +87,11 @@ export const actDeleteMajorAsync = (id) => async (dispatch) => {
         message.error('Xóa thất bại');
     }
 };
+
+export function resetMajor() {
+    return {
+        type: "RESET_MAJOR",
+    };
+}
+
 

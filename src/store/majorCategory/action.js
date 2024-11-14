@@ -88,3 +88,9 @@ export const actDeleteMajorCategoryAsync = (id) => async (dispatch) => {
         message.error('Xóa thất bại');
     }
 }
+
+export function resetMajorCategorySuccess() {
+    return {
+        type: 'RESET_MAJOR_CATEGORY',
+    };
+}

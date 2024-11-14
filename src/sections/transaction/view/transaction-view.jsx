@@ -31,8 +31,8 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actUniversityAddAsync, actUniversityGetAsync, resetUniversitySuccess } from 'src/store/university/action';
-import { getTransaction } from 'src/store/transaction/action';
+import { getTransaction, createDistributionAsync, resetTransaction } from 'src/store/transaction/action';
+import { getWalletbyIdAsync } from 'src/store/wallet/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -54,13 +54,15 @@ export default function TransactionView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [error, setError] = useState({});
+  const [walletHighSchoolId, setWalletHighSchoolId] = useState('');
+  console.log('walletHighSchoolId', walletHighSchoolId);
+  const [goldBalance, setGoldBalance] = useState('');
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    address: '',
-    description: '',
+    walletHighSchoolId: '',
+    gold: '',
+    years: '',
   });
 
   const [status, setStatus] = useState('false');
@@ -71,46 +73,91 @@ export default function TransactionView() {
 
   const dispatch = useDispatch();
 
-  const { universities = [], successUniversity, total } = useSelector((state) => state.reducerUniversity);
-  const { transactions = [] } = useSelector((state) => state.transactionReducer);
+  let accountId = localStorage.getItem('accountId');
+  console.log('accountId', accountId);
+
+  const { transactions = [], total = 0, success } = useSelector((state) => state.transactionReducer);
+  const { wallet = [] } = useSelector((state) => state.walletReducer);
   console.log('transactions', transactions);
-  console.log('universities', universities);
-  console.log('successUniversity', successUniversity)
 
-  // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
   useEffect(() => {
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: 2 }));
-
-  }, [dispatch, page, rowsPerPage]);
-
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId }));
+    dispatch(getWalletbyIdAsync({ id: accountId }));
 
 
-  // const handleAddUniversity = () => {
+  }, [dispatch, page, rowsPerPage, success]);
 
-  //   dispatch(actUniversityAddAsync(formData));
-  //   if (successUniversity) {
-  //     dispatch((resetUniversitySuccess()));
-  //     setFormData({
-  //       name: '',
-  //       email: '',
-  //       phone: '',
-  //       password: '',
-  //       address: '',
-  //       description: '',
-  //     });
-  //     message.success('Thêm trường đại học thành công');
+  useEffect(() => {
+    setWalletHighSchoolId(wallet?.id);
+    setGoldBalance(wallet?.goldBalance);
+  }, [wallet]); // Mảng phụ thuộc là `wallet`
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      walletHighSchoolId: walletHighSchoolId,
+    }));
+  }, [walletHighSchoolId]); // Mảng phụ thuộc là `walletHighSchoolId`
+
+  // const validateForm = () => {
+  //   let newError = {};
+  //   if (!formData.name) {
+  //     newError.name = 'Tên không được để trống';
   //   }
-
-  //   handleClose();
+  //   if (!formData.description) {
+  //     newError.description = 'Mô tả không được để trống';
+  //   }
+  //   setError(newError);
+  //   return Object.keys(newError).length === 0;
   // };
 
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
+  const handledistribute = async () => {
+    // Đợi createDistributionAsync hoàn tất
+    debugger
+    await dispatch(createDistributionAsync(formData));
+
+    // Khi createDistributionAsync hoàn tất, resetTransaction sẽ được gọi
+    dispatch(resetTransaction());
+
+    // Sau đó đóng modal hoặc thực hiện hành động khác
+    handleClose();
+
+    // Xử lý lỗi (hiển thị thông báo lỗi, v.v.)
+  }
+
+
+
   const [value, setValue] = useState(null); // Giá trị đã chọn
   console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
   console.log('inputValue', inputValue);
+
+
+  const options = [
+    { name: '2017', value: 2017 },
+    { name: '2018', value: 2018 },
+    { name: '2019', value: 2019 },
+    { name: '2020', value: 2020 },
+    { name: '2021', value: 2021 },
+    { name: '2022', value: 2022 },
+    { name: '2023', value: 2023 },
+    { name: '2024', value: 2024 },
+  ];
+
+
+
+  const [yearInputValue, setYearInputValue] = useState(''); // Input của trường năm
+  const [yearValue, setYearValue] = useState(null); // Giá trị đã chọn cho năm
+
+  const handleYearChange = (event, newValue) => {
+    setYearValue(newValue?.value);
+    setFormData({
+      ...formData,
+      year: newValue?.value
+    });
+  };
+
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -131,7 +178,7 @@ export default function TransactionView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = universities.map((n) => n.name);
+      const newSelecteds = transactions.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -158,13 +205,13 @@ export default function TransactionView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getTransaction({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getTransaction({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Gọi API với `pageSize` mới
   };
 
 
@@ -206,10 +253,6 @@ export default function TransactionView() {
 
 
 
-
-
-
-
   return (
     <>
 
@@ -222,7 +265,7 @@ export default function TransactionView() {
                 Ví của bạn
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                Số điểm: <strong>1500</strong>
+                Số điểm: <strong>{goldBalance}</strong>
               </Typography>
               {/* <Typography variant="body1" sx={{ mb: 2 }}>
                 Điểm đã phân phối: <strong>500</strong>
@@ -230,9 +273,58 @@ export default function TransactionView() {
               {/* <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                 Xem số điểm
               </Button> */}
-              <Button variant="outlined" color="secondary">
+              <Button variant="outlined" color="secondary" onClick={() => handleClickOpen('Create')}>
                 Phân phối điểm
               </Button>
+              <Dialog
+                open={open === 'Create'}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+                  Phân phối điểm
+                </DialogTitle>
+                <DialogContent >
+                  <DialogContentText id="alert-dialog-description">
+                    <Grid container spacing={2} sx={{ mt: 1 }}>
+                      <Grid size={{ md: 12 }}>
+                        <TextField
+                          fullWidth
+                          name='gold'
+                          label="Điểm"
+                          onChange={handlechange}
+                        />
+                      </Grid>
+
+                      <Grid size={{ md: 12 }}>
+                        <Autocomplete
+                          fullWidth
+                          onChange={handleYearChange}
+                          inputValue={yearInputValue}
+                          onInputChange={(event, newInputValue) => {
+                            setYearInputValue(newInputValue);
+                          }}
+                          id="controllable-states-demo-year"
+                          options={options || []}
+                          getOptionLabel={(option) => option?.name || ''}
+                          renderInput={(params) => <TextField {...params} label="Chọn năm" />}
+                        />
+
+                      </Grid>
+
+
+                    </Grid>
+
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose}>Hủy bỏ</Button>
+                  <Button onClick={handledistribute} autoFocus>
+                    Tạo mới
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </CardContent>
           </Card>
         </Box>
@@ -257,7 +349,7 @@ export default function TransactionView() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
-                  { id: 'goldamount', label: 'Số lượng vàng', align: 'center' },
+                  { id: 'goldamount', label: 'Số điểm', align: 'center' },
                   { id: 'time', label: 'Thời gian', align: 'center' },
                   { id: 'description', label: 'Mô tả', align: 'center' },
                   { id: '' },
@@ -269,7 +361,7 @@ export default function TransactionView() {
                     key={row?.id}
                     id={row?.id}
                     name={row?.name}
-                    goldAmount={row?.goldAmount}
+                    goldAmount={row?.goldAmount || 0}
                     description={row?.description || ''}
                     transactionDateTime={row?.transactionDateTime ? new Date(row.transactionDateTime).toISOString().split('T')[0] : ''}
                     avatarUrl={row?.avatarUrl}

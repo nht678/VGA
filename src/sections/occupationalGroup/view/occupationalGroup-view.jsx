@@ -28,7 +28,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actGetOccupationGroupAsync, actAddOccupationGroupAsync } from 'src/store/occupationGroup/action';
+import { actGetOccupationGroupAsync, actAddOccupationGroupAsync, resetOccupationGroupSuccess } from 'src/store/occupationGroup/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -55,7 +55,6 @@ export default function OccupationalGroupView() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    priceOnSlot: '',
   });
 
   console.log('formData', formData);
@@ -64,9 +63,6 @@ export default function OccupationalGroupView() {
     let newError = {};
     if (!formData.name) {
       newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
     }
     if (!formData.description) {
       newError.description = 'Mô tả không được để trống';
@@ -80,7 +76,7 @@ export default function OccupationalGroupView() {
 
   const dispatch = useDispatch();
 
-  const { occupationGroups, total = 0 } = useSelector((state) => state.occupationGroupReducer);
+  const { occupationGroups, total = 0, success } = useSelector((state) => state.occupationGroupReducer);
   console.log('occupationGroups', occupationGroups)
   // console.log('levels', levels);
 
@@ -90,26 +86,23 @@ export default function OccupationalGroupView() {
     dispatch(actGetOccupationGroupAsync({ page: page + 1, pageSize: rowsPerPage }));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage]);
+  }, [dispatch, page, rowsPerPage, success]);
 
 
 
-  // const handleAddConsultant = () => {
-
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   message.success('Tạo cấp độ tư vấn viên thành công');
-  //   dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
-
-  // console.log('formData', formData)
-
+  const handleAddOccupationGroup = () => {
+    if (validateForm()) {
+      dispatch(actAddOccupationGroupAsync(formData));
+      if (success) {
+        dispatch(resetOccupationGroupSuccess());
+        setFormData({
+          name: '',
+          description: '',
+        });
+        handleClose();
+      }
+    }
+  };
 
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
@@ -126,14 +119,7 @@ export default function OccupationalGroupView() {
       [e.target.name]: e.target.value,
     });
   };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
-  };
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -246,8 +232,8 @@ export default function OccupationalGroupView() {
             </DialogTitle>
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
-                {/* <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 12 }}>
                     <TextField
                       fullWidth
                       name='name'
@@ -257,17 +243,6 @@ export default function OccupationalGroupView() {
                       helperText={error.name}
                     />
                   </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='priceOnSlot'
-                      label="Giá trên mỗi slot"
-                      onChange={handlechange}
-                      error={!!error.priceOnSlot}
-                      helperText={error.priceOnSlot}
-                    />
-                  </Grid>
-
 
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>
@@ -277,15 +252,15 @@ export default function OccupationalGroupView() {
                   </Grid>
 
 
-                </Grid> */}
+                </Grid>
 
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Hủy bỏ</Button>
-              {/* <Button onClick={handleAddConsultant} autoFocus>
+              <Button onClick={handleAddOccupationGroup} autoFocus>
                 Tạo mới
-              </Button> */}
+              </Button>
             </DialogActions>
           </Dialog>
 

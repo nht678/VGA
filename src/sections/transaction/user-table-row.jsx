@@ -164,8 +164,7 @@ UserTableRow.propTypes = {
   name: PropTypes.string,
   selected: PropTypes.bool,
   id: PropTypes.string,
-  description: propTypes.string,
-  transactionDateTime: propTypes.string,
-  goldAmount: propTypes.number,
-
+  description: PropTypes.string,
+  transactionDateTime: PropTypes.string,
+  goldAmount: PropTypes.number,
 };

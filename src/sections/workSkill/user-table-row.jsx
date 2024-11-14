@@ -23,7 +23,7 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
+import { actUpdateWorkSkillAsync, actDeleteWorkSkillAsync, actResetSuccess } from 'src/store/workSkill/action';
 import { propTypes } from 'react-bootstrap/esm/Image';
 import { message } from 'antd';
 
@@ -57,12 +57,9 @@ export default function UserTableRow({
   avatarUrl,
   handleClick,
   id,
-  priceOnSlot,
   status,
-  description,
 }) {
-  console.log('id', id)
-  console.log('status', status)
+
 
 
   const [open, setOpen] = useState(null);
@@ -71,28 +68,21 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
 
-  const { successLevel } = useSelector((state) => state.levelReducer);
+  const { workSkills, total = 0, success } = useSelector((state) => state.workSkillReducer);
 
   const handleDelete = () => {
-    // console.log("id",id);
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Delete university success');
+    dispatch(actDeleteWorkSkillAsync(id));
+    if (success) {
+      dispatch(actResetSuccess());
     }
     handleCloseDialog();
   }
+
 
   const validateForm = () => {
     let newErrors = {};
     if (!formData.name) {
       newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -118,8 +108,6 @@ export default function UserTableRow({
   };
   const [formData, setFormData] = useState({
     name: name,
-    description: description,
-    priceOnSlot: priceOnSlot,
   });
 
   const handlechange = (event) => {
@@ -130,16 +118,15 @@ export default function UserTableRow({
     });
   }
 
-  const handleUpdateLevel = () => {
-    if (!validateForm()) return;
-    dispatch(actLevelUpdateAsync({ formData, id }));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Update university success');
+  const handleUpdateWorkSkill = () => {
+    if (validateForm()) {
+      dispatch(actUpdateWorkSkillAsync({ formData, id }));
+      if (success) {
+        dispatch(actResetSuccess());
+      }
+      handleClose();
     }
-    handleCloseDialog();
-  }
-
+  };
 
   const handleClose = () => {
     setDialog(null);
@@ -189,7 +176,7 @@ export default function UserTableRow({
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
+              <Grid size={{ md: 12 }}>
                 <TextField
                   fullWidth
                   defaultValue={name}
@@ -200,31 +187,12 @@ export default function UserTableRow({
                   helperText={errors.name}
                 />
               </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
-                  onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
-                />
-              </Grid>
-
-
-              <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
-                <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
-                />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
-              </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateLevel} autoFocus>
+          <Button onClick={handleUpdateWorkSkill} autoFocus>
             Cập nhật
           </Button>
         </DialogActions>
@@ -268,6 +236,4 @@ UserTableRow.propTypes = {
   selected: PropTypes.bool,
   id: PropTypes.number,
   status: PropTypes.bool,
-  priceOnSlot: PropTypes.number,
-  description: PropTypes.string,
 };

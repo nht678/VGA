@@ -23,7 +23,7 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
+import { actUpdateAdmissionMethodAsync, actDeleteAdmissionMethodAsync, resetAdmissionMethod } from 'src/store/admissionMethod/action';
 import { propTypes } from 'react-bootstrap/esm/Image';
 import { message } from 'antd';
 
@@ -67,34 +67,31 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState({});
 
   const dispatch = useDispatch();
 
-  const { successLevel } = useSelector((state) => state.levelReducer);
+  const { admissionMethods, total = 0, success } = useSelector((state) => state.admissionMethodReducer);
+  console.log('admissionMethods', admissionMethods)
 
   const handleDelete = () => {
-    // console.log("id",id);
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Delete university success');
+    dispatch(actDeleteAdmissionMethodAsync(id));
+    if (success) {
+      dispatch(resetAdmissionMethod());
     }
     handleCloseDialog();
-  }
+  };
+
 
   const validateForm = () => {
     let newErrors = {};
     if (!formData.name) {
       newErrors.name = 'Tên không được để trống';
     }
-    if (!formData.priceOnSlot) {
-      newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
     if (!formData.description) {
       newErrors.description = 'Mô tả không được để trống';
     }
-    setErrors(newErrors);
+    setError(newErrors);
     return Object.keys(newErrors).length === 0;
   }
 
@@ -119,7 +116,6 @@ export default function UserTableRow({
   const [formData, setFormData] = useState({
     name: name,
     description: description,
-    priceOnSlot: priceOnSlot,
   });
 
   const handlechange = (event) => {
@@ -130,17 +126,16 @@ export default function UserTableRow({
     });
   }
 
-  const handleUpdateLevel = () => {
-    if (!validateForm()) return;
-    dispatch(actLevelUpdateAsync({ formData, id }));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-      message.success('Update university success');
+  const handleUpdateAdmissionMedthod = () => {
+    if (validateForm()) {
+      dispatch(actUpdateAdmissionMethodAsync({ formData, id }));
+      if (success) {
+        dispatch(resetAdmissionMethod());
+      }
+      handleClose();
     }
-    handleCloseDialog();
+
   }
-
-
   const handleClose = () => {
     setDialog(null);
   };
@@ -188,47 +183,37 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          {"Cập nhật phương thức tuyển sinh"}
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
+              <Grid size={{ md: 12 }}>
                 <TextField
-                  fullWidth
                   defaultValue={name}
+                  fullWidth
                   name='name'
                   label="Tên"
                   onChange={handlechange}
-                  error={!!errors.name}
-                  helperText={errors.name}
+                  error={!!error.name}
+                  helperText={error.name}
                 />
               </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
-                  onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
-                />
-              </Grid>
-
-
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
+                <Typography variant="h6">Mô tả</Typography>
                 <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
+                {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
               </Grid>
+
+
             </Grid>
+
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateLevel} autoFocus>
+          <Button onClick={handleUpdateAdmissionMedthod} autoFocus>
             Cập nhật
           </Button>
         </DialogActions>
