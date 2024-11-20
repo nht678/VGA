@@ -1,4 +1,4 @@
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const occupationService = {
     getOccupations: ({ page, pageSize, search }) => {
@@ -9,16 +9,39 @@ const occupationService = {
         if (search) {
             params.name = search;
         }
-        return BASE_API.get(`/occupations`, { params });
+        return BASE_API.get(`/occupations`, {
+            params,
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
     },
     addOccupation: (data) =>
-        BASE_API.post(`/occupation`, data)
+        BASE_API.post(`/occupations`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     updateOccupation: (data) =>
-        BASE_API.put(`/occupation/${data.id}`, data.formData)
+        BASE_API.put(`/occupation/${data.id}`, data.formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     deleteOccupation: (id) =>
-        BASE_API.delete(`/occupation/${id}`)
+        BASE_API.delete(`/occupation/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
 }
 export default occupationService

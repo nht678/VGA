@@ -49,11 +49,7 @@ const options = ['1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997',
 export default function UniversityView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
 
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState('');
 
@@ -65,6 +61,19 @@ export default function UniversityView() {
   console.log('open', open)
 
   const [openDialog, setOpenDialog] = useState('');
+
+  console.log('option', options)
+  const [value, setValue] = useState(null); // Giá trị đã chọn
+  console.log('value', value);
+  const [inputValue, setInputValue] = useState(''); // Giá trị input\
+  console.log('inputValue', inputValue);
+
+  const dispatch = useDispatch();
+
+  const { universities = [], successUniversity, total } = useSelector((state) => state.reducerUniversity);
+  console.log('universities', universities);
+  console.log('successUniversity', successUniversity)
+
 
 
   const [formData, setFormData] = useState({
@@ -83,18 +92,7 @@ export default function UniversityView() {
 
   // write code here
 
-  const dispatch = useDispatch();
 
-  const { universities = [], successUniversity, total } = useSelector((state) => state.reducerUniversity);
-  console.log('universities', universities);
-  console.log('successUniversity', successUniversity)
-
-  // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
-  useEffect(() => {
-    dispatch(actUniversityGetAsync({ page: page + 1, pageSize: rowsPerPage }));
-    // Fetch regions chỉ một lần khi component mount
-
-  }, [dispatch, page, rowsPerPage, successUniversity]);
 
 
 
@@ -163,19 +161,10 @@ export default function UniversityView() {
 
 
 
-  // const [options, setOptions] = useState([]); // Danh sách options cho Autocomplete
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
-
   const handleYearChange = (event, newValue) => {
     setValue(newValue);
     setFormData({ ...formData, establishedYear: newValue });
   };
-
-
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -192,51 +181,15 @@ export default function UniversityView() {
     });
   };
 
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = universities.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actUniversityGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actUniversityGetAsync({ page: newPage + 1, pageSize: rowsPerPage, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actUniversityGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actUniversityGetAsync({ page: 1, pageSize: newRowsPerPage, search: filterName })); // Gọi API với `pageSize` mới
   };
 
   const handleClickOpen = (Typedialog) => {
@@ -262,8 +215,11 @@ export default function UniversityView() {
     }
   };
 
+  useEffect(() => {
+    dispatch(actUniversityGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    // Fetch regions chỉ một lần khi component mount
 
-
+  }, [successUniversity]);
 
 
   return (
@@ -345,7 +301,6 @@ export default function UniversityView() {
                         open={open}
                         onClose={handleClose}
                         onOpen={handleOpen}
-                        // value={age}
                         label="Trường"
                         onChange={handlechangeType}
                       >
@@ -394,7 +349,7 @@ export default function UniversityView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
@@ -403,12 +358,8 @@ export default function UniversityView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
+
+                numSelected={0}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
@@ -422,9 +373,10 @@ export default function UniversityView() {
                 ]}
               />
               <TableBody>
-                {universities.map((row) => (
+                {universities.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
+                    rowKey={index + 1}
                     name={row?.account?.name}
                     email={row?.account?.email}
                     phone={row?.account?.phone}
@@ -432,12 +384,10 @@ export default function UniversityView() {
                     description={row?.description}
                     id={row?.id}
                     status={row?.account?.status}
-                    avatarUrl={row?.avatarUrl}
+                    avatarUrl={row?.image_Url}
                     goldBalance={row?.account?.wallet?.goldBalance}
                     code={row?.code}
                     establishedYear={row?.establishedYear}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
                   />
                 ))}
               </TableBody>

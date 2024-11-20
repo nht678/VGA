@@ -224,7 +224,6 @@ export default function UserTableRow({
   };
   const deleteImageFireBase = async (filePath) => {
     try {
-      debugger
       // Create a reference to the file to delete based on its path
       const imageRef = ref(storage, filePath);
       await deleteObject(imageRef); // Delete image from Firebase Storage

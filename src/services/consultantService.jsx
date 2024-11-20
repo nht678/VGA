@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const consultantService = {
     getConsultants: async ({ page, pageSize, search, level }) => {
@@ -18,20 +18,43 @@ const consultantService = {
             params['consultant-level-id'] = level;
         }
 
-        const response = await BASE_API.get(`/consultants`, { params });
-        return response.data;
+        const response = await BASE_API.get(`/consultants`, {
+            params,
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
+        return response;
     },
     addConsultant: async (data) => {
-        const response = await BASE_API.post(`/consultants`, data);
-        return response.data;
+        const response = await BASE_API.post(`/consultants`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
+        return response;
     },
     updateConsultant: async (id, data) => {
-        const response = await BASE_API.put(`/consultant/${id}`, data);
-        return response.data;
+        const response = await BASE_API.put(`/consultant/${id}`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
+        return response;
     },
     deleteConsultant: async (id) => {
-        const response = await BASE_API.delete(`/consultant/${id}`);
-        return response.data;
+        const response = await BASE_API.delete(`/consultant/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
+        return response;
     },
 };
 export default consultantService;

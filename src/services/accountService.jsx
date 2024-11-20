@@ -4,7 +4,7 @@ import { BASE_API } from "./api";
 const accountService = {
     login: async (data) => {
         const response = await BASE_API.post('/login', data);
-        return response.data;
+        return response;
     },
     logout: async (id, token) => {
         const response = await BASE_API.post(`/logout/${id}`, {}, {
@@ -12,7 +12,7 @@ const accountService = {
                 Authorization: `Bearer ${token}`,
             }
         });
-        return response.data;
+        return response;
     },
     register: async (data) => {
         const response = await BASE_API.post('/register', data);

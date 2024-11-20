@@ -9,10 +9,10 @@ export const RESET_CONSULTANT_SUCCESS = "RESET_CONSULTANT_SUCCESS";
 
 export const getConsultants = ({ page, pageSize, search, level }) => async (dispatch) => {
     try {
-        const data = await consultantService.getConsultants({ page, pageSize, search, level });
+        const response = await consultantService.getConsultants({ page, pageSize, search, level });
         dispatch({
             type: GET_CONSULTANTS_SUCCESS,
-            payload: data,
+            payload: response.data,
         });
     } catch (error) {
         console.log(error);
@@ -22,10 +22,10 @@ export const getConsultants = ({ page, pageSize, search, level }) => async (disp
 export const addConsultant = (data) => async (dispatch) => {
     try {
         const response = await consultantService.addConsultant(data);
-        if (response) {
+        if (response.status === 201 || response.status === 200) {
             dispatch({
                 type: ADD_CONSULTANT,
-                payload: response,
+                payload: response.data,
             });
             message.success('Thêm mới thành công');
         } else {
@@ -40,11 +40,11 @@ export const addConsultant = (data) => async (dispatch) => {
 export const updateConsultant = (id, data) => async (dispatch) => {
     try {
         const response = await consultantService.updateConsultant(id, data);
-        if (response) {
+        if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
             dispatch({
                 type: UPDATE_CONSULTANT,
-                payload: response,
+                payload: response.data,
             });
         } else {
             message.error('Cập nhật thất bại');
@@ -58,7 +58,7 @@ export const updateConsultant = (id, data) => async (dispatch) => {
 export const deleteConsultant = (id) => async (dispatch) => {
     try {
         const response = await consultantService.deleteConsultant(id);
-        if (response) {
+        if (response.status === 200) {
             message.success('Xóa thành công');
             dispatch({
                 type: DELETE_CONSULTANT,

@@ -155,6 +155,7 @@ export const actHighSchoolUpdateAsync = ({ formData, id }) => async (dispatch) =
 export const actHighSchoolDeleteAsync = (id) => async (dispatch) => {
     try {
         const response = await highschoolService.deleteHighSchool(id);
+        debugger
         if (response.status === 200 || response.status === 201) {
             message.success('Xóa thành công');
             dispatch(actHighSchoolDelete(id));

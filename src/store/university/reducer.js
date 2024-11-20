@@ -1,6 +1,6 @@
 
 const initialState = {
-    university: [],
+    universities: [],
     successUniversity: false,
     total: 0,
 

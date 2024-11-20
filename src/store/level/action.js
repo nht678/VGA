@@ -1,4 +1,5 @@
 import { message } from "antd";
+import { el } from "date-fns/locale";
 import levelService from "src/services/levelService";
 
 export const ACT_LEVEL_GET = 'ACT_LEVEL_GET';
@@ -38,17 +39,20 @@ export const resetLevelSuccess = () => ({
 export const actLevelGetAsync = ({ page, pagesize, search }) => async (dispatch) => {
     try {
         const response = await levelService.getLevels({ page, pagesize, search });
-        dispatch(actLevelGet(response));
+        if (response.status === 200) {
+            dispatch(actLevelGet(response));
+        }
     } catch (error) {
         console.error(error);
+        message.error('Lấy dữ liệu thất bại');
     }
 };
 
 export const actLevelAddAsync = (data) => async (dispatch) => {
     try {
         const response = await levelService.addLevel(data);
-        if (response) {
-            dispatch(actAddLevel(response));
+        if (response.status === 201 || response.status === 200) {
+            dispatch(actAddLevel(response.data));
             message.success('Thêm mới thành công');
         } else {
             message.error('Thêm mới thất bại');
@@ -62,9 +66,9 @@ export const actLevelAddAsync = (data) => async (dispatch) => {
 export const actLevelUpdateAsync = ({ formData, id }) => async (dispatch) => {
     try {
         const response = await levelService.updateLevel({ formData, id });
-        if (response) {
+        if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actLevelUpdate(response));
+            dispatch(actLevelUpdate(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }
@@ -77,7 +81,7 @@ export const actLevelUpdateAsync = ({ formData, id }) => async (dispatch) => {
 export const actLevelDeleteAsync = (id) => async (dispatch) => {
     try {
         const response = await levelService.deleteLevel(id);
-        if (response) {
+        if (response.status === 200) {
             message.success('Xóa thành công');
             dispatch(actLevelDelete(id));
         } else {

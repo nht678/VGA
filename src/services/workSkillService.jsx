@@ -1,4 +1,4 @@
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const workSkillService = {
     getWorkSkills: ({ page, pageSize, search }) => {
@@ -9,7 +9,12 @@ const workSkillService = {
         if (search) {
             params.name = search;
         }
-        return BASE_API.get(`/work-skills`, { params });
+        return BASE_API.get(`/work-skills`, {
+            params,
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
     },
     addWorkSkill: (data) =>
         BASE_API.post(`/work-skills`, data)

@@ -1,4 +1,4 @@
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const entryLevelEducationService = {
     getEntryLevelEducations: ({ page, pageSize, search }) => {
@@ -9,16 +9,39 @@ const entryLevelEducationService = {
         if (search) {
             params.name = search;
         }
-        return BASE_API.get(`/entry-level-educations`, { params });
+        return BASE_API.get(`/entry-level-educations`, {
+            params,
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
     },
     addEntryLevelEducation: (data) =>
-        BASE_API.post(`/entry-level-educations`, data)
+        BASE_API.post(`/entry-level-educations`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     updateEntryLevelEducation: ({ formData, id }) =>
-        BASE_API.put(`/entry-level-education/${id}`, formData)
+        BASE_API.put(`/entry-level-education/${id}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     deleteEntryLevelEducation: (id) =>
-        BASE_API.delete(`/entry-level-education/${id}`)
+        BASE_API.delete(`/entry-level-education/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
 }
 export default entryLevelEducationService

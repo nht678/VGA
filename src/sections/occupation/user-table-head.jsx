@@ -27,12 +27,8 @@ export default function UserTableHead({
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-          />
+        <TableCell style={{ width: '50px' }}>
+          #
         </TableCell>
 
         {headLabel.map((headCell) => (

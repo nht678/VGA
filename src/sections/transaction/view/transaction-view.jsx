@@ -114,7 +114,6 @@ export default function TransactionView() {
 
   const handledistribute = async () => {
     // Đợi createDistributionAsync hoàn tất
-    debugger
     await dispatch(createDistributionAsync(formData));
 
     // Khi createDistributionAsync hoàn tất, resetTransaction sẽ được gọi
@@ -154,7 +153,7 @@ export default function TransactionView() {
     setYearValue(newValue?.value);
     setFormData({
       ...formData,
-      year: newValue?.value
+      years: newValue?.value
     });
   };
 

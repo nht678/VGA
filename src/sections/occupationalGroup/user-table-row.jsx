@@ -23,7 +23,8 @@ import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateOccupationGroupAsync, actDeleteOccupationGroupAsync, resetOccupationGroupSuccess } from 'src/store/occupationGroup/action';
-import { message } from 'antd';
+import InfoIcon from '@mui/icons-material/Info';
+import { Image } from 'antd'
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -50,17 +51,13 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
-  handleClick,
   id,
   status,
   description,
+  rowKey
 }) {
-  console.log('id', id)
-  console.log('status', status)
-
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -135,15 +132,15 @@ export default function UserTableRow({
 
 
   const handleClose = () => {
-    setDialog(null);
+    setDialog('');
   };
 
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover >
+        <TableCell >
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -181,7 +178,7 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          Cập nhật nhóm nghề nghiệp
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -199,7 +196,7 @@ export default function UserTableRow({
               </Grid>
 
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
+                <Typography variant="h6" >Mô tả</Typography>
                 <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
                 {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
@@ -215,7 +212,87 @@ export default function UserTableRow({
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết nhóm nghề nghiệp
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 4 }}>
+                <Image
+                  width={200}
+                  src={avatarUrl}
+                  style={{ zIndex: 2 }}
+                />
+              </Grid>
+              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Nhóm nghề nghiệp:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tình trạng:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {getStatusLabel(status)}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Mô tả:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {description}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
 
+
+
+
+      </Dialog >
 
       <DeleteDialog
         open={dialog}
@@ -241,6 +318,10 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
+        </MenuItem>
       </Popover>
     </>
   );
@@ -248,10 +329,9 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
-  selected: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.string,
   status: PropTypes.bool,
   description: PropTypes.string,
+  rowKey: PropTypes.number
 };

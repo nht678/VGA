@@ -42,7 +42,7 @@ export const actAddAdmissionInformationAsync = ({ formData, universityId }) => a
     try {
         const response = await admissionInformationService.addAdmissionInformation({ formData, universityId });
         if (response.status === 200 || response.status === 201) {
-            dispatch(actAddAdmissionInformation(response));
+            dispatch(actAddAdmissionInformation(response.data));
             message.success('Thêm mới thành công');
         } else {
             message.error('Thêm mới thất bại');

@@ -24,8 +24,8 @@ import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
-import { propTypes } from 'react-bootstrap/esm/Image';
 import { message } from 'antd';
+import InfoIcon from '@mui/icons-material/Info';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -52,10 +52,8 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
-  handleClick,
   id,
   entryLevelEducation,
   occupationalGroup,
@@ -67,9 +65,11 @@ export default function UserTableRow({
   jobOutlook,
   payScale,
   workEnvironment,
+  rowKey
 }) {
-  console.log('id', id)
-  console.log('status', status)
+
+  console.log('rowKey', rowKey);
+
 
 
   const [open, setOpen] = useState(null);
@@ -85,7 +85,6 @@ export default function UserTableRow({
     dispatch(actLevelDeleteAsync(id));
     if (successLevel) {
       dispatch(resetLevelSuccess());
-      message.success('Delete university success');
     }
     handleCloseDialog();
   }
@@ -142,7 +141,6 @@ export default function UserTableRow({
     dispatch(actLevelUpdateAsync({ formData, id }));
     if (successLevel) {
       dispatch(resetLevelSuccess());
-      message.success('Update university success');
     }
     handleCloseDialog();
   }
@@ -155,9 +153,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover >
+        <TableCell >
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -217,7 +215,7 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          Cập nhật nghề nghiệp
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -289,6 +287,10 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
+        </MenuItem>
       </Popover>
     </>
   );
@@ -296,10 +298,8 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
-  selected: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.string,
   entryLevelEducation: PropTypes.string,
   status: PropTypes.bool,
   description: PropTypes.string,
@@ -310,5 +310,5 @@ UserTableRow.propTypes = {
   jobOutlook: PropTypes.string,
   payScale: PropTypes.string,
   workEnvironment: PropTypes.string,
-
+  rowKey: PropTypes.number
 };

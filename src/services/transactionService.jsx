@@ -1,4 +1,4 @@
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 
 const transactionService = {
@@ -14,7 +14,12 @@ const transactionService = {
         if (accountId) {
             params.account_id = accountId;
         }
-        const response = await BASE_API.get(`/transactions`, { params });
+        const response = await BASE_API.get(`/transactions`, {
+            params,
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
 
         console.log(response.data);
 
@@ -22,9 +27,25 @@ const transactionService = {
     },
 
     createDistribution: async (data) => {
-        const response = await BASE_API.put(`/wallet/distribution`, data);
+        const response = await BASE_API.put(`/wallet/distribution`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
+        return response;
+    },
+    createDistributionofAdminUniAsync: async ({ formData, gold }) => {
+        const response = await BASE_API.put(`wallet/tranferring-gold?gold=${gold}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
         debugger
-        return response.data;
+        return response;
     }
 }
 export default transactionService;

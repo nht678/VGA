@@ -24,8 +24,8 @@ import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateMajorCategoryAsync, actDeleteMajorCategoryAsync, resetMajorCategorySuccess } from 'src/store/majorCategory/action';
-import { propTypes } from 'react-bootstrap/esm/Image';
-import { message } from 'antd';
+import InfoIcon from '@mui/icons-material/Info';
+import { Image } from 'antd';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -52,15 +52,15 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
-  handleClick,
   id,
   status,
+  rowKey
 }) {
   console.log('id', id)
   console.log('status', status)
+  console.log('rowKey', rowKey)
 
 
   const [open, setOpen] = useState(null);
@@ -86,7 +86,7 @@ export default function UserTableRow({
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.rowKeys(newErrors).length === 0;
   }
 
 
@@ -136,9 +136,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover tabIndex={-1} role="checkbox">
+        <TableCell>
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -171,7 +171,7 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          Cập nhật thể loại ngành
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -199,6 +199,75 @@ export default function UserTableRow({
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết Lĩnh vực chuyên môn chính
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 4 }}>
+                <Image
+                  width={200}
+                  src={avatarUrl}
+                  style={{ zIndex: 2 }}
+                />
+              </Grid>
+              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Lĩnh vực chuyên môn chính
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tình trạng:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {getStatusLabel(status)}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+
+
+
+
+      </Dialog >
 
 
       <DeleteDialog
@@ -225,6 +294,10 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
+        </MenuItem>
       </Popover>
     </>
   );
@@ -232,9 +305,8 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
-  selected: PropTypes.bool,
   id: PropTypes.number,
   status: PropTypes.bool,
+  rowKey: PropTypes.number
 };

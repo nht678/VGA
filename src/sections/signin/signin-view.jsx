@@ -29,19 +29,19 @@ export default function SigninView() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Form data', formData);
-        dispatch(signinUser(formData));
+        dispatch(signinUser(formData, navigate));
         // if (isAuthenticated)
         // {
         // message.success('Sign in successfully');
         // }
         // navigate('/', { replace: true });
     }
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate('/', { replace: true });
-            message.success('Đăng nhập thành công');
-        }
-    }, [isAuthenticated]);
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         navigate('/', { replace: true });
+    //         message.success('Đăng nhập thành công');
+    //     }
+    // }, [isAuthenticated]);
 
 
 
@@ -90,9 +90,9 @@ export default function SigninView() {
                                     Mật khẩu
                                 </label>
                                 <div className="text-sm">
-                                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    {/* <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
                                         Quên mật khẩu?
-                                    </a>
+                                    </a> */}
                                 </div>
                             </div>
                             <div className="mt-2">

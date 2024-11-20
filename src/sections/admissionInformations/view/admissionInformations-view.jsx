@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -8,6 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+
 
 
 import Dialog from '@mui/material/Dialog';
@@ -57,13 +58,47 @@ export default function AdmissionInformationsView() {
   const [error, setError] = useState({});
 
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState([{
     majorId: '',
     admissionMethodId: '',
     tuitionFee: 0,
     year: '',
     quantityTarget: 0,
-  });
+  }]);
+
+  const handleAddRow = () => {
+    // Thêm hàng mới vào formData
+    setFormData([
+      ...formData,
+      {
+        majorId: '',
+        admissionMethodId: '',
+        tuitionFee: 0,
+        year: '',
+        quantityTarget: 0,
+      },
+    ]);
+  };
+
+  const handleRemoveRow = (index) => {
+    // Xóa hàng dựa trên index
+    setFormData(formData.filter((_, i) => i !== index));
+  };
+
+  const handleChangeField = (index, field, value) => {
+    // Cập nhật giá trị cho từng hàng
+    const parsedValue = field === 'tuitionFee' || field === 'quantityTarget' ? parseInt(value, 10) || 0 : value;
+    // const updatedFormData = [...formData];
+    // updatedFormData[index][field] = value;
+    // setFormData(updatedFormData);
+    const newFormData = [...formData];
+    newFormData[index] = {
+      ...newFormData[index],
+      [field]: parsedValue,
+    };
+
+    setFormData(newFormData);
+  };
 
   const dispatch = useDispatch();
 
@@ -140,17 +175,17 @@ export default function AdmissionInformationsView() {
   };
 
   const handleAddAdmissionInfo = () => {
-    if (!validateForm()) return;
+    // if (!validateForm()) return;
     dispatch(actAddAdmissionInformationAsync({ formData, universityId: userId }));
     if (success) {
       dispatch(actResetAdmissionInformation());
-      setFormData({
+      setFormData([{
         majorId: '',
         admissionMethodId: '',
         tuitionFee: '',
         year: '',
         quantityTarget: '',
-      });
+      }]);
       handleClose();
     }
   }
@@ -181,22 +216,6 @@ export default function AdmissionInformationsView() {
   }, [dispatch, page, rowsPerPage, success]);
 
 
-
-  // const handleAddConsultant = () => {
-
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   message.success('Tạo cấp độ tư vấn viên thành công');
-  //   // dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
-
-  console.log('formData', formData)
 
 
 
@@ -263,9 +282,17 @@ export default function AdmissionInformationsView() {
     setOpen(Typedialog);
   };
 
+  const dialogRef = useRef();
+
   const handleClose = () => {
-    setOpen(false);
+    // setFormData([{ majorId: '', admissionMethodId: '', tuitionFee: 0, year: '', quantityTarget: 0 }]);
+    // setOpen(false);
+    // if (dialogRef.current && dialogRef.current.contains(event.target)) {
+    //   return;
+    // }
+    setOpen(false);  // Đóng Dialog nếu không phải click ngoài
   };
+
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
@@ -293,14 +320,14 @@ export default function AdmissionInformationsView() {
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
             Tạo thông tin tuyển sinh
           </Button>
-
-
+          {/* 
           <Dialog
             open={open === 'Create'}
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             fullWidth
+            maxWidth='lg'
           >
             <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
               {"Tạo thông tin tuyển sinh"}
@@ -308,7 +335,7 @@ export default function AdmissionInformationsView() {
             <DialogContent >
               <DialogContentText id="alert-dialog-description">
                 <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 3 }}>
                     <Autocomplete
                       fullWidth
                       onChange={handleMajorChange}
@@ -324,7 +351,7 @@ export default function AdmissionInformationsView() {
                     {error.majorId && <Typography variant='caption' color="error">{error.majorId}</Typography>}
                   </Grid>
 
-                  <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 3 }}>
                     <Autocomplete
                       onChange={handleAdmissionMethodChange}
                       inputValue={admissionMethodInputValue}
@@ -338,7 +365,7 @@ export default function AdmissionInformationsView() {
                     />
                     {error.admissionMethodId && <Typography variant='caption' color="error">{error.admissionMethodId}</Typography>}
                   </Grid>
-                  <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 2 }}>
                     <TextField
                       fullWidth
                       label="Học phí"
@@ -348,7 +375,7 @@ export default function AdmissionInformationsView() {
                     />
                     {error.tuitionFee && <Typography variant='caption' color="error">{error.tuitionFee}</Typography>}
                   </Grid>
-                  <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 2 }}>
                     <Autocomplete
                       fullWidth
                       onChange={handleYearChange}
@@ -363,7 +390,7 @@ export default function AdmissionInformationsView() {
                     />
                     {error.year && <Typography variant='caption' color="error">{error.year}</Typography>}
                   </Grid>
-                  <Grid size={{ md: 6 }}>
+                  <Grid size={{ md: 2 }}>
                     <TextField
                       fullWidth
                       label="Số lượng mục tiêu"
@@ -374,6 +401,103 @@ export default function AdmissionInformationsView() {
                     {error.quantityTarget && <Typography variant='caption' color="error">{error.quantityTarget}</Typography>}
                   </Grid>
                 </Grid>
+
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
+              <Button onClick={handleAddAdmissionInfo} autoFocus>
+                Tạo mới
+              </Button>
+            </DialogActions>
+          </Dialog> */}
+          <Dialog
+            open={open === 'Create'}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth
+            maxWidth="lg"
+          >
+            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+              {"Tạo thông tin tuyển sinh"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                {formData?.map((row, index) => (
+                  <Grid container spacing={2} sx={{ mt: 1 }} key={index}>
+                    <Grid size={{ md: 3 }}> {/* Đây là cách bạn sử dụng 'size' từ @mui/system */}
+                      <Autocomplete
+                        value={majors.find(major => major.id === formData[index].majorId) || null}
+                        fullWidth
+                        onChange={(e, newValue) =>
+                          handleChangeField(index, 'majorId', newValue?.id)
+                        }
+                        options={majors || []}
+                        getOptionLabel={(option) => option?.name || ''}
+                        renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
+                      />
+                    </Grid>
+                    <Grid size={{ md: 3 }}>
+                      <Autocomplete
+                        fullWidth
+                        value={admissionMethods.find(admissionMethod => admissionMethod.id === formData[index].admissionMethodId) || null}
+                        onChange={(e, newValue) =>
+                          handleChangeField(index, 'admissionMethodId', newValue?.id)
+                        }
+                        options={admissionMethods || []}
+                        getOptionLabel={(option) => option?.name || ''}
+                        renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
+                      />
+                    </Grid>
+                    <Grid size={{ md: 3 }}>
+                      <Autocomplete
+                        fullWidth
+                        value={options.find(option => option?.value === formData[index].year) || null}
+                        onChange={(e, newValue) =>
+                          handleChangeField(index, 'year', newValue?.value)
+                        }
+                        options={options || []}
+                        getOptionLabel={(option) => option?.name || ''}
+                        renderInput={(params) => <TextField {...params} label="Chọn năm" />}
+                      />
+                    </Grid>
+                    <Grid size={{ md: 1 }}>
+                      <TextField
+                        fullWidth
+                        label="Học phí"
+                        value={row.tuitionFee || ''}
+                        onChange={(e) => handleChangeField(index, 'tuitionFee', e.target.value)}
+                        type="number"  // Giới hạn nhập chỉ số
+                      />
+                    </Grid>
+                    <Grid size={{ md: 1 }}>
+                      <TextField
+                        fullWidth
+                        label="Số lượng mục tiêu"
+                        value={row.quantityTarget || ''}
+                        onChange={(e) => handleChangeField(index, 'quantityTarget', e.target.value)}
+                        type="number"  // Giới hạn nhập chỉ số
+                      />
+                    </Grid>
+                    <Grid size={{ md: 1 }}>
+                      <Button
+                        color="error"
+                        onClick={() => handleRemoveRow(index)}
+                      >
+                        Xóa
+                      </Button>
+                    </Grid>
+                  </Grid>
+                ))}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddRow}
+                  sx={{ mt: 2 }}
+                >
+                  Thêm hàng mới
+                </Button>
 
               </DialogContentText>
             </DialogContent>
@@ -424,6 +548,8 @@ export default function AdmissionInformationsView() {
                     id={row?.id}
                     admissionMethodName={row?.admissionMethodName}
                     majorName={row?.majorName}
+                    majorId={row?.majorId}
+                    admissionMethodId={row?.admissionMethodId}
                     quantityTarget={row?.quantityTarget}
                     status={row?.status}
                     tuitionFee={row?.tuitionFee}

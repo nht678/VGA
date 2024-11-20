@@ -24,9 +24,8 @@ import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateEntryLevelEducationAsync, actDeleteEntryLevelEducationAsync, resetEntryLevelEducationSuccess } from 'src/store/entryLevelEducation/action';
-import { propTypes } from 'react-bootstrap/esm/Image';
-import { message } from 'antd';
-
+import InfoIcon from '@mui/icons-material/Info';
+import { Image } from 'antd';
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
   switch (status) {
@@ -52,16 +51,12 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
-  handleClick,
   id,
   status,
+  rowKey
 }) {
-  console.log('id', id)
-  console.log('status', status)
-
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -72,7 +67,6 @@ export default function UserTableRow({
   const { entryLevelEducations, total = 0, success } = useSelector((state) => state.entryLevelEducationReducer);
 
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actDeleteEntryLevelEducationAsync(id));
     if (success) {
       dispatch(resetEntryLevelEducationSuccess());
@@ -136,14 +130,13 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover >
+        <TableCell>
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>
@@ -198,6 +191,69 @@ export default function UserTableRow({
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết trình độ học vấn đâu vào
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Trình độ học vấn đâù vào:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tình trạng:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {status ? 'Active' : 'Blocked'}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+
+          </DialogContentText>
+        </DialogContent>
+
+
+
+
+      </Dialog >
 
 
       <DeleteDialog
@@ -224,6 +280,10 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
+        </MenuItem>
       </Popover>
     </>
   );
@@ -231,9 +291,8 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
-  selected: PropTypes.bool,
   id: PropTypes.number,
   status: PropTypes.bool,
+  rowKey: PropTypes.number,
 };

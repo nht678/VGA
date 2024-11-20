@@ -26,13 +26,33 @@ export const createDistributionAsync = (data) => async (dispatch) => {
     try {
         debugger
         const response = await transactionService.createDistribution(data);
-        dispatch(createDistribution(response));
-        message.success("Tạo phân phối thành công");
+        if (response.status === 200 || response.status === 201) {
+            dispatch(createDistribution(response.data));
+            message.success("Tạo phân phối thành công");
+        } else {
+            message.error("Tạo phân phối thất bại");
+        }
     } catch (error) {
         console.error(error);
         message.error("Tạo phân phối thất bại");
     }
 }
+
+export const createDistributionofAdminUniAsync = ({ formData, gold }) => async (dispatch) => {
+    try {
+        const response = await transactionService.createDistributionofAdminUniAsync({ formData, gold });
+        if (response.status === 200 || response.status === 201) {
+            dispatch(createDistribution(response.data));
+            message.success("Tạo phân phối thành công");
+        } else {
+            message.error("Tạo phân phối thất bại");
+        }
+    } catch (error) {
+        console.error(error);
+        message.error("Tạo phân phối thất bại");
+    }
+}
+
 
 export const resetTransaction = () => ({
     type: "RESET_TRANSACTION",

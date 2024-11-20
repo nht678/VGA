@@ -10,20 +10,20 @@ const levelService = {
                 'name': search || '',
             },
         });
-        return response.data;
+        return response;
     },
     addLevel: async (data) => {
         const response = await BASE_API.post(`consultant-levels`, data);
-        return response.data;
+        return response;
     },
 
     updateLevel: async ({ formData, id }) => {
         const response = await BASE_API.put(`consultant-levels/${id}`, formData);
-        return response.data;
+        return response;
     },
     deleteLevel: async (id) => {
         const response = await BASE_API.delete(`consultant-levels/${id}`);
-        return response.data;
+        return response;
     },
 };
 export default levelService;

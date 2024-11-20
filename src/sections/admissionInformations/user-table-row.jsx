@@ -62,11 +62,13 @@ export default function UserTableRow({
   status,
   tuitionFee,
   year,
+  admissionMethodId,
+  majorId,
 
 }) {
   console.log('id', id)
-  console.log('status', status)
-
+  console.log('majorId', majorId)
+  console.log('admissionMethodId', admissionMethodId)
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -95,6 +97,17 @@ export default function UserTableRow({
     }
     handleCloseDialog();
   }
+
+  useEffect(() => {
+    // Khi majorId, admissionMethodId hoặc các giá trị khác thay đổi, cập nhật lại formData
+    setFormData([{
+      majorId: majorId,
+      admissionMethodId: admissionMethodId,
+      tuitionFee: tuitionFee,
+      year: year,
+      quantityTarget: quantityTarget,
+    }]);
+  }, [majorId, admissionMethodId, tuitionFee, year, quantityTarget]);
 
 
   const validateForm = () => {
@@ -188,13 +201,58 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const [formData, setFormData] = useState({
-    majorId: '',
-    admissionMethodId: '',
-    quantityTarget: quantityTarget,
+  const [formData, setFormData] = useState([{
+    majorId: majorId,
+    admissionMethodId: admissionMethodId,
     tuitionFee: tuitionFee,
     year: year,
-  });
+    quantityTarget: quantityTarget,
+  }]);
+  console.log('formData', formData)
+
+
+  const handleAddRow = () => {
+    // Thêm hàng mới vào formData
+    setFormData([
+      ...formData,
+      {
+        majorId: '',
+        admissionMethodId: '',
+        tuitionFee: 0,
+        year: '',
+        quantityTarget: 0,
+      },
+    ]);
+  };
+
+  const handleRemoveRow = (index) => {
+    // Xóa hàng dựa trên index
+    setFormData(formData.filter((_, i) => i !== index));
+  };
+
+  const handleChangeField = (index, field, value) => {
+    // Cập nhật giá trị cho từng hàng
+    const parsedValue = field === 'tuitionFee' || field === 'quantityTarget' ? parseInt(value, 10) || 0 : value;
+    // const updatedFormData = [...formData];
+    // updatedFormData[index][field] = value;
+    // setFormData(updatedFormData);
+    const newFormData = [...formData];
+    newFormData[index] = {
+      ...newFormData[index],
+      [field]: parsedValue,
+    };
+
+    setFormData(newFormData);
+  };
+
+  const handleUpdateAdmissionInfo = () => {
+    dispatch(actUpdateAdmissionInformationAsync({ formData, id }));
+    if (success) {
+      dispatch(actResetAdmissionInformation());
+    }
+    handleClose();
+  }
+
 
   const handlechange = (event) => {
     setFormData({
@@ -256,7 +314,7 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <Dialog
+      {/* <Dialog
         open={dialog === 'edit'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -348,6 +406,106 @@ export default function UserTableRow({
             Cập nhật
           </Button>
         </DialogActions>
+      </Dialog> */}
+
+      <Dialog
+        open={dialog === 'edit'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+          {"Cập nhât thông tin tuyển sinh"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {formData?.map((row, index) => (
+              <Grid container spacing={2} sx={{ mt: 1 }} key={index}>
+                <Grid size={{ md: 3 }}> {/* Đây là cách bạn sử dụng 'size' từ @mui/system */}
+                  <Autocomplete
+                    value={majors.find(major => major.id === formData[index].majorId) || null}
+                    fullWidth
+                    onChange={(e, newValue) =>
+                      handleChangeField(index, 'majorId', newValue?.id)
+                    }
+                    options={majors || []}
+                    getOptionLabel={(option) => option?.name || ''}
+                    renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
+                  />
+                </Grid>
+                <Grid size={{ md: 3 }}>
+                  <Autocomplete
+                    fullWidth
+                    value={admissionMethods.find(admissionMethod => admissionMethod.id === formData[index].admissionMethodId) || null}
+                    onChange={(e, newValue) =>
+                      handleChangeField(index, 'admissionMethodId', newValue?.id)
+                    }
+                    options={admissionMethods || []}
+                    getOptionLabel={(option) => option?.name || ''}
+                    renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
+                  />
+                </Grid>
+                <Grid size={{ md: 3 }}>
+                  <Autocomplete
+                    fullWidth
+                    value={options.find(option => option?.value === formData[index].year) || null}
+                    onChange={(e, newValue) =>
+                      handleChangeField(index, 'year', newValue?.value)
+                    }
+                    options={options || []}
+                    getOptionLabel={(option) => option?.name || ''}
+                    renderInput={(params) => <TextField {...params} label="Chọn năm" />}
+                  />
+                </Grid>
+                <Grid size={{ md: 1 }}>
+                  <TextField
+                    fullWidth
+                    defaultValue={row.tuitionFee || ''}
+                    label="Học phí"
+                    value={row.tuitionFee || ''}
+                    onChange={(e) => handleChangeField(index, 'tuitionFee', e.target.value)}
+                    type="number"  // Giới hạn nhập chỉ số
+                  />
+                </Grid>
+                <Grid size={{ md: 1 }}>
+                  <TextField
+                    fullWidth
+                    defaultValue={row.quantityTarget || ''}
+                    label="Số lượng mục tiêu"
+                    value={row.quantityTarget || ''}
+                    onChange={(e) => handleChangeField(index, 'quantityTarget', e.target.value)}
+                    type="number"  // Giới hạn nhập chỉ số
+                  />
+                </Grid>
+                <Grid size={{ md: 1 }}>
+                  <Button
+                    color="error"
+                    onClick={() => handleRemoveRow(index)}
+                  >
+                    Xóa
+                  </Button>
+                </Grid>
+              </Grid>
+            ))}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddRow}
+              sx={{ mt: 2 }}
+            >
+              Thêm hàng mới
+            </Button>
+
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
+          <Button onClick={handleUpdateAdmissionInfo} autoFocus>
+            Cập nhật
+          </Button>
+        </DialogActions>
       </Dialog>
 
 
@@ -392,5 +550,7 @@ UserTableRow.propTypes = {
   status: PropTypes.bool,
   tuitionFee: PropTypes.number,
   year: PropTypes.number,
+  majorId: PropTypes.string,
+  admissionMethodId: PropTypes.string,
 
 };

@@ -25,6 +25,7 @@
     }
   },
   "rules": {
+    "arrow-body-style": "off",
     "jsx-a11y/click-events-have-key-events": "off",
     "no-nested-ternary": "off",
     "object-shorthand": "off",

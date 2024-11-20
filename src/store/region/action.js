@@ -34,9 +34,8 @@ export function actRegionGet(data) {
 export const actGetRegionAsync = () => async (dispatch) => {
     try {
         const response = await regionService.getRegions();
-        if (response) {
-            dispatch(actRegionGet(response));
-            message.success('Lấy dữ liệu thành công');
+        if (response.status === 200) {
+            dispatch(actRegionGet(response.data));
         }
     } catch (error) {
         console.error(error);

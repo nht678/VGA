@@ -1,7 +1,8 @@
-import { BASE_API } from "./api"
+import { BASE_API, TOKEN } from "./api"
 
 const admissionInformationService = {
     getAdmissionInformation: ({ page, pageSize, search, universityid }) => {
+        console.log('TOKEN', TOKEN);
         const params = {
             'current-page': page,
             'page-size': pageSize,
@@ -10,16 +11,39 @@ const admissionInformationService = {
         if (search) {
             params.name = search;
         }
-        return BASE_API.get(`/admission-informations`, { params });
+        return BASE_API.get(`/admission-informations`, {
+            params,
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
     },
     addAdmissionInformation: ({ formData, universityId }) =>
-        BASE_API.post(`/admission-information/${universityId}`, formData)
+        BASE_API.post(`/admission-information/${universityId}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
-    updateAdmissionInformation: (data) =>
-        BASE_API.put(`/admission-information/${data.id}`, data.formData)
+    updateAdmissionInformation: ({ formData, id }) =>
+        BASE_API.put(`/admission-informations/${id}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     deleteAdmissionInformation: (id) =>
-        BASE_API.delete(`/admission-information/${id}`)
+        BASE_API.delete(`/admission-information/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
 }
 export default admissionInformationService

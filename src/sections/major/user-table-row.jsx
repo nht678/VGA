@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+import { Upload, Button as ButtonAnt, Image } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -24,7 +28,7 @@ import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateMajorAsync, resetMajor, actDeleteMajorAsync } from 'src/store/major/action';
-import { message } from 'antd';
+import InfoIcon from '@mui/icons-material/Info';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -51,24 +55,23 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   avatarUrl,
-  handleClick,
   id,
   name,
   majorCategoryName,
   status,
   description,
   code,
-  majorCategoryId
+  majorCategoryId,
+  rowKey
 }) {
-  console.log('id', id)
-  console.log('status', status)
 
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [error, setError] = useState({});
+  const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input
+
 
   const dispatch = useDispatch();
 
@@ -76,12 +79,10 @@ export default function UserTableRow({
   console.log('majors', majors)
   const { majorCategories } = useSelector((state) => state.majorCategoryReducer);
   console.log('majorCategories', majorCategories);
-  // console.log('levels', levels);
 
   const [majorCategoriesValue, setMajorCategoriesValue] = useState(
     majorCategories.find((item) => item.id === majorCategoryId) || null
   );
-  const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input
 
   const handleMajorCategoriesChange = (event, newValue) => {
     setMajorCategoriesValue(newValue);
@@ -93,6 +94,9 @@ export default function UserTableRow({
 
   const handleDelete = () => {
     dispatch(actDeleteMajorAsync(id));
+    if (success) {
+      dispatch(resetMajor());
+    }
     handleCloseDialog();
   }
 
@@ -114,8 +118,6 @@ export default function UserTableRow({
     return Object.keys(newErrors).length === 0;
   }
 
-
-
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -136,7 +138,8 @@ export default function UserTableRow({
     code: code,
     name: name,
     majorCategoryId: majorCategoryId,
-    description
+    description: description,
+    image: avatarUrl
   });
 
   const handlechange = (event) => {
@@ -146,6 +149,83 @@ export default function UserTableRow({
 
     });
   }
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(avatarUrl || ""); // Lưu URL ảnh (có thể là ảnh cũ nếu có avatarUrl)
+  const [fileList, setFileList] = useState([]); // Danh sách file của Upload
+
+  useEffect(() => {
+    if (avatarUrl) {
+      setImageUrl(avatarUrl); // Cập nhật imageUrl với avatarUrl nếu có
+      setFileList([{
+        uid: '-1', // Đảm bảo có một uid cho ảnh hiện tại
+        name: 'image.jpg', // Đặt tên file phù hợp (có thể lấy tên ảnh từ avatarUrl)
+        status: 'done', // Đảm bảo file đã được tải lên
+        url: avatarUrl, // URL ảnh cũ từ Firebase
+      }]);
+    }
+  }, [avatarUrl]); // Cập nhật fileList khi avatarUrl thay đổi
+
+  const uploadProps = {
+    name: "file",
+    listType: "picture",
+    fileList: fileList, // Hiển thị ảnh cũ nếu có
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl(url); // Lưu URL vào state
+        setFileList([{
+          uid: file.uid,
+          name: file.name,
+          status: 'done',
+          url,
+        }]);
+
+        setFormData((prevData) => ({
+          ...prevData,
+          image: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(file.url); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setFileList([]); // Xóa file trong fileList
+        setImageUrl(""); // Xóa URL trong state
+
+        setFormData((prevData) => ({
+          ...prevData,
+          image: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+  ;
+
   const handleUpdateMajor = () => {
     if (validateForm()) {
       dispatch(actUpdateMajorAsync({ formData, id }));
@@ -156,18 +236,15 @@ export default function UserTableRow({
     }
   }
 
-
-
   const handleClose = () => {
     setDialog(null);
   };
 
-
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover >
+        <TableCell >
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -209,7 +286,7 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          Cập nhật ngành học
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
@@ -254,6 +331,18 @@ export default function UserTableRow({
                 {error.majorCategoryId && <Typography variant='caption' color="error" >{error.majorCategoryId}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Ảnh</Typography>
+                <Upload
+                  {...uploadProps}
+                >
+                  {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                    <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                      Upload
+                    </ButtonAnt>
+                  )}
+                </Upload>
+              </Grid>
+              <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Mô tả</Typography>
                 <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
@@ -271,9 +360,99 @@ export default function UserTableRow({
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết ngành học
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 4 }}>
+                <Image
+                  width={200}
+                  src={avatarUrl}
+                  style={{ zIndex: 2 }}
+                />
+              </Grid>
+              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Mã ngành:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {code}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tên ngành:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Thể loại ngành:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {majorCategoryName}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Mô tả:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {description}
+                </Typography>
+              </Grid>
 
 
+            </Grid>
 
+          </DialogContentText>
+        </DialogContent>
+
+      </Dialog >
       <DeleteDialog
         open={dialog}
         onClose={handleCloseDialog}
@@ -298,6 +477,10 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
+        </MenuItem>
       </Popover>
     </>
   );
@@ -305,8 +488,6 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
-  selected: PropTypes.bool,
   id: PropTypes.number,
   name: PropTypes.string,
   majorCategoryName: PropTypes.string,
@@ -314,4 +495,5 @@ UserTableRow.propTypes = {
   description: PropTypes.string,
   code: PropTypes.string,
   majorCategoryId: PropTypes.string,
+  rowKey: PropTypes.number
 };

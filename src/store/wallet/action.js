@@ -26,9 +26,12 @@ export function getWalletAsync({ page, pageSize }) {
     return async (dispatch) => {
         try {
             const response = await walletService.getWallet({ page, pageSize });
-            dispatch(getWallet(response));
+            if (response.status === 200) {
+                dispatch(getWallet(response.data));
+            }
         } catch (error) {
             console.log(error);
+            message.error("Lấy thông tin ví thất bại");
         }
     };
 }
@@ -53,9 +56,14 @@ export function updateWalletAsync({ id, data }) {
     return async (dispatch) => {
         try {
             const response = await walletService.updateWallet({ id, data });
-            dispatch(updateWallet(response));
+            if (response.status === 200) {
+                message.success("Cập nhật ví thành công");
+            } else {
+                message.error("Cập nhật ví thất bại");
+            }
         } catch (error) {
             console.log(error);
+            message.error("Cập nhật ví thất bại");
         }
     };
 }

@@ -99,15 +99,16 @@ export default function Header() {
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
     console.log('isAuthenticated1', isAuthenticated);
 
+    const accountId = localStorage.getItem('accountId');
+
     const handleLogout = (e) => {
         e.preventDefault();
-        dispatch(signoutUser());
-        navigate('/signin', { replace: true });
-        message.success('Đăng xuất thành công');
+        dispatch(signoutUser(accountId, navigate));
+        // navigate('/signin', { replace: true });
+        // message.success('Đăng xuất thành công');
 
     };
     // useEffect(() => {
-    //     debugger
     //     if (!isAuthenticated) {
     //         navigate('/signin', { replace: true });
     //         message.success('Đăng xuất thành công');

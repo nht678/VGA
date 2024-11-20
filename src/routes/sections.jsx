@@ -29,6 +29,7 @@ export const Logout = lazy(() => import('src/pages/logout'));
 export const ConsultantView = lazy(() => import('src/pages/consultant'));
 export const ConsultantLevelView = lazy(() => import('src/pages/consultantlevel'));
 export const Transaction = lazy(() => import('src/pages/transaction'));
+export const TransactionUniversityPage = lazy(() => import('src/pages/transactionuniversity'));
 export const Wallet = lazy(() => import('src/pages/wallet'));
 export const AdmissionInformationsPage = lazy(() => import('src/pages/admissionInformations'));
 export const MajorPage = lazy(() => import('src/pages/major'));
@@ -39,6 +40,7 @@ export const MajorCategoryPage = lazy(() => import('src/pages/majorCategory'));
 export const OccupationalGroupPage = lazy(() => import('src/pages/occupationalGroup'));
 export const WorkSkillPage = lazy(() => import('src/pages/workSkill'));
 export const NewsForUniversity = lazy(() => import('src/pages/newsforUniversity'));
+export const TransactionAdmin = lazy(() => import('src/pages/transactionAdmin'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -72,7 +74,7 @@ export default function Router() {
         // { path: 'upload', element: <UploadFile /> },
         // { path: 'counter', element: <CounterComponent /> },
         // { path: 'eventquiz', element: <EventQuiz /> },
-        // { path: 'editquiz', element: <EditQuiz /> },
+        // { path: 'editquiz', element: <EditQuiz /> `},
         // { path: 'myquiz', element: <MyQuiz /> },
         // { path: 'newsuniversity', element: <NewsUniversity /> },
         { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
@@ -85,12 +87,14 @@ export default function Router() {
         { path: 'MajorCategory', element: role === '1' ? <MajorCategoryPage /> : <Navigate to="/404" replace /> },
         { path: 'occupationgroup', element: role === '1' ? <OccupationalGroupPage /> : <Navigate to="/404" replace /> },
         { path: 'workSkill', element: role === '1' ? <WorkSkillPage /> : <Navigate to="/404" replace /> },
+        { path: 'transactionsAdmin', element: role === '1' ? <TransactionAdmin /> : <Navigate to="/404" replace /> },
         { path: 'consultants', element: role === '5' ? <ConsultantView /> : <Navigate to="/404" replace /> },
         { path: 'news', element: role === '5' ? <NewsForUniversity /> : <Navigate to="/404" replace /> },
         { path: 'occupation', element: role === '1' ? <OccupationPage /> : <Navigate to="/404" replace /> },
         { path: 'admissionInformations', element: role === '5' ? <AdmissionInformationsPage /> : <Navigate to="/404" replace /> },
+        { path: 'transactionsuniversity', element: role === '5' ? <TransactionUniversityPage /> : <Navigate to="/404" replace /> },
         { path: 'university', element: role === '1' ? <UniversityView /> : <Navigate to="/404" replace /> },
-        { path: 'consultantsLevel', element: role === '1' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
+        { path: 'consultantsLevel', element: role === '5' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 
       ],

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -8,6 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { UploadOutlined } from '@ant-design/icons';
 
 
 import Dialog from '@mui/material/Dialog';
@@ -20,7 +23,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
+import { Button as ButtonAnt, Upload } from 'antd';
 
 
 
@@ -42,23 +45,25 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function MajorView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [error, setError] = useState({});
 
+  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
+  console.log('option', options)
+  const [value, setValue] = useState(null); // Giá trị đã chọn
+  console.log('value', value);
+  const [inputValue, setInputValue] = useState(''); // Giá trị input\
+  console.log('inputValue', inputValue);
+
   const [formData, setFormData] = useState({
     code: '',
     name: '',
     description: '',
     majorCategoryId: '',
+    image: ''
   });
 
   console.log('formData', formData);
@@ -91,7 +96,6 @@ export default function MajorView() {
   console.log('majors', majors)
   const { majorCategories } = useSelector((state) => state.majorCategoryReducer);
   console.log('majorCategories', majorCategories);
-  // console.log('levels', levels);
 
   const [majorCategoriesValue, setMajorCategoriesValue] = useState(null); // Giá trị đã chọn
   const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input
@@ -107,10 +111,10 @@ export default function MajorView() {
   // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
   useEffect(() => {
     dispatch(actGetMajorsAsync({ page: page + 1, pageSize: rowsPerPage }));
-    dispatch(actGetMajorCategoriesAsync({ page: 1, pageSize: 1000, search: '' }));
+    dispatch(actGetMajorCategoriesAsync({}));
     // Fetch regions chỉ một lần khi component mount
 
-  }, [dispatch, page, rowsPerPage, success]);
+  }, [success]);
 
 
 
@@ -122,6 +126,7 @@ export default function MajorView() {
         name: '',
         description: '',
         majorCategoryId: '',
+        image: ''
       });
       setMajorCategoriesValue(null);
       dispatch(resetMajor());
@@ -129,18 +134,67 @@ export default function MajorView() {
     }
   };
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
 
+  const uploadProps = {
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
 
-  console.log('formData', formData)
+        setImageUrl(url); // Lưu URL vào state
+        setFormData((prevData) => ({
+          ...prevData,
+          image: url, // Lưu URL vào formData.image
+        }));
 
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setImageUrl(""); // Xóa URL trong state
+        setFormData((prevData) => ({
+          ...prevData,
+          image: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
 
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
+  const fileList = imageUrl
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -150,50 +204,15 @@ export default function MajorView() {
     });
   };
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = majors.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actGetMajorsAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actGetMajorsAsync({ page: newPage + 1, pageSize: rowsPerPage, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actGetMajorsAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actGetMajorsAsync({ page: 1, pageSize: newRowsPerPage, search: filterName })); // Gọi API với `pageSize` mới
   };
 
 
@@ -219,10 +238,6 @@ export default function MajorView() {
       dispatch(actGetMajorsAsync({ page: 1, pageSize: rowsPerPage }));
     }
   };
-
-
-
-
 
 
 
@@ -287,6 +302,20 @@ export default function MajorView() {
                     {error.majorCategoryId && <Typography variant='caption' color="error" >{error.majorCategoryId}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Ảnh</Typography>
+                    <Upload
+                      listType="picture"
+                      {...uploadProps}
+                      fileList={fileList}
+                    >
+                      {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                        <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                          Upload
+                        </ButtonAnt>
+                      )}
+                    </Upload>
+                  </Grid>
+                  <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>
                     <textarea name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
@@ -313,7 +342,7 @@ export default function MajorView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
@@ -322,12 +351,6 @@ export default function MajorView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'code', label: 'Mã ngành' },
                   { id: 'name', label: 'Tên', align: 'center' },
@@ -338,19 +361,19 @@ export default function MajorView() {
                 ]}
               />
               <TableBody>
-                {majors.map((row) => (
+                {majors.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id}
+                    rowKey={index + 1}
                     code={row?.code}
                     name={row?.name}
                     majorCategoryName={row?.majorCategoryName}
                     majorCategoryId={row?.majorCategoryId}
                     description={row?.description}
                     status={row?.status}
-                    avatarUrl={row?.avatarUrl}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
+                    avatarUrl={row?.image}
+
                   />
                 ))}
               </TableBody>

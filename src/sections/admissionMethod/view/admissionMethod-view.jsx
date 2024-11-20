@@ -53,13 +53,24 @@ export default function AdmissionMethodView() {
 
   const [error, setError] = useState({});
 
+  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
+  console.log('option', options)
+  const [value, setValue] = useState(null); // Giá trị đã chọn
+  console.log('value', value);
+  const [inputValue, setInputValue] = useState(''); // Giá trị input\
+  console.log('inputValue', inputValue);
+
+  const dispatch = useDispatch();
+
+  const { admissionMethods, total = 0, success } = useSelector((state) => state.admissionMethodReducer);
+  console.log('admissionMethods', admissionMethods)
+
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     status: true,
   });
-
-  console.log('formData', formData);
 
   const validateForm = () => {
     let newError = {};
@@ -76,21 +87,6 @@ export default function AdmissionMethodView() {
 
   // write code here
 
-  const dispatch = useDispatch();
-
-  const { admissionMethods, total = 0, success } = useSelector((state) => state.admissionMethodReducer);
-  console.log('admissionMethods', admissionMethods)
-  // console.log('levels', levels);
-
-
-  // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
-  useEffect(() => {
-    dispatch(actGetAdmissionMethodsAsync({ page: page + 1, pageSize: rowsPerPage }));
-    // Fetch regions chỉ một lần khi component mount
-
-  }, [dispatch, page, rowsPerPage, success]);
-
-
 
   const handleAddAdmissionMethod = async () => {
     if (validateForm()) {
@@ -105,18 +101,6 @@ export default function AdmissionMethodView() {
     }
   };
 
-
-  console.log('formData', formData)
-
-
-
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
-
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
     setFormData({
@@ -124,76 +108,18 @@ export default function AdmissionMethodView() {
       [e.target.name]: e.target.value,
     });
   };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
-  };
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = admissionMethods.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actGetAdmissionMethodsAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actGetAdmissionMethodsAsync({ page: newPage + 1, pageSize: rowsPerPage, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actGetAdmissionMethodsAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actGetAdmissionMethodsAsync({ page: 1, pageSize: newRowsPerPage, search: filterName })); // Gọi API với `pageSize` mới
   };
 
-
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
-
-  // const dataFiltered = applyFilter({
-  //   inputData: highschools,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  // const notFound = !dataFiltered.length && !!filterName;
-
-  // write code here
   const [open, setOpen] = useState('');
 
   const handleClickOpen = (Typedialog) => {
@@ -216,9 +142,11 @@ export default function AdmissionMethodView() {
     }
   };
 
+  useEffect(() => {
+    dispatch(actGetAdmissionMethodsAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName }));
+    // Fetch regions chỉ một lần khi component mount
 
-
-
+  }, [success]);
 
 
 
@@ -282,7 +210,7 @@ export default function AdmissionMethodView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
@@ -291,12 +219,6 @@ export default function AdmissionMethodView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'description', label: 'Mô tả', align: 'center' },
@@ -305,17 +227,15 @@ export default function AdmissionMethodView() {
                 ]}
               />
               <TableBody>
-                {admissionMethods.map((row) => (
+                {admissionMethods.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id}
+                    rowKey={index + 1}
                     name={row?.name}
                     description={row?.description}
-                    priceOnSlot={row?.priceOnSlot}
                     status={row?.status}
                     avatarUrl={row?.avatarUrl}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
                   />
                 ))}
               </TableBody>

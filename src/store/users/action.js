@@ -40,10 +40,13 @@ export const resetUserSuccess = () => ({
 export function actUserGetAsync({ page, pageSize, highSchoolId, search, schoolYears }) {
     return async (dispatch) => {
         try {
-            const data = await userServices.getUsers({ page, pageSize, highSchoolId, search, schoolYears });
-            dispatch(actUserGet(data));
+            const response = await userServices.getUsers({ page, pageSize, highSchoolId, search, schoolYears });
+            if (response.status === 200) {
+                dispatch(actUserGet(response.data));
+            }
         } catch (error) {
             console.log(error);
+            message.error('Lấy dữ liệu thất bại');
         }
     };
 }
@@ -52,8 +55,7 @@ export function actAddUserAsync(data) {
     return async (dispatch) => {
         try {
             const response = await userServices.addUser(data);
-            console.log('response.status:', response.status);
-            if (response) {
+            if (response.status === 201 || response.status === 200) {
                 dispatch(actAddUser(response));
                 message.success('Thêm mới thành công');
             } else {
@@ -61,6 +63,7 @@ export function actAddUserAsync(data) {
             }
         } catch (error) {
             console.log(error);
+            message.error('Lỗi gì đó');
         }
     };
 }
@@ -69,7 +72,7 @@ export function actUserUpdateAsync(data, userId) {
     return async (dispatch) => {
         try {
             const response = await userServices.updateUser(data, userId);
-            if (response) {
+            if (response.status === 200 || response.status === 201) {
                 dispatch(actUserUpdate(response));
                 message.success('Cập nhật thành công');
             } else {
@@ -77,6 +80,7 @@ export function actUserUpdateAsync(data, userId) {
             }
         } catch (error) {
             console.log(error);
+            message.error('Cập nhật thất bại');
         }
     };
 }
@@ -84,7 +88,7 @@ export function actUserDeleteAsync(id) {
     return async (dispatch) => {
         try {
             const response = await userServices.deleteUser(id);
-            if (response) {
+            if (response.status === 200) {
                 dispatch(actUserDelete(id));
                 message.success('Xóa thành công');
             } else {
@@ -92,6 +96,7 @@ export function actUserDeleteAsync(id) {
             }
         } catch (error) {
             console.log(error);
+            message.error('Xóa thất bại');
         }
     };
 }

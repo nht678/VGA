@@ -1,4 +1,4 @@
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const highschoolService = {
     getHighSchools: async ({ page, pageSize, search }) => {
@@ -8,17 +8,41 @@ const highschoolService = {
                 'page-size': pageSize,
                 name: search || '',
             },
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+
         });
         return response.data;
     },
     addHighSchool: (data) =>
-        BASE_API.post(`/high-school`, data)
+        BASE_API.post(`/high-school`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     updateHighSchool: ({ id, formData }) =>
-        BASE_API.put(`/high-school/${id}`, formData)
+        BASE_API.put(`/high-school/${id}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
     ,
     deleteHighSchool: async (id) => {
-        BASE_API.delete(`/high-school/${id}`);
+        const response = await BASE_API.delete(`/high-school/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
+        debugger
+        return response;
     },
 };
 export default highschoolService;

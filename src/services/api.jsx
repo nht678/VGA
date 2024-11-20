@@ -14,6 +14,8 @@ export const BASE_API = axios.create({
     baseURL: "https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/api/v1/"
 });
 
+export const TOKEN = localStorage.getItem('token');
+
 export const API_TRANSACTION = axios.create({
     baseURL: "https://localhost:7182/api/"
 });
