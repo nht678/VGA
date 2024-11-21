@@ -54,16 +54,17 @@ export function signoutUser(accountId, navigate) {
             const response = await accountService.logout(accountId, token);
             if (response.status === 200) {
                 message.success('Đăng xuất thành công');
+                localStorage.removeItem('userInfo');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('name');
+                localStorage.removeItem('role');
+                localStorage.removeItem('accountId');
                 navigate('/signin', { replace: true });
             } else {
                 message.error('Đăng xuất thất bại');
             }
-            localStorage.removeItem('userInfo');
-            localStorage.removeItem('token');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('name');
-            localStorage.removeItem('role');
-            localStorage.removeItem('accountId');
+
         } catch (error) {
             console.log('Error:', error);
             message.error('Lỗi đăng xuất');

@@ -8,6 +8,7 @@ export const DELETE_NEWS = 'DELETE_NEWS';
 export const DELETE_NEWS_IMAGE = 'DELETE_NEWS_IMAGE';
 export const CREATE_NEWS_IMAGE = 'CREATE_NEWS_IMAGE';
 export const UPDATE_NEWS_CONTENT = 'UPDATE_NEWS_CONTENT';
+export const GET_NEWS_BY_ID = 'GET_NEWS_BY_ID';
 
 
 export function actGetNews(data) {
@@ -58,12 +59,28 @@ export function actUpdateNewsContent(data) {
         payload: data,
     };
 }
+// get newsid 
+export function actGetNewsById(data) {
+    return {
+        type: GET_NEWS_BY_ID,
+        payload: data,
+    };
+}
 
 
 export const actGetNewsAsync = ({ page, pageSize, search, universityid }) => async (dispatch) => {
     try {
         const response = await newsForUniversityService.getNewsForUniversity({ page, pageSize, search, universityid });
         dispatch(actGetNews(response.data));
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const actGetNewsByIdAsync = (id) => async (dispatch) => {
+    try {
+        const response = await newsForUniversityService.getNewsByIdForUniversity(id);
+        dispatch(actGetNewsById(response.data));
     } catch (error) {
         console.error(error);
     }

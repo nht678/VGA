@@ -36,11 +36,11 @@ export const resetLevelSuccess = () => ({
     type: 'RESET_LEVEL_SUCCESS',
 });
 
-export const actLevelGetAsync = ({ page, pagesize, search }) => async (dispatch) => {
+export const actLevelGetAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
-        const response = await levelService.getLevels({ page, pagesize, search });
+        const response = await levelService.getLevels({ page, pageSize, search });
         if (response.status === 200) {
-            dispatch(actLevelGet(response));
+            dispatch(actLevelGet(response.data));
         }
     } catch (error) {
         console.error(error);

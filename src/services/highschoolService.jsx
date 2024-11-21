@@ -41,7 +41,6 @@ const highschoolService = {
                 },
             }
         );
-        debugger
         return response;
     },
 };

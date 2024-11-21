@@ -17,6 +17,13 @@ const newsForUniversityService = {
             },
         });
     },
+    getNewsByIdForUniversity: (id) =>
+        BASE_API.get(`/news/${id}`, {
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        })
+    ,
     addNewsForUniversity: (data) =>
         BASE_API.post(`/news`, data,
             {

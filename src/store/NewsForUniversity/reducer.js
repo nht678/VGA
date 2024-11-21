@@ -1,4 +1,4 @@
-import { GET_NEWS, ADD_NEWS, UPDATE_NEWS, DELETE_NEWS, UPDATE_NEWS_CONTENT } from './action';
+import { GET_NEWS, ADD_NEWS, UPDATE_NEWS, DELETE_NEWS, UPDATE_NEWS_CONTENT, GET_NEWS_BY_ID } from './action';
 
 const initialState = {
     news: [],
@@ -13,6 +13,12 @@ const newsForUniversityReducer = (state = initialState, action) => {
                 ...state,
                 news: action.payload._news,
                 total: action.payload.total,
+                success: true,
+            };
+        case GET_NEWS_BY_ID:
+            return {
+                ...state,
+                news: action.payload,
                 success: true,
             };
         case ADD_NEWS:

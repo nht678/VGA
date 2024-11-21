@@ -159,7 +159,7 @@ export default function HomepageView() {
         <div>
           <h3 style={contentStyle}>
             <img
-              src="assets/images/avatars/University1.png"
+              src="https://dnuni.fpt.edu.vn/wp-content/uploads/2022/02/Untitled-design-12-min-1600x900.png"
               alt="img"
               style={{ width: '100%', height: '400px', objectFit: 'cover' }}
             />
@@ -169,7 +169,7 @@ export default function HomepageView() {
         <div>
           <h3 style={contentStyle}>
             <img
-              src="assets/images/avatars/University2.png"
+              src="https://tuyensinh.ueh.edu.vn/wp-content/uploads/2024/06/1920x1080.png"
               alt="img"
               style={{ width: '100%', height: '400px', objectFit: 'cover' }}
             />
@@ -178,7 +178,7 @@ export default function HomepageView() {
         <div>
           <h3 style={contentStyle}>
             <img
-              src="assets/images/avatars/University3.png"
+              src="https://vluwebmedia.s3.ap-southeast-1.amazonaws.com/large_xet_hoc_ba_1920x1080_01_5d8328bee8.jpg"
               alt="img"
               style={{ width: '100%', height: '400px', objectFit: 'cover' }}
             />
@@ -187,7 +187,7 @@ export default function HomepageView() {
         <div>
           <h3 style={contentStyle}>
             <img
-              src="assets/images/avatars/University4.png"
+              src="https://www.hoasen.edu.vn/tuyensinh/wp-content/uploads/sites/7/2024/07/tuyensinh.png"
               alt="img"
               style={{ width: '100%', height: '400px', objectFit: 'cover' }}
             />
@@ -196,17 +196,17 @@ export default function HomepageView() {
       </Carousel>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mx: 10 }}>
         <Typography variant="h4" component="h2" gutterBottom>
-          About us
+          Về chúng tôi
         </Typography>
         <Typography variant="body1" gutterBottom>
-          We are a team of dedicated professionals committed to delivering the best service to our customers. With extensive experience in our field, we continuously strive to improve service quality and ensure customer satisfaction. We believe that every customer deserves to be served in the best possible way, so we always listen and seek new, creative methods to meet their needs. Customer satisfaction is our top priority and the driving force behind our continuous development.
+          Chúng tôi là một đội ngũ các chuyên gia tận tâm, cam kết mang đến dịch vụ tốt nhất cho khách hàng. Với kinh nghiệm sâu rộng trong lĩnh vực của mình, chúng tôi không ngừng nỗ lực cải thiện chất lượng dịch vụ và đảm bảo sự hài lòng của khách hàng. Chúng tôi tin rằng mỗi khách hàng đều xứng đáng được phục vụ theo cách tốt nhất có thể, vì vậy chúng tôi luôn lắng nghe và tìm kiếm những phương pháp sáng tạo mới để đáp ứng nhu cầu của họ. Sự hài lòng của khách hàng là ưu tiên hàng đầu và là động lực thúc đẩy sự phát triển không ngừng của chúng tôi.
         </Typography>
       </Box>
       <Box sx={{ flexGrow: 1, m: 10 }}>
         <Grid container spacing={2} >
           <Grid size={5} sx={{ display: { xs: 'none', md: 'block', lg: 'block' } }}>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <ImageList
+              {/* <ImageList
                 sx={{ width: 500, height: 290 }}
                 variant="quilted"
                 cols={4}
@@ -221,8 +221,12 @@ export default function HomepageView() {
                     />
                   </ImageListItem>
                 ))}
-              </ImageList>
-
+              </ImageList> */}
+              <img
+                src="assets/images/avatars/Admiss1.png"
+                alt="img"
+                style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+              />
             </Box>
           </Grid>
           <Grid xs={12} size={7}>
@@ -236,7 +240,8 @@ export default function HomepageView() {
                 component="h2"
                 gutterBottom
               >
-                {'What is our main goal'}
+
+                Mục tiêu chính của chúng ta là gì?
               </Typography>
               <Typography
                 sx={{
@@ -246,7 +251,7 @@ export default function HomepageView() {
                 component="h2"
                 gutterBottom
               >
-                Our goal is to provide the best service to our customers
+                Mục tiêu của chúng tôi là cung cấp dịch vụ tốt nhất cho khách hàng.
               </Typography>
               <Typography
                 sx={{
@@ -255,7 +260,7 @@ export default function HomepageView() {
                 variant="body1"
                 gutterBottom
               >
-                We are a team of committed professionals, driven by the mission of delivering exceptional services to both students and educators within the academic community. Our goal is to create an enriching, supportive, and engaging environment where every individual can thrive. We believe in the transformative power of education and are constantly seeking innovative ways to enhance our offerings, whether through cutting-edge technology, personalized support, or streamlined processes that cater to the unique needs of high schools and universities.
+                Chúng tôi là một đội ngũ các chuyên gia tận tâm, được thúc đẩy bởi sứ mệnh mang lại những dịch vụ xuất sắc cho cả học sinh và giáo viên trong cộng đồng học thuật. Mục tiêu của chúng tôi là tạo ra một môi trường phong phú, hỗ trợ và hấp dẫn, nơi mỗi cá nhân đều có thể phát triển. Chúng tôi tin vào sức mạnh chuyển đổi của giáo dục và luôn tìm kiếm những cách sáng tạo để nâng cao dịch vụ của mình, cho dù đó là thông qua công nghệ tiên tiến, hỗ trợ cá nhân hóa hay quy trình tối ưu hóa đáp ứng nhu cầu riêng biệt của các trường trung học và đại học.
               </Typography>
               <Typography
                 sx={{
@@ -264,7 +269,7 @@ export default function HomepageView() {
                 variant="body1"
                 gutterBottom
               >
-                Our dedication to continuous improvement ensures that we stay ahead of educational trends, providing a platform where students can easily access resources and educators can foster academic excellence. By focusing on creating meaningful and lasting relationships with our users, we strive to not only meet their needs but exceed their expectations, ensuring their success and satisfaction in all interactions with our platform.
+                Sự cam kết của chúng tôi với việc cải tiến liên tục đảm bảo rằng chúng tôi luôn đi đầu trong các xu hướng giáo dục, cung cấp một nền tảng nơi học sinh có thể dễ dàng tiếp cận tài nguyên và giáo viên có thể thúc đẩy sự xuất sắc trong học tập. Bằng cách tập trung vào việc tạo ra những mối quan hệ ý nghĩa và bền vững với người dùng, chúng tôi không chỉ đáp ứng nhu cầu của họ mà còn vượt qua mong đợi của họ, đảm bảo sự thành công và hài lòng của họ trong mọi tương tác với nền tảng của chúng tôi.
               </Typography>
             </Box>
           </Grid>

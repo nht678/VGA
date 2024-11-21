@@ -42,16 +42,15 @@ const options = [
 
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
   gender,
   email,
   phone,
   gold,
-  handleClick,
   id: userId,  // Đổi tên id props thành userId
   dateOfBirth,
+  rowKey
 }) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
@@ -173,9 +172,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover >
+        <TableCell >
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -460,13 +459,12 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
   gender: PropTypes.bool,
-  selected: PropTypes.bool,
   gold: PropTypes.number,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,
   email: PropTypes.string,
   phone: PropTypes.string,
+  rowKey: PropTypes.number
 };

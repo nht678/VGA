@@ -45,12 +45,6 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function AdmissionInformationsView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -113,7 +107,6 @@ export default function AdmissionInformationsView() {
   const admissionMethods = useSelector((state) => state.admissionMethodReducer.admissionMethods);
   console.log('admissionMethods', admissionMethods);
 
-  // console.log('levels', levels);
 
   console.log('formData', formData);
 
@@ -201,24 +194,14 @@ export default function AdmissionInformationsView() {
     { name: '2024', value: 2024 },
   ];
 
-
-
-  // write code here
-
-
-  // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
   useEffect(() => {
     dispatch(actGetAdmissionInformationAsync({ page: 1, pageSize: rowsPerPage, universityid: userId, search: filterName }));
-    dispatch(actGetMajorsAsync({ page: 1, pageSize: 1000, search: '' }));
-    dispatch(actGetAdmissionMethodsAsync({ page: 1, pageSize: 1000, search: '' }));
-    // Fetch regions chỉ một lần khi component mount
+  }, [success]);
 
-  }, [dispatch, page, rowsPerPage, success]);
-
-
-
-
-
+  useEffect(() => {
+    dispatch(actGetMajorsAsync({}));
+    dispatch(actGetAdmissionMethodsAsync({}));
+  }, []);
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -226,42 +209,6 @@ export default function AdmissionInformationsView() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = admissionInformation.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -307,6 +254,14 @@ export default function AdmissionInformationsView() {
   };
 
 
+  useEffect(() => {
+    dispatch(actGetAdmissionInformationAsync({ page: 1, pageSize: rowsPerPage, universityid: userId, search: filterName }));
+  }, [success]);
+
+  useEffect(() => {
+    dispatch(actGetMajorsAsync({}));
+    dispatch(actGetAdmissionMethodsAsync({}));
+  }, []);
 
 
 
@@ -320,97 +275,6 @@ export default function AdmissionInformationsView() {
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('Create')}>
             Tạo thông tin tuyển sinh
           </Button>
-          {/* 
-          <Dialog
-            open={open === 'Create'}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            fullWidth
-            maxWidth='lg'
-          >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-              {"Tạo thông tin tuyển sinh"}
-            </DialogTitle>
-            <DialogContent >
-              <DialogContentText id="alert-dialog-description">
-                <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 3 }}>
-                    <Autocomplete
-                      fullWidth
-                      onChange={handleMajorChange}
-                      inputValue={majorInputValue}
-                      onInputChange={(event, newInputValue) => {
-                        setMajorInputValue(newInputValue);
-                      }}
-                      id="controllable-states-demo-major"
-                      options={majors || []}
-                      getOptionLabel={(option) => option?.name || ''}
-                      renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
-                    />
-                    {error.majorId && <Typography variant='caption' color="error">{error.majorId}</Typography>}
-                  </Grid>
-
-                  <Grid size={{ md: 3 }}>
-                    <Autocomplete
-                      onChange={handleAdmissionMethodChange}
-                      inputValue={admissionMethodInputValue}
-                      onInputChange={(event, newInputValue) => {
-                        setAdmissionMethodInputValue(newInputValue);
-                      }}
-                      id="controllable-states-demo-admission"
-                      options={admissionMethods || []}
-                      getOptionLabel={(option) => option?.name || ''}
-                      renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
-                    />
-                    {error.admissionMethodId && <Typography variant='caption' color="error">{error.admissionMethodId}</Typography>}
-                  </Grid>
-                  <Grid size={{ md: 2 }}>
-                    <TextField
-                      fullWidth
-                      label="Học phí"
-                      name="tuitionFee"
-                      // value={formData.tuitionFee}
-                      onChange={handlechange}
-                    />
-                    {error.tuitionFee && <Typography variant='caption' color="error">{error.tuitionFee}</Typography>}
-                  </Grid>
-                  <Grid size={{ md: 2 }}>
-                    <Autocomplete
-                      fullWidth
-                      onChange={handleYearChange}
-                      inputValue={yearInputValue}
-                      onInputChange={(event, newInputValue) => {
-                        setYearInputValue(newInputValue);
-                      }}
-                      id="controllable-states-demo-year"
-                      options={options || []}
-                      getOptionLabel={(option) => option?.name || ''}
-                      renderInput={(params) => <TextField {...params} label="Chọn năm" />}
-                    />
-                    {error.year && <Typography variant='caption' color="error">{error.year}</Typography>}
-                  </Grid>
-                  <Grid size={{ md: 2 }}>
-                    <TextField
-                      fullWidth
-                      label="Số lượng mục tiêu"
-                      name="quantityTarget"
-                      // value={formData.quantityTarget}
-                      onChange={handlechange}
-                    />
-                    {error.quantityTarget && <Typography variant='caption' color="error">{error.quantityTarget}</Typography>}
-                  </Grid>
-                </Grid>
-
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Hủy bỏ</Button>
-              <Button onClick={handleAddAdmissionInfo} autoFocus>
-                Tạo mới
-              </Button>
-            </DialogActions>
-          </Dialog> */}
           <Dialog
             open={open === 'Create'}
             onClose={handleClose}
@@ -516,7 +380,7 @@ export default function AdmissionInformationsView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
@@ -525,12 +389,6 @@ export default function AdmissionInformationsView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'majorName', label: 'Ngành' },
                   { id: 'admissionMethodName', label: 'Phương thức tuyển sinh', align: 'center' },
@@ -542,10 +400,11 @@ export default function AdmissionInformationsView() {
                 ]}
               />
               <TableBody>
-                {admissionInformation.map((row) => (
+                {admissionInformation.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id}
+                    rowKey={index + 1}
                     admissionMethodName={row?.admissionMethodName}
                     majorName={row?.majorName}
                     majorId={row?.majorId}
@@ -555,8 +414,6 @@ export default function AdmissionInformationsView() {
                     tuitionFee={row?.tuitionFee}
                     year={row?.year}
                     avatarUrl={row?.avatarUrl}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
                   />
                 ))}
               </TableBody>

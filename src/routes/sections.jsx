@@ -89,7 +89,7 @@ export default function Router() {
         { path: 'workSkill', element: role === '1' ? <WorkSkillPage /> : <Navigate to="/404" replace /> },
         { path: 'transactionsAdmin', element: role === '1' ? <TransactionAdmin /> : <Navigate to="/404" replace /> },
         { path: 'consultants', element: role === '5' ? <ConsultantView /> : <Navigate to="/404" replace /> },
-        { path: 'news', element: role === '5' ? <NewsForUniversity /> : <Navigate to="/404" replace /> },
+        { path: 'newsuni', element: role === '5' ? <NewsForUniversity /> : <Navigate to="/404" replace /> },
         { path: 'occupation', element: role === '1' ? <OccupationPage /> : <Navigate to="/404" replace /> },
         { path: 'admissionInformations', element: role === '5' ? <AdmissionInformationsPage /> : <Navigate to="/404" replace /> },
         { path: 'transactionsuniversity', element: role === '5' ? <TransactionUniversityPage /> : <Navigate to="/404" replace /> },
@@ -122,7 +122,7 @@ export default function Router() {
     },
     { path: 'hello', element: <Hello /> },
     {
-      path: 'newsdetail', element: (
+      path: '/newsdetail/:id', element: (
         <Suspense fallback={<LoadingPage />}>
           <NewsDetail />
         </Suspense>

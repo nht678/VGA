@@ -213,7 +213,7 @@ const NavConfigComponent = () => {
           ]
         },
         { title: 'Thông tin tuyển sinh', path: '/admissionInformations' },
-        { title: 'Tin tức', path: '/news' },
+        { title: 'Tin tức', path: '/newsuni' },
         { title: 'Giao dịch', path: '/transactionsuniversity' },
       ] : [];
 

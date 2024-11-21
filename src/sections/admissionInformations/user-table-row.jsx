@@ -52,9 +52,7 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   avatarUrl,
-  handleClick,
   id,
   admissionMethodName,
   majorName,
@@ -64,7 +62,7 @@ export default function UserTableRow({
   year,
   admissionMethodId,
   majorId,
-
+  rowKey,
 }) {
   console.log('id', id)
   console.log('majorId', majorId)
@@ -90,7 +88,6 @@ export default function UserTableRow({
 
 
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actDeleteAdmissionInformationAsync(id));
     if (success) {
       dispatch(actResetAdmissionInformation());
@@ -278,9 +275,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover>
+        <TableCell >
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -541,8 +538,6 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
-  selected: PropTypes.bool,
   id: PropTypes.number,
   admissionMethodName: PropTypes.string,
   majorName: PropTypes.string,
@@ -552,5 +547,5 @@ UserTableRow.propTypes = {
   year: PropTypes.number,
   majorId: PropTypes.string,
   admissionMethodId: PropTypes.string,
-
+  rowKey: PropTypes.number,
 };

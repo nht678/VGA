@@ -2,6 +2,7 @@ import { UPDATE_WALLET, GET_WALLET, GET_WALLETBYID } from "./action";
 
 const initialState = {
     wallet: [],
+    succesWallet: false,
 };
 
 export default function walletReducer(state = initialState, action) {

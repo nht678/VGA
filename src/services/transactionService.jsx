@@ -44,7 +44,6 @@ const transactionService = {
                 },
             }
         );
-        debugger
         return response;
     }
 }

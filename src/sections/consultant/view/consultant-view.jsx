@@ -53,9 +53,6 @@ export default function ConsultantView() {
   let userId = localStorage.getItem('userId');
 
   const [page, setPage] = useState(0);
-
-  const [order, setOrder] = useState('asc');
-
   const [formData, setformData] = useState({
     name: '',
     email: '',
@@ -67,10 +64,6 @@ export default function ConsultantView() {
     universityId: userId,
   });
 
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -81,7 +74,6 @@ export default function ConsultantView() {
 
   const onPanelChange = (value1, mode) => {
     setformData({ ...formData, doB: value1.format('YYYY-MM-DD') });
-
   };
 
   const [errors, setErrors] = useState({});
@@ -133,17 +125,11 @@ export default function ConsultantView() {
     return Object.keys(newErrors).length === 0;
   };
 
-
-
-
-
   useEffect(() => {
     dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
-    dispatch(actLevelGetAsync({ page: page + 1, pageSize: rowsPerPage }));
+    dispatch(actLevelGetAsync({}));
     // dispatch(actLevelGetAsync)
   }, [page, rowsPerPage]);
-
-
 
   const handleAddConsultant = () => {
     if (!validateForm()) return;
@@ -164,44 +150,6 @@ export default function ConsultantView() {
 
     setOpen(false);
   }
-  console.log('formData', formData)
-
-
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = consultants.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -215,18 +163,6 @@ export default function ConsultantView() {
   };
 
 
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
-
-  const dataFiltered = applyFilter({
-    inputData: consultants,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const notFound = !dataFiltered.length && !!filterName;
 
   // write code here
   const [open, setOpen] = useState('');
@@ -398,7 +334,7 @@ export default function ConsultantView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
           filterLevel={filterLevel}
@@ -411,12 +347,6 @@ export default function ConsultantView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
@@ -429,10 +359,11 @@ export default function ConsultantView() {
                 ]}
               />
               <TableBody>
-                {dataFiltered.map((row) => (
+                {consultants.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id || ''}
+                    rowKey={index + 1}
                     name={row.name || ''}
                     email={row?.email || ''}
                     phone={row?.phone || ''}
@@ -441,8 +372,6 @@ export default function ConsultantView() {
                     consultantLevelId={row?.consultantLevel?.id || ''}
                     gender={row?.gender || ''}
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
-                    selected={selected.indexOf(row.name) !== -1}
-                    handleClick={(event) => handleClick(event, row.name)}
                   />
                 ))}
               </TableBody>

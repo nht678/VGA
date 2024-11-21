@@ -26,7 +26,6 @@ import { message } from 'antd';
 
 
 
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -44,20 +43,11 @@ import UserTableToolbar from '../user-table-toolbar';
 
 export default function TransactionUniversity() {
   const [page, setPage] = useState(0);
-
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [error, setError] = useState({});
-  const [walletUniversityId, setWalletUniversityId] = useState('');
-  console.log('walletUniversityId', walletUniversityId);
   const [goldBalance, setGoldBalance] = useState('');
   const [gold, setGold] = useState(null);
 
@@ -84,61 +74,18 @@ export default function TransactionUniversity() {
   const { wallet = [] } = useSelector((state) => state.walletReducer);
   console.log('transactions', transactions);
 
-  useEffect(() => {
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId }));
-    dispatch(actHighSchoolGetAsync({ page: 1, pageSize: 1000 }));
-    dispatch(getWalletbyIdAsync({ id: accountId }));
-
-
-  }, [dispatch, page, rowsPerPage, success]);
-
-  useEffect(() => {
-    setWalletUniversityId(wallet?.id);
-    setGoldBalance(wallet?.goldBalance);
-  }, [wallet]); // Mảng phụ thuộc là `wallet`
-
-  // useEffect(() => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     account_id_tranferring: walletUniversityId,
-  //   }));
-  // }, [walletUniversityId]); // Mảng phụ thuộc là `walletHighSchoolId`
-
-  // const validateForm = () => {
-  //   let newError = {};
-  //   if (!formData.name) {
-  //     newError.name = 'Tên không được để trống';
-  //   }
-  //   if (!formData.description) {
-  //     newError.description = 'Mô tả không được để trống';
-  //   }
-  //   setError(newError);
-  //   return Object.keys(newError).length === 0;
-  // };
-
-
   const handledistribute = async () => {
     // Đợi createDistributionAsync hoàn tất
     await dispatch(createDistributionofAdminUniAsync({ formData, gold }));
-
-    // Khi createDistributionAsync hoàn tất, resetTransaction sẽ được gọi
     dispatch(resetTransaction());
-
-    // Sau đó đóng modal hoặc thực hiện hành động khác
     handleClose();
 
-    // Xử lý lỗi (hiển thị thông báo lỗi, v.v.)
   }
-
-
 
   const [value, setValue] = useState(null); // Giá trị đã chọn
   console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
   console.log('inputValue', inputValue);
-
-
-
 
   const [schoolInputValue, setschoolInputValue] = useState(''); // Input của trường năm
   const [schoolValue, setschoolValue] = useState(null); // Giá trị đã chọn cho năm
@@ -158,68 +105,17 @@ export default function TransactionUniversity() {
     setGold(value1 ? parseInt(value1, 10) : null);
   };
 
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = transactions.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Cập nhật trang và gọi API
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Gọi API với `pageSize` mới
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId, search: filterName })); // Gọi API với `pageSize` mới
   };
 
-
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
-
-  // const dataFiltered = applyFilter({
-  //   inputData: highschools,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  // const notFound = !dataFiltered.length && !!filterName;
-
-  // write code here
   const [open, setOpen] = useState('');
 
   const handleClickOpen = (Typedialog) => {
@@ -230,18 +126,32 @@ export default function TransactionUniversity() {
     setOpen(false);
   };
 
-  // const handleFilterByName = async (event) => {
-  //   const filterValue = event.target.value;
-  //   setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+  const handleFilterByName = async (event) => {
+    const filterValue = event.target.value;
+    setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
-  //   if (filterValue.trim()) {
-  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
-  //   } else {
-  //     // Gọi lại API khi không có từ khóa tìm kiếm
-  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage }));
-  //   }
-  // };
+    if (filterValue.trim()) {
+      dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, accountId: accountId, search: filterValue }));
+    } else {
+      // Gọi lại API khi không có từ khóa tìm kiếm
+      dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, accountId: accountId }));
+    }
+  };
 
+
+  useEffect(() => {
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId }));
+    dispatch(getWalletbyIdAsync({ id: accountId }));
+  }, [success]);
+
+  useEffect(() => {
+    dispatch(actHighSchoolGetAsync({}));
+    dispatch(getWalletbyIdAsync({ id: accountId }));
+  }, []);
+
+  useEffect(() => {
+    setGoldBalance(wallet?.goldBalance);
+  }, [wallet]); // Mảng phụ thuộc là `wallet`
 
 
   return (
@@ -315,21 +225,15 @@ export default function TransactionUniversity() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
-        // onFilterName={handleFilterByName}
+          onFilterName={handleFilterByName}
         />
 
         <Scrollbar>
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'goldamount', label: 'Số điểm', align: 'center' },
@@ -339,17 +243,16 @@ export default function TransactionUniversity() {
                 ]}
               />
               <TableBody>
-                {transactions?.map((row) => (
+                {transactions?.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id}
+                    rowKey={index + 1}
                     name={row?.name}
                     goldAmount={row?.goldAmount || 0}
                     description={row?.description || ''}
                     transactionDateTime={row?.transactionDateTime ? new Date(row.transactionDateTime).toISOString().split('T')[0] : ''}
                     avatarUrl={row?.avatarUrl}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
                   />
                 ))}
               </TableBody>

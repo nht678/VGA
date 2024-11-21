@@ -64,8 +64,10 @@ export default function UserTableRow({
   description,
   transactionDateTime,
   goldAmount,
+  rowKey,
 }) {
 
+  let nameAdmin = localStorage.getItem('name');
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -97,23 +99,17 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  const [options, setOptions] = useState([]);
-  const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-
-
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+        <TableCell >
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" component='div' noWrap>
-              {name}
+              {nameAdmin}
             </Typography>
           </Stack>
         </TableCell>
@@ -264,4 +260,5 @@ UserTableRow.propTypes = {
   description: PropTypes.string,
   transactionDateTime: PropTypes.string,
   goldAmount: PropTypes.number,
+  rowKey: PropTypes.number,
 };

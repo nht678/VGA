@@ -1,28 +1,49 @@
 import axios from "axios";
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const levelService = {
-    getLevels: async ({ page, pagesize, search }) => {
+    getLevels: async ({ page, pageSize, search }) => {
         const response = await BASE_API.get(`consultant-levels`, {
             params: {
                 'current-page': page,
-                'page-size': pagesize,
+                'page-size': pageSize,
                 'name': search || '',
+            },
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
             },
         });
         return response;
     },
     addLevel: async (data) => {
-        const response = await BASE_API.post(`consultant-levels`, data);
+        const response = await BASE_API.post(`consultant-levels`, data,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
         return response;
     },
 
     updateLevel: async ({ formData, id }) => {
-        const response = await BASE_API.put(`consultant-levels/${id}`, formData);
+        const response = await BASE_API.put(`consultant-levels/${id}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
         return response;
     },
     deleteLevel: async (id) => {
-        const response = await BASE_API.delete(`consultant-levels/${id}`);
+        const response = await BASE_API.delete(`consultant-levels/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        );
         return response;
     },
 };

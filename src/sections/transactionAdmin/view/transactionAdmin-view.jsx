@@ -89,55 +89,25 @@ export default function TransactionAdminView() {
     // dispatch(getWalletbyIdAsync({ id: accountId }));
 
 
-  }, [dispatch, page, rowsPerPage, success]);
+  }, [success]);
 
   useEffect(() => {
-    // setWalletuniversitiesId(wallet?.id);
     setGoldBalance(wallet?.goldBalance);
   }, [wallet]); // Mảng phụ thuộc là `wallet`
 
-  // useEffect(() => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     account_id_tranferring: walletuniversitiesId,
-  //   }));
-  // }, [walletuniversitiesId]); // Mảng phụ thuộc là `walletHighSchoolId`
-
-  // const validateForm = () => {
-  //   let newError = {};
-  //   if (!formData.name) {
-  //     newError.name = 'Tên không được để trống';
-  //   }
-  //   if (!formData.description) {
-  //     newError.description = 'Mô tả không được để trống';
-  //   }
-  //   setError(newError);
-  //   return Object.keys(newError).length === 0;
-  // };
-
 
   const handledistribute = async () => {
-    // Đợi createDistributionAsync hoàn tất
     await dispatch(createDistributionofAdminUniAsync({ formData, gold }));
-
-    // Khi createDistributionAsync hoàn tất, resetTransaction sẽ được gọi
-    dispatch(resetTransaction());
-
-    // Sau đó đóng modal hoặc thực hiện hành động khác
+    if (success) {
+      dispatch(resetTransaction());
+    }
     handleClose();
-
-    // Xử lý lỗi (hiển thị thông báo lỗi, v.v.)
   }
-
-
 
   const [value, setValue] = useState(null); // Giá trị đã chọn
   console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
   console.log('inputValue', inputValue);
-
-
-
 
   const [schoolInputValue, setschoolInputValue] = useState(''); // Input của trường năm
   const [schoolValue, setschoolValue] = useState(null); // Giá trị đã chọn cho năm
@@ -160,13 +130,13 @@ export default function TransactionAdminView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Cập nhật trang và gọi API
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Gọi API với `pageSize` mới
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId, filterName })); // Gọi API với `pageSize` mới
   };
 
 
@@ -185,13 +155,12 @@ export default function TransactionAdminView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(getTransaction({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(getTransaction({ page: 1, pageSize: rowsPerPage, search: filterValue, accountId: accountId })); // Gọi lại API với từ khóa tìm kiếm
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(getTransaction({ page: 1, pageSize: rowsPerPage }));
+      dispatch(getTransaction({ page: 1, pageSize: rowsPerPage, accountId: accountId }));
     }
   };
-
 
 
   return (
@@ -278,10 +247,11 @@ export default function TransactionAdminView() {
                 ]}
               />
               <TableBody>
-                {transactions?.map((row) => (
+                {transactions?.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id}
+                    rowKey={index + 1}
                     name={row?.name}
                     goldAmount={row?.goldAmount || 0}
                     description={row?.description || ''}

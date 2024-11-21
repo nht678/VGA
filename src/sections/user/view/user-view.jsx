@@ -171,42 +171,6 @@ export default function UserView() {
     setOpen(true);
   };
 
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = students.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     dispatch(actUserGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
@@ -218,15 +182,7 @@ export default function UserView() {
     dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
-  // const dataFiltered = applyFilter({
-  //   inputData: students,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
 
-  // const notFound = !dataFiltered.length && !!filterName;
-
-  // write code here
   const [open, setOpen] = useState('');
 
   const handleClickOpen = (Typedialog) => {
@@ -305,25 +261,12 @@ export default function UserView() {
 
       dispatch(uploadFileAsync(formUpload));
       dispatch(resetUserSuccess());
-      // if (uploadSuccess) {
-      //   message.success(`${selectedFile.name} file uploaded and converted successfully`);
-      //   setOpen(false);
-      // } else {
-      //   message.error(`${selectedFile.name} file upload failed.`);
-      // }
       setOpen(false);
     };
 
     reader.readAsArrayBuffer(selectedFile);
 
   };
-
-
-  useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
-  }, [page, rowsPerPage, usersSuccess]);
-
-
 
 
   const handleFilterByName = async (event) => {
@@ -350,6 +293,12 @@ export default function UserView() {
     setValue(newValue);
     setformData({ ...formData, schoolYears: newValue?.value });
   };
+
+
+  useEffect(() => {
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
+  }, [usersSuccess]);
+
 
 
 
@@ -504,7 +453,7 @@ export default function UserView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
           handleFilter={handleFilter}
@@ -515,12 +464,6 @@ export default function UserView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'email', label: 'Email', align: 'center' },
@@ -532,10 +475,11 @@ export default function UserView() {
                 ]}
               />
               <TableBody>
-                {students.map((row, key) => (
+                {students?.map((row, index) => (
                   <UserTableRow
-                    key={key}
+                    key={row?.id}
                     name={row?.account?.name || ''} // Kiểm tra row.name
+                    rowKey={index + 1}
                     id={row?.id || ''} // Kiểm tra row.id
                     gender={row?.gender} // Kiểm tra row.gender
                     gold={row?.account?.goldBalance || 0} // Kiểm tra row["gold-balance"]
@@ -543,8 +487,6 @@ export default function UserView() {
                     phone={row.account?.phone || ''} // Kiểm tra row.account?.phone
                     avatarUrl={row.avatarUrl || ''} // Kiểm tra row.avatarUrl
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''} // Kiểm tra row.dateOfBirth
-                    selected={selected.indexOf(row.name) !== -1}
-                    handleClick={(event) => handleClick(event, row.name)}
                   />
                 ))}
               </TableBody>

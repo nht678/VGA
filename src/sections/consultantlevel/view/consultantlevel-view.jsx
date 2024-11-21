@@ -239,7 +239,7 @@ export default function ConsultantLevelView() {
                 ]}
               />
               <TableBody>
-                {consultantLevels.map((row, index) => (
+                {consultantLevels?.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
                     id={row?.id}

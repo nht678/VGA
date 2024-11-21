@@ -50,17 +50,16 @@ const getColorByLevel = (level) => {
 };
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
   email,
   phone,
-  handleClick,
   id,  // Đổi tên id props thành userId
   dateOfBirth,
   description,
   consultantLevelId,
-  gender
+  gender,
+  rowKey,
 }) {
   let userId = localStorage.getItem('userId');
 
@@ -186,9 +185,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover >
+        <TableCell>
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -368,9 +367,7 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
-  selected: PropTypes.bool,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,
   email: PropTypes.string,
@@ -378,4 +375,5 @@ UserTableRow.propTypes = {
   description: PropTypes.string,
   gender: PropTypes.bool,
   consultantLevelId: PropTypes.number,
+  rowKey: PropTypes.number,
 };

@@ -56,14 +56,13 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  selected,
   name,
   avatarUrl,
-  handleClick,
   id,
   description,
   transactionDateTime,
   goldAmount,
+  rowKey,
 }) {
 
 
@@ -105,9 +104,9 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+      <TableRow hover>
+        <TableCell>
+          {rowKey}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -160,11 +159,10 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  handleClick: PropTypes.func,
   name: PropTypes.string,
-  selected: PropTypes.bool,
   id: PropTypes.string,
   description: PropTypes.string,
   transactionDateTime: PropTypes.string,
   goldAmount: PropTypes.number,
+  rowKey: PropTypes.number,
 };

@@ -44,12 +44,6 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function NewsForUniversityView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -76,33 +70,7 @@ export default function NewsForUniversityView() {
 
   const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
   console.log('news', news)
-  // console.log('levels', levels);
 
-
-  // Đảm bảo regions được fetch một lần và cập nhật options khi regions thay đổi
-  useEffect(() => {
-    dispatch(actGetNewsAsync({ page: page + 1, pageSize: rowsPerPage, universityid: userId, search: '' }));
-    // Fetch regions chỉ một lần khi component mount
-
-  }, [dispatch, page, rowsPerPage, success]);
-
-
-
-  // const handleAddConsultant = () => {
-
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelAddAsync(formData));
-  //   message.success('Tạo cấp độ tư vấn viên thành công');
-  //   dispatch((resetLevelSuccess()));
-  //   setFormData({
-  //     name: '',
-  //     description: '',
-  //     priceOnSlot: '',
-  //   });
-  //   handleClose();
-  // }
-
-  // console.log('formData', formData)
 
 
 
@@ -120,49 +88,7 @@ export default function NewsForUniversityView() {
       [e.target.name]: e.target.value,
     });
   };
-  // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
-  const handleRegionChange = (event, newValue) => {
-    setValue(newValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      regionId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
-    }));
-  };
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = news.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -175,19 +101,6 @@ export default function NewsForUniversityView() {
     dispatch(actGetNewsAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
-
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
-
-  // const dataFiltered = applyFilter({
-  //   inputData: highschools,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  // const notFound = !dataFiltered.length && !!filterName;
 
   // write code here
   const [open, setOpen] = useState('');
@@ -211,16 +124,6 @@ export default function NewsForUniversityView() {
       dispatch(actGetNewsAsync({ page: 1, pageSize: rowsPerPage }));
     }
   };
-  // const [selectedFile, setSelectedFile] = useState(null);
-
-  // const props = {
-  //   name: 'file',
-  //   beforeUpload(file) {
-  //     // Lưu file đã chọn vào state
-  //     setSelectedFile(file);
-  //     return false;  // Ngăn chặn upload mặc định của antd
-  //   },
-  // };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
@@ -267,8 +170,6 @@ export default function NewsForUniversityView() {
     return uploadedUrls;
   };
 
-
-
   // Hàm xử lý khi nhấn nút Tạo mới
   const handleAddNews = async () => {
     // Chờ hoàn thành upload và lấy dữ liệu các URL đã upload
@@ -295,6 +196,10 @@ export default function NewsForUniversityView() {
   };
   // dispatch(actAddNewsAsync(newsData));
 
+  useEffect(() => {
+    dispatch(actGetNewsAsync({ page: page + 1, pageSize: rowsPerPage, universityid: userId }));
+
+  }, [success]);
 
   return (
     <>
@@ -353,14 +258,12 @@ export default function NewsForUniversityView() {
             </DialogActions>
           </Dialog>
 
-
-
         </Box>
       </Stack>
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
@@ -369,17 +272,10 @@ export default function NewsForUniversityView() {
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'title', label: 'Tiêu đề' },
                   { id: 'content', label: 'Nội dung', align: 'center' },
                   { id: 'createAt', label: 'Ngày tạo', align: 'center' },
-                  // { id: 'imageNews', label: 'Ảnh', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -388,13 +284,12 @@ export default function NewsForUniversityView() {
                   <UserTableRow
                     key={index}
                     id={row?.id}
+                    rowKey={index + 1}
                     title={row?.title}
                     content={row?.content}
                     createAt={row?.createdAt}
                     imageNews={row?.imageNews}
-                    avatarUrl={row?.avatarUrl}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
+                    imageSingle={row?.imageNews[0].imageUrl}
                   />
                 ))}
               </TableBody>

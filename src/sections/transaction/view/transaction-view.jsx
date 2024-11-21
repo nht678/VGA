@@ -44,32 +44,15 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function TransactionView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [error, setError] = useState({});
-  const [walletHighSchoolId, setWalletHighSchoolId] = useState('');
-  console.log('walletHighSchoolId', walletHighSchoolId);
+  // const [walletHighSchoolId, setWalletHighSchoolId] = useState('');
+  // console.log('walletHighSchoolId', walletHighSchoolId);
   const [goldBalance, setGoldBalance] = useState('');
 
-  const [formData, setFormData] = useState({
-    walletHighSchoolId: '',
-    gold: '',
-    years: '',
-  });
-
-  const [status, setStatus] = useState('false');
-  console.log('formData', formData);
-
-
-  // write code here
 
   const dispatch = useDispatch();
 
@@ -80,24 +63,17 @@ export default function TransactionView() {
   const { wallet = [] } = useSelector((state) => state.walletReducer);
   console.log('transactions', transactions);
 
-  useEffect(() => {
-    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId }));
-    dispatch(getWalletbyIdAsync({ id: accountId }));
+  const [formData, setFormData] = useState({
+    accountId: accountId,
+    gold: '',
+    years: '',
+  });
+
+  const [status, setStatus] = useState('false');
+  console.log('formData', formData);
 
 
-  }, [dispatch, page, rowsPerPage, success]);
-
-  useEffect(() => {
-    setWalletHighSchoolId(wallet?.id);
-    setGoldBalance(wallet?.goldBalance);
-  }, [wallet]); // Mảng phụ thuộc là `wallet`
-
-  useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      walletHighSchoolId: walletHighSchoolId,
-    }));
-  }, [walletHighSchoolId]); // Mảng phụ thuộc là `walletHighSchoolId`
+  // write code here
 
   // const validateForm = () => {
   //   let newError = {};
@@ -115,11 +91,10 @@ export default function TransactionView() {
   const handledistribute = async () => {
     // Đợi createDistributionAsync hoàn tất
     await dispatch(createDistributionAsync(formData));
+    if (success) {
+      dispatch(resetTransaction());
+    }
 
-    // Khi createDistributionAsync hoàn tất, resetTransaction sẽ được gọi
-    dispatch(resetTransaction());
-
-    // Sau đó đóng modal hoặc thực hiện hành động khác
     handleClose();
 
     // Xử lý lỗi (hiển thị thông báo lỗi, v.v.)
@@ -167,41 +142,6 @@ export default function TransactionView() {
   };
 
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = transactions.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId })); // Cập nhật trang và gọi API
@@ -214,20 +154,6 @@ export default function TransactionView() {
   };
 
 
-  // const handleFilterByName = (event) => {
-  //   setPage(0);
-  //   setFilterName(event.target.value);
-  // };
-
-  // const dataFiltered = applyFilter({
-  //   inputData: highschools,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  // const notFound = !dataFiltered.length && !!filterName;
-
-  // write code here
   const [open, setOpen] = useState('');
 
   const handleClickOpen = (Typedialog) => {
@@ -238,17 +164,31 @@ export default function TransactionView() {
     setOpen(false);
   };
 
-  // const handleFilterByName = async (event) => {
-  //   const filterValue = event.target.value;
-  //   setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
+  const handleFilterByName = async (event) => {
+    const filterValue = event.target.value;
+    setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
-  //   if (filterValue.trim()) {
-  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
-  //   } else {
-  //     // Gọi lại API khi không có từ khóa tìm kiếm
-  //     dispatch(actHighSchoolGetAsync({ page: 1, pageSize: rowsPerPage }));
-  //   }
-  // };
+    if (filterValue.trim()) {
+      dispatch(getTransaction({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+    } else {
+      // Gọi lại API khi không có từ khóa tìm kiếm
+      dispatch(getTransaction({ page: 1, pageSize: rowsPerPage }));
+    }
+  };
+
+
+  useEffect(() => {
+    dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId }));
+    dispatch(getWalletbyIdAsync({ id: accountId }));
+  }, [success]);
+
+  useEffect(() => {
+    dispatch(getWalletbyIdAsync({ id: accountId }));
+  }, []);
+
+  useEffect(() => {
+    setGoldBalance(wallet?.goldBalance);
+  }, [wallet]); // Mảng phụ thuộc là `wallet`
 
 
 
@@ -331,21 +271,15 @@ export default function TransactionView() {
 
       <Card>
         <UserTableToolbar
-          numSelected={selected.length}
+          numSelected={0}
           filterName={filterName}
-        // onFilterName={handleFilterByName}
+          onFilterName={handleFilterByName}
         />
 
         <Scrollbar>
           <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                // rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'goldamount', label: 'Số điểm', align: 'center' },
@@ -355,17 +289,16 @@ export default function TransactionView() {
                 ]}
               />
               <TableBody>
-                {transactions?.map((row) => (
+                {transactions?.map((row, index) => (
                   <UserTableRow
                     key={row?.id}
+                    rowKey={index + 1}
                     id={row?.id}
                     name={row?.name}
                     goldAmount={row?.goldAmount || 0}
                     description={row?.description || ''}
                     transactionDateTime={row?.transactionDateTime ? new Date(row.transactionDateTime).toISOString().split('T')[0] : ''}
                     avatarUrl={row?.avatarUrl}
-                    selected={selected.indexOf(row?.name) !== -1}
-                    handleClick={(event) => handleClick(event, row?.name)}
                   />
                 ))}
               </TableBody>

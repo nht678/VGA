@@ -144,7 +144,7 @@ export default function UserTableRow({
   return (
     <>
       <TableRow hover >
-        <TableCell padding="checkbox">
+        <TableCell>
           {rowKey}
         </TableCell>
 
