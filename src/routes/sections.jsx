@@ -21,7 +21,6 @@ export const EventQuiz = lazy(() => import('src/pages/eventquiz'));
 export const EditQuiz = lazy(() => import('src/pages/quizdetail'));
 export const MyQuiz = lazy(() => import('src/pages/myquiz'));
 export const NewsDetail = lazy(() => import('src/pages/newsdetail'));
-export const NewsUniversity = lazy(() => import('src/pages/newsuniversity'));
 export const Profile = lazy(() => import('src/pages/profile'));
 export const Signin = lazy(() => import('src/pages/signin'));
 export const HighSchoolView = lazy(() => import('src/pages/highschool'));
@@ -81,7 +80,6 @@ export default function Router() {
         // { path: 'eventquiz', element: <EventQuiz /> },
         // { path: 'editquiz', element: <EditQuiz /> `},
         // { path: 'myquiz', element: <MyQuiz /> },
-        // { path: 'newsuniversity', element: <NewsUniversity /> },
         { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
         { path: 'transactions', element: role === '3' || role === "1" || role === "5" ? <Transaction /> : <Navigate to="/404" replace /> },
         { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
