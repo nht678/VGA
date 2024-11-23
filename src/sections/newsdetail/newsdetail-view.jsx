@@ -23,7 +23,7 @@ export default function NewsDetailView() {
     // useparam
     let { id } = useParams();
     console.log(id);
-    const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
+    const { newsById } = useSelector((state) => state.newsForUniversityReducer);
     // useEffect
     const dispatch = useDispatch();
     useEffect(() => {
@@ -35,36 +35,14 @@ export default function NewsDetailView() {
 
     return (
         <Box role="presentation" onClick={handleClick} sx={{ m: 20 }}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link underline="hover" color="inherit" href="/">
-                    Số hóa
-                </Link>
-                <Link
-                    underline="hover"
-                    color="inherit"
-                    href="/material-ui/getting-started/installation/"
-                >
-                    Sản phẩm
-                </Link>
-                <Typography sx={{ color: 'text.primary' }}>Thị trường</Typography>
-            </Breadcrumbs>
             <Typography variant="h4" sx={{ mb: 5, mt: 2 }}>
-                {news?.title || 'Chưa có tiêu đề'}
+                {newsById?.title || 'Chưa có tiêu đề'}
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 5 }}>
-                {news?.content || 'Chưa có nội dung'}
+                {newsById?.content || 'Chưa có nội dung'}
             </Typography>
-            <Box sx={{ m: 10 }}>
-                <Image
-                    style={{ margin: 'auto' }}
-                    width={'90%'}
-                    height={500}
-                    src="./assets/images/avatars/avatar_9.jpg"
-
-                />
-            </Box>
-            {news?.imageNews?.map((image, index) => (
+            {newsById?.imageNews?.map((image, index) => (
                 <Box key={index} sx={{ m: 10 }}>
                     <Image
                         style={{ margin: 'auto' }}

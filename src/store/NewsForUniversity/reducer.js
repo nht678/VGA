@@ -4,6 +4,7 @@ const initialState = {
     news: [],
     total: 0,
     success: false,
+    newsById: null, // Chứa thông tin bài báo cụ thể
 };
 
 const newsForUniversityReducer = (state = initialState, action) => {
@@ -18,7 +19,7 @@ const newsForUniversityReducer = (state = initialState, action) => {
         case GET_NEWS_BY_ID:
             return {
                 ...state,
-                news: action.payload,
+                newsById: action.payload,
                 success: true,
             };
         case ADD_NEWS:

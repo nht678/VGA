@@ -41,6 +41,11 @@ export const OccupationalGroupPage = lazy(() => import('src/pages/occupationalGr
 export const WorkSkillPage = lazy(() => import('src/pages/workSkill'));
 export const NewsForUniversity = lazy(() => import('src/pages/newsforUniversity'));
 export const TransactionAdmin = lazy(() => import('src/pages/transactionAdmin'));
+export const PaymentPage = lazy(() => import('src/pages/payment'));
+export const SigninPayment = lazy(() => import('src/sections/payment/signinpayment'));
+export const PaymentBegin = lazy(() => import('src/sections/payment/paymentbegin'));
+export const PaymentSuccess = lazy(() => import('src/sections/payment/Success'));
+export const Notification = lazy(() => import('src/pages/notification'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -102,6 +107,26 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'payment',
+      element: < PaymentPage />,
+    },
+    {
+      path: 'signinpayment',
+      element: < SigninPayment />,
+    },
+    {
+      path: 'paymentbegin',
+      element: < PaymentBegin />,
+    },
+    {
+      path: "Payment/result",
+      element: <PaymentSuccess />
+    },
+    {
+      path: 'notification',
+      element: <Notification />
     },
     {
       path: '404',

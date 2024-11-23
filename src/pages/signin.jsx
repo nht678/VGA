@@ -7,7 +7,7 @@ export default function Signin() {
     return (
         <>
             <Helmet>
-                <title>Sign in | Minimal UI</title>
+                <title>Đăng nhập</title>
             </Helmet>
             <Header />
             <SigninView />

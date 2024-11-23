@@ -1,4 +1,4 @@
-// import * as React from 'react';
+import * as React from 'react';
 import { useEffect } from 'react';
 
 import Typography from '@mui/material/Typography';
@@ -9,6 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+
+
+import { List as ListMui, ListItemButton as ListItemButtonMui, ListItemText as ListItemTextMui, Menu as MenuMui, MenuItem as MenuItemMui } from '@mui/material';
 import { signoutUser } from '../store/account/action';
 
 
@@ -51,53 +54,35 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-
-// const Search = styled('div')(({ theme }) => ({
-//     position: 'relative',
-//     borderRadius: theme.shape.borderRadius,
-//     backgroundColor: alpha(theme.palette.common.white, 0.15),
-//     '&:hover': {
-//         backgroundColor: alpha(theme.palette.common.white, 0.25),
-//     },
-//     marginRight: theme.spacing(2),
-//     marginLeft: 0,
-//     width: '100%',
-//     [theme.breakpoints.up('sm')]: {
-//         marginLeft: theme.spacing(3),
-//         width: '40%',
-//     },
-// }));
-
-// const SearchIconWrapper = styled('div')(({ theme }) => ({
-//     padding: theme.spacing(0, 2),
-//     height: '100%',
-//     position: 'absolute',
-//     pointerEvents: 'none',
-//     display: 'flex',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-
-// }));
-
-// const StyledInputBase = styled(InputBase)(({ theme }) => ({
-//     color: 'inherit',
-//     '& .MuiInputBase-input': {
-//         padding: theme.spacing(1, 1, 1, 0),
-//         // vertical padding + font size from searchIcon
-//         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-//         transition: theme.transitions.create('width'),
-//         width: '100%',
-//         [theme.breakpoints.up('md')]: {
-//             width: '60ch',
-//         },
-//     },
-// }));
+const options = [
+    'Show some love to MUI',
+    'Show all notification content',
+    'Hide sensitive notification content',
+    'Hide all notification content',
+];
 
 export default function Header() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
     console.log('isAuthenticated1', isAuthenticated);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [selectedIndex, setSelectedIndex] = React.useState(1);
+    const open = Boolean(anchorEl);
+    console.log('open', open);
+    const handleClickListItem = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuItemClick = (event, index) => {
+        setSelectedIndex(index);
+        setAnchorEl(null);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const accountId = localStorage.getItem('accountId');
 
@@ -171,7 +156,49 @@ export default function Header() {
                                     >
                                         <span className="absolute -inset-1.5" />
                                         <span className="sr-only">View notifications</span>
-                                        <BellIcon aria-hidden="true" className="h-6 w-6" />
+                                        <BellIcon onClick={handleClickListItem} aria-hidden="true" className="h-6 w-6" />
+                                        {/* <div>
+                                            <ListMui
+                                                component="nav"
+                                                aria-label="Device settings"
+                                            // sx={{ bgcolor: 'background.paper' }}
+                                            >
+                                                <ListItemButtonMui
+                                                    id="lock-button"
+                                                    aria-haspopup="listbox"
+                                                    aria-controls="lock-menu"
+                                                    aria-label="when device is locked"
+                                                    aria-expanded={open ? 'true' : undefined}
+                                                    onClick={handleClickListItem}
+                                                >
+                                                    <ListItemTextMui
+                                                        primary="When device is locked"
+                                                        secondary={options[selectedIndex]}
+                                                    />
+                                                </ListItemButtonMui>
+                                            </ListMui>
+                                            <MenuMui
+                                                id="lock-menu"
+                                                anchorEl={anchorEl}
+                                                open={open}
+                                                onClose={handleClose}
+                                                MenuListProps={{
+                                                    'aria-labelledby': 'lock-button',
+                                                    role: 'listbox',
+                                                }}
+                                            >
+                                                {options.map((option, index) => (
+                                                    <MenuItemMui
+                                                        key={option}
+                                                        disabled={index === 0}
+                                                        selected={index === selectedIndex}
+                                                        onClick={(event) => handleMenuItemClick(event, index)}
+                                                    >
+                                                        {option}
+                                                    </MenuItemMui>
+                                                ))}
+                                            </MenuMui>
+                                        </div> */}
                                     </button>
 
                                     {/* Profile dropdown */}
