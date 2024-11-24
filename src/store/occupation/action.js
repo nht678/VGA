@@ -47,7 +47,7 @@ export const actAddOccupationAsync = (data) => async (dispatch) => {
     try {
         const response = await occupationService.addOccupation(data);
         if (response.status === 200 || response.status === 201) {
-            dispatch(actAddOccupation(response));
+            dispatch(actAddOccupation(response.data));
             message.success('Thêm mới thành công');
         } else {
             message.error('Thêm mới thất bại');
@@ -63,7 +63,7 @@ export const actUpdateOccupationAsync = ({ formData, id }) => async (dispatch) =
         const response = await occupationService.updateOccupation({ id, formData });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actUpdateOccupation(response));
+            dispatch(actUpdateOccupation(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }
@@ -87,4 +87,10 @@ export const actDeleteOccupationAsync = (id) => async (dispatch) => {
         message.error('Xóa thất bại');
     }
 };
+// reset 
+export function resetOccupation() {
+    return {
+        type: 'RESET_OCCUPATION',
+    };
+}
 

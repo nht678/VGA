@@ -27,7 +27,7 @@ const levelService = {
     },
 
     updateLevel: async ({ formData, id }) => {
-        const response = await BASE_API.put(`consultant-levels/${id}`, formData,
+        const response = await BASE_API.put(`consultant-level/${id}`, formData,
             {
                 headers: {
                     Authorization: `Bearer ${TOKEN}`,
@@ -37,7 +37,7 @@ const levelService = {
         return response;
     },
     deleteLevel: async (id) => {
-        const response = await BASE_API.delete(`consultant-levels/${id}`,
+        const response = await BASE_API.delete(`consultant-level/${id}`,
             {
                 headers: {
                     Authorization: `Bearer ${TOKEN}`,

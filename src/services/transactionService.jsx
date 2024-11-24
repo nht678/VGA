@@ -6,6 +6,8 @@ const transactionService = {
         const params = {
             'current-page': page,
             'page-size': pageSize,
+            'sort-by-date-time': true,
+            'descending': true
         };
 
         if (transactionType) {

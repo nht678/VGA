@@ -170,10 +170,13 @@ const NavConfigComponent = () => {
 
           ]
         },
+        { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
         {
           title: 'Tài khoản', path: '#1', children: [
-            { title: 'Trường đại học', path: '/university' },
-            { title: 'Trường cấp 3', path: '/highschool' }
+            { title: 'Trường đại học', path: '/universityAccount' },
+            { title: 'Trường cấp 3', path: '/highschoolAccount' },
+            { title: 'Tư vấn viên', path: '/consultantAccount' },
+            { title: 'Học sinh', path: '/userAccount' },
           ]
         },
         // {
@@ -208,7 +211,7 @@ const NavConfigComponent = () => {
       ] : role === '5' ? [
         {
           title: 'Quản lý tư vấn viên', path: '#2', children: [
-            { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
+            // { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
             { title: 'Tư vấn viên', path: '/consultants' },
           ]
         },

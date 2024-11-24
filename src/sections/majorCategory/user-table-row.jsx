@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+import { Upload, Button as ButtonAnt, Image } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -25,7 +29,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateMajorCategoryAsync, actDeleteMajorCategoryAsync, resetMajorCategorySuccess } from 'src/store/majorCategory/action';
 import InfoIcon from '@mui/icons-material/Info';
-import { Image } from 'antd';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -56,7 +59,8 @@ export default function UserTableRow({
   avatarUrl,
   id,
   status,
-  rowKey
+  rowKey,
+  description
 }) {
   console.log('id', id)
   console.log('status', status)
@@ -78,6 +82,82 @@ export default function UserTableRow({
       handleCloseDialog();
     }
   };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(avatarUrl || ""); // Lưu URL ảnh (có thể là ảnh cũ nếu có avatarUrl)
+  const [fileList, setFileList] = useState([]); // Danh sách file của Upload
+
+  useEffect(() => {
+    if (avatarUrl) {
+      setImageUrl(avatarUrl); // Cập nhật imageUrl với avatarUrl nếu có
+      setFileList([{
+        uid: '-1', // Đảm bảo có một uid cho ảnh hiện tại
+        name: 'image.jpg', // Đặt tên file phù hợp (có thể lấy tên ảnh từ avatarUrl)
+        status: 'done', // Đảm bảo file đã được tải lên
+        url: avatarUrl, // URL ảnh cũ từ Firebase
+      }]);
+    }
+  }, [avatarUrl]); // Cập nhật fileList khi avatarUrl thay đổi
+
+  const uploadProps = {
+    name: "file",
+    listType: "picture",
+    fileList: fileList, // Hiển thị ảnh cũ nếu có
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl(url); // Lưu URL vào state
+        setFileList([{
+          uid: file.uid,
+          name: file.name,
+          status: 'done',
+          url,
+        }]);
+
+        setFormData((prevData) => ({
+          ...prevData,
+          image: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(file.url); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setFileList([]); // Xóa file trong fileList
+        setImageUrl(""); // Xóa URL trong state
+
+        setFormData((prevData) => ({
+          ...prevData,
+          image: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+  ;
 
   const validateForm = () => {
     let newErrors = {};
@@ -109,6 +189,8 @@ export default function UserTableRow({
   };
   const [formData, setFormData] = useState({
     name: name,
+    description: description,
+    image: avatarUrl,
   });
 
   const handlechange = (event) => {
@@ -120,12 +202,10 @@ export default function UserTableRow({
   }
 
   const handleUpdateMajorCategory = () => {
-    if (validateForm()) {
-      dispatch(actUpdateMajorCategoryAsync({ formData, id }));
-      if (success) {
-        dispatch(resetMajorCategorySuccess());
-        handleClose();
-      }
+    dispatch(actUpdateMajorCategoryAsync({ formData, id }));
+    if (success) {
+      dispatch(resetMajorCategorySuccess());
+      handleClose();
     }
   };
 
@@ -148,6 +228,9 @@ export default function UserTableRow({
               {name}
             </Typography>
           </Stack>
+        </TableCell>
+        <TableCell align="center">
+          {description}
         </TableCell>
         <TableCell align="center">
           <Chip
@@ -186,6 +269,29 @@ export default function UserTableRow({
                   error={!!errors.name}
                   helperText={errors.name}
                 />
+              </Grid>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Description</Typography>
+                <textarea
+                  defaultValue={description}
+                  style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
+                  label="Mô tả"
+                  name='description'
+                  placeholder='Hãy viết mô tả...'
+                  onChange={handlechange}
+                />
+              </Grid>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Ảnh</Typography>
+                <Upload
+                  {...uploadProps}
+                >
+                  {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                    <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                      Upload
+                    </ButtonAnt>
+                  )}
+                </Upload>
               </Grid>
 
             </Grid>
@@ -308,5 +414,6 @@ UserTableRow.propTypes = {
   name: PropTypes.string,
   id: PropTypes.number,
   status: PropTypes.bool,
-  rowKey: PropTypes.number
+  rowKey: PropTypes.number,
+  description: PropTypes.string,
 };

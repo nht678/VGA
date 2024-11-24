@@ -83,12 +83,13 @@ export default function UserTableRow({
   const [majorCategoriesValue, setMajorCategoriesValue] = useState(
     majorCategories.find((item) => item.id === majorCategoryId) || null
   );
+  console.log('majorCategoriesValue', majorCategoriesValue);
 
   const handleMajorCategoriesChange = (event, newValue) => {
     setMajorCategoriesValue(newValue);
     setFormData((prevData) => ({
       ...prevData,
-      majorCategoryId: newValue?.id || '', // Cập nhật regionId khi giá trị thay đổi
+      majorCategoryId: newValue?.id || '',
     }));
   };
 

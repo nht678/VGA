@@ -33,6 +33,7 @@ export default function Nav({ openNav, onCloseNav }) {
   // if role chage then useeffect will be called
 
   let role = localStorage.getItem('role');
+  let name = localStorage.getItem('name');
 
 
   const pathname = usePathname();
@@ -78,7 +79,8 @@ export default function Nav({ openNav, onCloseNav }) {
             padding: '5px 10px',
           }}
         >
-          {role === '1' ? 'Admin' : role === '3' ? 'HighSchool' : role === '5' ? 'University' : 'User'}
+          {/* {role === '1' ? 'Admin' : role === '3' ? 'HighSchool' : role === '5' ? 'University' : 'User'} */}
+          {name}
         </Typography>
       </Box>
 

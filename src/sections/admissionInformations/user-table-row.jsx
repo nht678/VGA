@@ -24,8 +24,8 @@ import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateAdmissionInformationAsync, actDeleteAdmissionInformationAsync, actResetAdmissionInformation } from 'src/store/admissionInformation/action';
-import { propTypes } from 'react-bootstrap/esm/Image';
-import { message } from 'antd';
+import { Image } from 'antd';
+import InfoIcon from '@mui/icons-material/Info';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -64,9 +64,6 @@ export default function UserTableRow({
   majorId,
   rowKey,
 }) {
-  console.log('id', id)
-  console.log('majorId', majorId)
-  console.log('admissionMethodId', admissionMethodId)
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -76,15 +73,12 @@ export default function UserTableRow({
 
 
   const { admissionInformation, total = 0, success } = useSelector((state) => state.admissionInformationReducer);
-  console.log('admissionInformation', admissionInformation)
 
   let userId = localStorage.getItem('userId');
 
   // useSelector: Lấy state từ store thông qua key
   const majors = useSelector((state) => state.majorReducer.majors);
-  console.log('majors', majors);
   const admissionMethods = useSelector((state) => state.admissionMethodReducer.admissionMethods);
-  console.log('admissionMethods', admissionMethods);
 
 
   const handleDelete = () => {
@@ -99,12 +93,13 @@ export default function UserTableRow({
     // Khi majorId, admissionMethodId hoặc các giá trị khác thay đổi, cập nhật lại formData
     setFormData([{
       majorId: majorId,
+      id: id,
       admissionMethodId: admissionMethodId,
       tuitionFee: tuitionFee,
       year: year,
       quantityTarget: quantityTarget,
     }]);
-  }, [majorId, admissionMethodId, tuitionFee, year, quantityTarget]);
+  }, [id, majorId, admissionMethodId, tuitionFee, year, quantityTarget]);
 
 
   const validateForm = () => {
@@ -199,13 +194,13 @@ export default function UserTableRow({
     setDialog('');
   };
   const [formData, setFormData] = useState([{
+    id: id,
     majorId: majorId,
     admissionMethodId: admissionMethodId,
     tuitionFee: tuitionFee,
     year: year,
     quantityTarget: quantityTarget,
   }]);
-  console.log('formData', formData)
 
 
   const handleAddRow = () => {
@@ -243,7 +238,7 @@ export default function UserTableRow({
   };
 
   const handleUpdateAdmissionInfo = () => {
-    dispatch(actUpdateAdmissionInformationAsync({ formData, id }));
+    dispatch(actUpdateAdmissionInformationAsync({ formData }));
     if (success) {
       dispatch(actResetAdmissionInformation());
     }
@@ -310,101 +305,6 @@ export default function UserTableRow({
           </IconButton>
         </TableCell>
       </TableRow>
-
-      {/* <Dialog
-        open={dialog === 'edit'}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          Cập nhật thông tin tuyển sinh
-        </DialogTitle>
-        <DialogContent >
-          <DialogContentText id="alert-dialog-description">
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
-                <Autocomplete
-                  defaultValue={majorName}
-                  fullWidth
-                  onChange={handleMajorChange}
-                  inputValue={majorInputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setMajorInputValue(newInputValue);
-                  }}
-                  id="controllable-states-demo-major"
-                  options={majors || []}
-                  getOptionLabel={(option) => option?.name || ''}
-                  renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
-                />
-                {error.majorId && <Typography variant='caption' color="error">{error.majorId}</Typography>}
-              </Grid>
-
-              <Grid size={{ md: 6 }}>
-                <Autocomplete
-                  defaultValue={admissionMethodName}
-                  onChange={handleAdmissionMethodChange}
-                  inputValue={admissionMethodInputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setAdmissionMethodInputValue(newInputValue);
-                  }}
-                  id="controllable-states-demo-admission"
-                  options={admissionMethods || []}
-                  getOptionLabel={(option) => option?.name || ''}
-                  renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
-                />
-                {error.admissionMethodId && <Typography variant='caption' color="error">{error.admissionMethodId}</Typography>}
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  defaultValue={tuitionFee}
-                  fullWidth
-                  label="Học phí"
-                  name="tuitionFee"
-                  // value={formData.tuitionFee}
-                  onChange={handlechange}
-                />
-                {error.tuitionFee && <Typography variant='caption' color="error">{error.tuitionFee}</Typography>}
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <Autocomplete
-                  defaultValue={year}
-                  fullWidth
-                  onChange={handleYearChange}
-                  inputValue={yearInputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setYearInputValue(newInputValue);
-                  }}
-                  id="controllable-states-demo-year"
-                  options={options || []}
-                  getOptionLabel={(option) => option?.name || ''}
-                  renderInput={(params) => <TextField {...params} label="Chọn năm" />}
-                />
-                {error.year && <Typography variant='caption' color="error">{error.year}</Typography>}
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  defaultValue={quantityTarget}
-                  fullWidth
-                  label="Số lượng mục tiêu"
-                  name="quantityTarget"
-                  // value={formData.quantityTarget}
-                  onChange={handlechange}
-                />
-                {error.quantityTarget && <Typography variant='caption' color="error">{error.quantityTarget}</Typography>}
-              </Grid>
-            </Grid>
-
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdate} autoFocus>
-            Cập nhật
-          </Button>
-        </DialogActions>
-      </Dialog> */}
-
       <Dialog
         open={dialog === 'edit'}
         onClose={handleClose}
@@ -456,17 +356,20 @@ export default function UserTableRow({
                     renderInput={(params) => <TextField {...params} label="Chọn năm" />}
                   />
                 </Grid>
-                <Grid size={{ md: 1 }}>
+                <Grid size={{ md: 3 }}>
                   <TextField
                     fullWidth
-                    defaultValue={row.tuitionFee || ''}
-                    label="Học phí"
-                    value={row.tuitionFee || ''}
-                    onChange={(e) => handleChangeField(index, 'tuitionFee', e.target.value)}
-                    type="number"  // Giới hạn nhập chỉ số
+                    label="Học phí tuyển sinh"
+                    value={new Intl.NumberFormat('vi-VN').format(row.tuitionFee || 0)} // Định dạng hiển thị
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\./g, ''); // Loại bỏ dấu chấm
+                      const numericValue = Number(rawValue); // Chuyển sang số
+                      handleChangeField(index, 'tuitionFee', numericValue); // Lưu giá trị không định dạng
+                    }}
+                    type="text" // Đặt là text để hiển thị dấu chấm
                   />
                 </Grid>
-                <Grid size={{ md: 1 }}>
+                <Grid size={{ md: 3 }}>
                   <TextField
                     fullWidth
                     defaultValue={row.quantityTarget || ''}
@@ -476,25 +379,8 @@ export default function UserTableRow({
                     type="number"  // Giới hạn nhập chỉ số
                   />
                 </Grid>
-                <Grid size={{ md: 1 }}>
-                  <Button
-                    color="error"
-                    onClick={() => handleRemoveRow(index)}
-                  >
-                    Xóa
-                  </Button>
-                </Grid>
               </Grid>
             ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddRow}
-              sx={{ mt: 2 }}
-            >
-              Thêm hàng mới
-            </Button>
-
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -505,6 +391,122 @@ export default function UserTableRow({
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết thông tin tuyển sinh
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 4 }}>
+                <Image
+                  width={200}
+                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
+                  style={{ zIndex: 2 }}
+                />
+              </Grid>
+              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Ngành
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {majorName}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Phương thức tuyển sinh
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {admissionMethodName}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Số lượng mục tiêu
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {quantityTarget}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Học phí
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {tuitionFee}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Năm
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {year}
+                </Typography>
+              </Grid>
+
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Trạng thái
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
+                </Typography>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+
+
+
+
+      </Dialog >
 
 
       <DeleteDialog
@@ -530,6 +532,10 @@ export default function UserTableRow({
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
+        </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
         </MenuItem>
       </Popover>
     </>

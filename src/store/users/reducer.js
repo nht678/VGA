@@ -42,7 +42,6 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         usersSuccess: false,
       };
-
     default:
       return state;
   }

@@ -50,6 +50,15 @@ const userServices = {
         );
         return response;
     },
+    banAccount: async ({ changeStatus, accountId }) => {
+        const response = await BASE_API.put(`/accounts/${accountId}`, null, {
+            params: {
+                status: changeStatus,
+            },
+        });
+        return response;
+
+    }
 };
 
 export default userServices;

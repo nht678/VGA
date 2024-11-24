@@ -26,3 +26,10 @@ export function uploadFileAsync(data) {
         }
     };
 }
+
+// reset 
+export function resetUploadFile() {
+    return {
+        type: 'RESET_UPLOAD_FILE',
+    };
+}

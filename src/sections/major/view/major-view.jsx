@@ -10,7 +10,6 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { UploadOutlined } from '@ant-design/icons';
 
 
 import Dialog from '@mui/material/Dialog';
@@ -24,6 +23,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import Grid from '@mui/system/Grid';
 import { Button as ButtonAnt, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 
 
@@ -128,6 +128,7 @@ export default function MajorView() {
         majorCategoryId: '',
         image: ''
       });
+      setImageUrl("");
       setMajorCategoriesValue(null);
       dispatch(resetMajor());
       handleClose();

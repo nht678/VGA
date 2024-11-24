@@ -10,8 +10,6 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { users } from 'src/_mock/user';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -22,9 +20,6 @@ import TextField from '@mui/material/TextField';
 
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
-
-
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -255,7 +250,13 @@ export default function TransactionAdminView() {
                     name={row?.name}
                     goldAmount={row?.goldAmount || 0}
                     description={row?.description || ''}
-                    transactionDateTime={row?.transactionDateTime ? new Date(row.transactionDateTime).toISOString().split('T')[0] : ''}
+                    transactionType={row?.transactionType}
+                    transactionDateTime={
+                      row?.transactionDateTime
+                        ? new Date(row.transactionDateTime)
+                          .toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : ''
+                    }
                     avatarUrl={row?.avatarUrl}
                   />
                 ))}

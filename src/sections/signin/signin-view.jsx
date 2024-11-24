@@ -26,10 +26,10 @@ export default function SigninView() {
     }
     console.log('formData', formData);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Form data', formData);
-        dispatch(signinUser(formData, navigate));
+        await dispatch(signinUser(formData, navigate));
         // if (isAuthenticated)
         // {
         // message.success('Sign in successfully');

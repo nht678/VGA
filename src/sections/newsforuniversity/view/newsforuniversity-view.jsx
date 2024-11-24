@@ -287,7 +287,9 @@ export default function NewsForUniversityView() {
                     rowKey={index + 1}
                     title={row?.title}
                     content={row?.content}
-                    createAt={row?.createdAt}
+                    createAt={row?.createdAt ? new Date(row.createdAt)
+                      .toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                      : ''}
                     imageNews={row?.imageNews}
                     imageSingle={row?.imageNews[0].imageUrl}
                   />

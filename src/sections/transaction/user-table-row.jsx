@@ -61,9 +61,12 @@ export default function UserTableRow({
   id,
   description,
   transactionDateTime,
+  transactionType,
   goldAmount,
   rowKey,
 }) {
+
+  console.log('transactionType', transactionType);
 
 
   const [open, setOpen] = useState(null);
@@ -119,8 +122,14 @@ export default function UserTableRow({
         </TableCell>
 
 
-        <TableCell sx={{ textAlign: 'center' }}>
-          {goldAmount}
+        <TableCell
+          sx={{
+            textAlign: 'center',
+            color: transactionType === 2 ? 'red' : transactionType === 1 ? 'green' : 'inherit',
+            fontWeight: 'bold',
+          }}
+        >
+          {transactionType === 2 ? `- ${goldAmount}` : transactionType === 1 ? `+ ${goldAmount}` : goldAmount}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{transactionDateTime}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
@@ -134,6 +143,95 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết giao dịch
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tên:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Số điểm:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2"
+                      sx={{
+                        textAlign: 'center',
+                        color: transactionType === 2 ? 'red' : transactionType === 1 ? 'green' : 'inherit',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {transactionType === 2 ? `- ${goldAmount}` : transactionType === 1 ? `+ ${goldAmount}` : goldAmount}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Thời gian:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {transactionDateTime}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Mô tả:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {description}
+                </Typography>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog >
+
       <Popover
         open={!!open}
         anchorEl={open}
@@ -144,14 +242,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={() => handleClickOpenDialog('edit')}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>Chi tiết</MenuItem>
       </Popover>
     </>
   );
@@ -165,4 +256,5 @@ UserTableRow.propTypes = {
   transactionDateTime: PropTypes.string,
   goldAmount: PropTypes.number,
   rowKey: PropTypes.number,
+  transactionType: PropTypes.string,
 };

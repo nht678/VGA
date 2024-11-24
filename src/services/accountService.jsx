@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BASE_API } from "./api";
+import { BASE_API, TOKEN } from "./api";
 
 const accountService = {
     login: async (data) => {

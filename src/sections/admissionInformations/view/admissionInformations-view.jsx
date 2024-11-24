@@ -52,6 +52,7 @@ export default function AdmissionInformationsView() {
   const [error, setError] = useState({});
 
 
+
   const [formData, setFormData] = useState([{
     majorId: '',
     admissionMethodId: '',
@@ -68,11 +69,16 @@ export default function AdmissionInformationsView() {
         majorId: '',
         admissionMethodId: '',
         tuitionFee: 0,
-        year: '',
+        year: defaultYear, // Sử dụng năm của hàng đầu tiên
         quantityTarget: 0,
       },
     ]);
   };
+  console.log('formData', formData)
+
+
+  // Lấy năm từ hàng đầu tiên (hoặc mặc định là rỗng nếu không có hàng nào)
+  const defaultYear = formData[0]?.year || '';
 
   const handleRemoveRow = (index) => {
     // Xóa hàng dựa trên index
@@ -288,6 +294,28 @@ export default function AdmissionInformationsView() {
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
+                {/* Chọn năm một lần */}
+                <Grid container spacing={2} sx={{ mt: 1 }}>
+                  <Grid size={{ md: 3 }}>
+                    <Autocomplete
+                      fullWidth
+                      value={options.find(option => option?.value === formData[0]?.year) || null}
+                      onChange={(e, newValue) => {
+                        // Cập nhật "năm" cho tất cả các hàng
+                        setFormData(
+                          formData.map(row => ({
+                            ...row,
+                            year: newValue?.value || '',
+                          }))
+                        );
+                      }}
+                      options={options || []}
+                      getOptionLabel={(option) => option?.name || ''}
+                      renderInput={(params) => <TextField {...params} label="Chọn năm" />}
+                    />
+                  </Grid>
+                </Grid>
+
                 {formData?.map((row, index) => (
                   <Grid container spacing={2} sx={{ mt: 1 }} key={index}>
                     <Grid size={{ md: 3 }}> {/* Đây là cách bạn sử dụng 'size' từ @mui/system */}
@@ -314,28 +342,25 @@ export default function AdmissionInformationsView() {
                         renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
                       />
                     </Grid>
-                    <Grid size={{ md: 3 }}>
-                      <Autocomplete
-                        fullWidth
-                        value={options.find(option => option?.value === formData[index].year) || null}
-                        onChange={(e, newValue) =>
-                          handleChangeField(index, 'year', newValue?.value)
-                        }
-                        options={options || []}
-                        getOptionLabel={(option) => option?.name || ''}
-                        renderInput={(params) => <TextField {...params} label="Chọn năm" />}
-                      />
-                    </Grid>
-                    <Grid size={{ md: 1 }}>
+                    <Grid size={{ md: 2 }}>
                       <TextField
                         fullWidth
-                        label="Học phí"
-                        value={row.tuitionFee || ''}
-                        onChange={(e) => handleChangeField(index, 'tuitionFee', e.target.value)}
-                        type="number"  // Giới hạn nhập chỉ số
+                        label="Học phí tuyển sinh"
+                        value={
+                          row.tuitionFee !== undefined && row.tuitionFee !== null
+                            ? new Intl.NumberFormat('vi-VN').format(row.tuitionFee) // Định dạng số
+                            : ''
+                        }
+                        onChange={(e) => {
+                          const rawValue = e.target.value.replace(/\./g, ''); // Loại bỏ dấu chấm
+                          const numericValue = Number(rawValue); // Chuyển sang số
+                          handleChangeField(index, 'tuitionFee', numericValue); // Lưu giá trị không định dạng
+                        }}
+                        type="text" // Đổi thành text để hiển thị định dạng
                       />
                     </Grid>
-                    <Grid size={{ md: 1 }}>
+
+                    <Grid size={{ md: 2 }}>
                       <TextField
                         fullWidth
                         label="Số lượng mục tiêu"

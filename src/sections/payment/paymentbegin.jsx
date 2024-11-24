@@ -46,7 +46,6 @@ export default function PaymentBegin() {
     };
     const handlePayment = async () => {
         if (selectedRow !== null && accountId !== null) {
-            debugger
             try {
                 console.log("formData", formData);
 
@@ -54,8 +53,8 @@ export default function PaymentBegin() {
                 const res = await axios.post(
                     'https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/api/v1/wallet/request-top-up-wallet-with-payos',
                     {
-                        returnUrl: "https://vga-beta.vercel.app/Payment/result",
-                        cancelUrl: "https://vga-beta.vercel.app/Payment/result",
+                        returnUrl: "http://localhost:3030/Payment/result",
+                        cancelUrl: "http://localhost:3030/Payment/result",
                     },
                     {
                         params: {

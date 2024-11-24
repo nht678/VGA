@@ -53,9 +53,9 @@ export const actAddAdmissionInformationAsync = ({ formData, universityId }) => a
     }
 };
 
-export const actUpdateAdmissionInformationAsync = ({ formData, id }) => async (dispatch) => {
+export const actUpdateAdmissionInformationAsync = ({ formData }) => async (dispatch) => {
     try {
-        const response = await admissionInformationService.updateAdmissionInformation({ id, formData });
+        const response = await admissionInformationService.updateAdmissionInformation({ formData });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
             dispatch(actUpdateAdmissionInformation(response));

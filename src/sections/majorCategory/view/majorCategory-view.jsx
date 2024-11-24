@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+import { Button as ButtonAnt, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -19,7 +23,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
+
 
 
 
@@ -87,11 +91,76 @@ export default function MajorCategoryView() {
         dispatch(resetMajorCategorySuccess());
         setFormData({
           name: '',
+          description: '',
+          image: '',
         });
+        setImageUrl('');
         handleClose();
       }
     }
   };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
+
+  const uploadProps = {
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl(url); // Lưu URL vào state
+        setFormData((prevData) => ({
+          ...prevData,
+          image: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setImageUrl(""); // Xóa URL trong state
+        setFormData((prevData) => ({
+          ...prevData,
+          image: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+
+  const fileList = imageUrl
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -176,6 +245,30 @@ export default function MajorCategoryView() {
                       helperText={error.name}
                     />
                   </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Description</Typography>
+                    <textarea
+                      style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
+                      label="Mô tả"
+                      name='description'
+                      placeholder='Hãy viết mô tả...'
+                      onChange={handlechange}
+                    />
+                  </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Ảnh</Typography>
+                    <Upload
+                      listType="picture"
+                      {...uploadProps}
+                      fileList={fileList}
+                    >
+                      {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                        <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                          Upload
+                        </ButtonAnt>
+                      )}
+                    </Upload>
+                  </Grid>
                 </Grid>
 
               </DialogContentText>
@@ -207,6 +300,7 @@ export default function MajorCategoryView() {
                 headLabel={[
                   { id: 'name', label: 'Tên' },
                   { id: 'status', label: 'Tình trạng', align: 'center' },
+                  { id: 'description', label: 'Mô tả', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -218,7 +312,6 @@ export default function MajorCategoryView() {
                     rowKey={index + 1} //
                     name={row?.name}
                     description={row?.description}
-                    priceOnSlot={row?.priceOnSlot}
                     status={row?.status}
                     avatarUrl={row?.image}
                   />

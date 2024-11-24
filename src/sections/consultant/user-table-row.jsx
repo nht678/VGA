@@ -28,8 +28,8 @@ import { styled } from '@mui/material/styles';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
-import { Calendar, theme } from 'antd';
-
+import { Calendar, theme, Image } from 'antd';
+import InfoIcon from '@mui/icons-material/Info';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateConsultant, deleteConsultant } from 'src/store/consultant/action';
 import DeleteDialog from '../../pages/delete';
@@ -341,6 +341,134 @@ export default function UserTableRow({
         </DialogActions>
       </Dialog>
 
+
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết người tư vấn
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 4 }}>
+                <Image
+                  width={200}
+                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
+                  style={{ zIndex: 2 }}
+                />
+              </Grid>
+              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Họ và tên:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Email
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {email}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Số điện thoại
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {phone}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Giới tính:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {gender ? 'Nam' : 'Nữ'}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Ngày sinh:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {dateOfBirth}
+                </Typography>
+              </Grid>
+
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Mô tả:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {description}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Cấp độ:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {`Level ${consultantLevelId}`}
+                </Typography>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+
+
+
+
+      </Dialog >
+
       <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover
         open={!!open}
@@ -359,6 +487,10 @@ export default function UserTableRow({
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
+        </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
         </MenuItem>
       </Popover>
     </>

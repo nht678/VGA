@@ -297,7 +297,13 @@ export default function TransactionView() {
                     name={row?.name}
                     goldAmount={row?.goldAmount || 0}
                     description={row?.description || ''}
-                    transactionDateTime={row?.transactionDateTime ? new Date(row.transactionDateTime).toISOString().split('T')[0] : ''}
+                    transactionType={row?.transactionType}
+                    transactionDateTime={
+                      row?.transactionDateTime
+                        ? new Date(row.transactionDateTime)
+                          .toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : ''
+                    }
                     avatarUrl={row?.avatarUrl}
                   />
                 ))}

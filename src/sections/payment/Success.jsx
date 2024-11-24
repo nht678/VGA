@@ -11,7 +11,6 @@ const useQuery = () => {
   console.log('query', query);
 
   useEffect(() => {
-    debugger
     const queryParams = new URLSearchParams(search);
     const queryObject = {};
     queryParams.forEach((value, key) => {

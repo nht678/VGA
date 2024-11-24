@@ -27,8 +27,8 @@ const admissionInformationService = {
             }
         )
     ,
-    updateAdmissionInformation: ({ formData, id }) =>
-        BASE_API.put(`/admission-informations/${id}`, formData,
+    updateAdmissionInformation: ({ formData }) =>
+        BASE_API.put(`/admission-informations`, formData,
             {
                 headers: {
                     Authorization: `Bearer ${TOKEN}`,

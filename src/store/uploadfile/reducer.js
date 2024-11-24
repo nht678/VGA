@@ -19,6 +19,12 @@ const uploadReducer = (state = initialState, action) => {
                 uploadSuccess: true,
             };
 
+        case 'RESET_UPLOAD_FILE':
+            return {
+                ...state,
+                uploadSuccess: false,
+            };
+
         default:
             return state;
     }

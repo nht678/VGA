@@ -45,6 +45,10 @@ export const SigninPayment = lazy(() => import('src/sections/payment/signinpayme
 export const PaymentBegin = lazy(() => import('src/sections/payment/paymentbegin'));
 export const PaymentSuccess = lazy(() => import('src/sections/payment/Success'));
 export const Notification = lazy(() => import('src/pages/notification'));
+export const ConsultantAccountView = lazy(() => import('src/sections/adminAccount/consultant/view/consultantaccount-view'));
+export const HighSchoolAccountView = lazy(() => import('src/sections/adminAccount/highschool/view/highschoolaccount-view'));
+export const UserAccountView = lazy(() => import('src/sections/adminAccount/user/view/userAccount-view'));
+export const UniversityAccountView = lazy(() => import('src/sections/adminAccount/university/view/universityAccount-view'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -72,7 +76,7 @@ export default function Router() {
       ),
       children: [
         // { element: <IndexPage />, index: true },
-        { path: 'students', element: role === '3' ? <UserPage /> : <Navigate to="/404" replace /> },
+        { path: 'students', element: role === '3' || role === '1' ? <UserPage /> : <Navigate to="/404" replace /> },
         // { path: 'products', element: <ProductsPage /> },
         // { path: 'blog', element: <BlogPage /> },
         // { path: 'upload', element: <UploadFile /> },
@@ -91,13 +95,17 @@ export default function Router() {
         { path: 'occupationgroup', element: role === '1' ? <OccupationalGroupPage /> : <Navigate to="/404" replace /> },
         { path: 'workSkill', element: role === '1' ? <WorkSkillPage /> : <Navigate to="/404" replace /> },
         { path: 'transactionsAdmin', element: role === '1' ? <TransactionAdmin /> : <Navigate to="/404" replace /> },
-        { path: 'consultants', element: role === '5' ? <ConsultantView /> : <Navigate to="/404" replace /> },
+        { path: 'consultants', element: role === '5' || role === '1' ? <ConsultantView /> : <Navigate to="/404" replace /> },
         { path: 'newsuni', element: role === '5' ? <NewsForUniversity /> : <Navigate to="/404" replace /> },
         { path: 'occupation', element: role === '1' ? <OccupationPage /> : <Navigate to="/404" replace /> },
         { path: 'admissionInformations', element: role === '5' ? <AdmissionInformationsPage /> : <Navigate to="/404" replace /> },
         { path: 'transactionsuniversity', element: role === '5' ? <TransactionUniversityPage /> : <Navigate to="/404" replace /> },
         { path: 'university', element: role === '1' ? <UniversityView /> : <Navigate to="/404" replace /> },
-        { path: 'consultantsLevel', element: role === '5' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
+        { path: 'consultantAccount', element: role === '1' ? <ConsultantAccountView /> : <Navigate to="/404" replace /> },
+        { path: 'highschoolAccount', element: role === '1' ? <HighSchoolAccountView /> : <Navigate to="/404" replace /> },
+        { path: 'consultantsLevel', element: role === '1' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
+        { path: 'userAccount', element: role === '1' ? <UserAccountView /> : <Navigate to="/404" replace /> },
+        { path: 'universityAccount', element: role === '1' ? <UniversityAccountView /> : <Navigate to="/404" replace /> },
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 
       ],

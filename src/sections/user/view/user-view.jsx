@@ -72,9 +72,9 @@ export default function UserView() {
   const [filterYear, setFilterYear] = useState(getCurrentYear);
   console.log('students', students);
 
-  const { loading, error, uploadSuccess } = useSelector((state) => state.uploadReducer);
+  const { uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log('userInfo1', userInfo?.userId);
+
 
   const nameHighSchool = localStorage.getItem('name');
   console.log('nameHighSchool', nameHighSchool);
@@ -162,6 +162,7 @@ export default function UserView() {
           schoolYears: '',
           highSchoolId: userInfo ? userInfo.userId : '',
         });
+        dispatch(resetUserSuccess());
       }
     } catch (e) {
       message.error('Add user failed');
@@ -297,7 +298,7 @@ export default function UserView() {
 
   useEffect(() => {
     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
-  }, [usersSuccess]);
+  }, [usersSuccess, uploadSuccess]);
 
 
 
@@ -308,7 +309,6 @@ export default function UserView() {
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Danh sách học sinh năm:{filterYear}</Typography>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">{nameHighSchool}</Typography>
         <Box>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
             Tạo học sinh
@@ -482,7 +482,7 @@ export default function UserView() {
                     rowKey={index + 1}
                     id={row?.id || ''} // Kiểm tra row.id
                     gender={row?.gender} // Kiểm tra row.gender
-                    gold={row?.account?.goldBalance || 0} // Kiểm tra row["gold-balance"]
+                    gold={row?.account?.wallet?.goldBalance || 0} // Kiểm tra row["gold-balance"]
                     email={row.account?.email || ''} // Kiểm tra row.account?.email
                     phone={row.account?.phone || ''} // Kiểm tra row.account?.phone
                     avatarUrl={row.avatarUrl || ''} // Kiểm tra row.avatarUrl

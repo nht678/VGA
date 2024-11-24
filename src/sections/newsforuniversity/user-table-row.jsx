@@ -411,6 +411,7 @@ export default function UserTableRow({
                   width={200}
                   src={imageSingle}
                   style={{ zIndex: 2 }}
+                  alt={title}
                 />
               </Grid>
               <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >

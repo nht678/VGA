@@ -61,6 +61,7 @@ export default function UserTableRow({
   transactionDateTime,
   goldAmount,
   rowKey,
+  transactionType,
 }) {
 
 
@@ -115,9 +116,14 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-
-        <TableCell sx={{ textAlign: 'center' }}>
-          {goldAmount}
+        <TableCell
+          sx={{
+            textAlign: 'center',
+            color: transactionType === 2 ? 'red' : transactionType === 1 ? 'green' : 'inherit',
+            fontWeight: 'bold',
+          }}
+        >
+          {transactionType === 2 ? `- ${goldAmount}` : transactionType === 1 ? `+ ${goldAmount}` : goldAmount}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{transactionDateTime}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
@@ -179,8 +185,14 @@ export default function UserTableRow({
                     </Typography>
                   </Grid>
                   <Grid size={{ md: 6 }}>
-                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                      {goldAmount}
+                    <Typography variant="body2"
+                      sx={{
+                        textAlign: 'center',
+                        color: transactionType === 2 ? 'red' : transactionType === 1 ? 'green' : 'inherit',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {transactionType === 2 ? `- ${goldAmount}` : transactionType === 1 ? `+ ${goldAmount}` : goldAmount}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -224,14 +236,6 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={() => handleClickOpenDialog('edit')}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết
@@ -248,4 +252,6 @@ UserTableRow.propTypes = {
   transactionDateTime: PropTypes.string,
   goldAmount: PropTypes.number,
   rowKey: PropTypes.number,
+  transactionType: PropTypes.string,
+
 };

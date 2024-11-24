@@ -101,41 +101,21 @@ export function actUserDeleteAsync(id) {
     };
 }
 
+export function actUserBan({ changeStatus, accountId }) {
+    return async (dispatch) => {
+        try {
+            const response = await userServices.banAccount({ changeStatus, accountId });
+            if (response.status === 200) {
+                message.success('Chuyển đổi trạng thái tài khoản thành công');
+            } else {
+                message.error('Chuyển đổi trạng thái tài khoản thất bại');
+            }
+        } catch (error) {
+            console.log(error);
+            message.error('Chuyển đổi trạng thái tài khoản thất bại');
+        }
+    };
+}
 
 
-
-
-
-// export function actAddUserAsync(data) {
-//     console.log('data:', data);
-//     return async (dispatch) => {
-//         try {
-//             const response = await apiUser.post('', data);
-//             dispatch(actAddUser(response.data));
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     };
-// }
-
-// export function actUserUpdateAsync(data, id) {
-//     return async (dispatch) => {
-//         try {
-//             const response = await apiUserUpdate.put(`/${id}`, data);
-//             dispatch(actUserUpdate(response.data));
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     };
-// }
-// export function actUserDeleteAsync(id) {
-//     return async (dispatch) => {
-//         try {
-//             const response = await apiUser.delete(`/users/${id}`);
-//             dispatch(actUserDelete(id));
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     };
-// }
 

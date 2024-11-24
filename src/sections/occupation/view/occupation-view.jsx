@@ -33,7 +33,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { actGetOccupationsAsync, actAddOccupationAsync } from 'src/store/occupation/action';
+import { actGetOccupationsAsync, actAddOccupationAsync, resetOccupation } from 'src/store/occupation/action';
 import { actGetEntryLevelEducationsAsync } from 'src/store/entryLevelEducation/action';
 import { actGetOccupationGroupAsync } from 'src/store/occupationGroup/action';
 import { actGetWorkSkillsAsync } from 'src/store/workSkill/action';
@@ -82,7 +82,6 @@ export default function OccupationView() {
     occupationalSkills: [
       {
         workSkillsId: "",
-        occupationId: "",
         content: "",
       },
     ],
@@ -109,7 +108,7 @@ export default function OccupationView() {
 
   const dispatch = useDispatch();
 
-  const { occupations, total = 0, } = useSelector((state) => state.occupationReducer);
+  const { occupations, total = 0, successOccupation } = useSelector((state) => state.occupationReducer);
   const { entryLevelEducations } = useSelector((state) => state.entryLevelEducationReducer);
   const { occupationGroups } = useSelector((state) => state.occupationGroupReducer);
   const { workSkills } = useSelector((state) => state.workSkillReducer);
@@ -121,25 +120,27 @@ export default function OccupationView() {
 
   const handleAddOcupation = async () => {
     dispatch(actAddOccupationAsync(formData));
-    setFormData({
-      entryLevelEducationId: "",
-      occupationalGroupId: "",
-      name: "",
-      description: "",
-      howToWork: "",
-      workEnvironment: "",
-      education: "",
-      payScale: "",
-      jobOutlook: "",
-      image: "",
-      occupationalSkills: [
-        {
-          workSkillsId: "",
-          occupationId: "",
-          content: "",
-        },
-      ],
-    });
+    if (successOccupation) {
+      dispatch(resetOccupation());
+      setFormData({
+        entryLevelEducationId: "",
+        occupationalGroupId: "",
+        name: "",
+        description: "",
+        howToWork: "",
+        workEnvironment: "",
+        education: "",
+        payScale: "",
+        jobOutlook: "",
+        image: "",
+        occupationalSkills: [
+          {
+            workSkillsId: "",
+            content: "",
+          },
+        ],
+      });
+    }
     handleClose();
   };
 
@@ -160,7 +161,6 @@ export default function OccupationView() {
         ...prev.occupationalSkills,
         {
           workSkillsId: "",
-          occupationId: "",
           content: "",
         },
       ],
@@ -297,7 +297,7 @@ export default function OccupationView() {
 
   useEffect(() => {
     dispatch(actGetOccupationsAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName }));
-  }, []);
+  }, [successOccupation]);
 
   useEffect(() => {
     dispatch(actGetEntryLevelEducationsAsync({}));
@@ -410,33 +410,21 @@ export default function OccupationView() {
 
                 {formData.occupationalSkills.map((skill, index) => (
                   <Grid container spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px' }}>
-                    <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
-                      <Autocomplete
-                        fullWidth
-                        value={workSkills.find((item) => item.id === skill.workSkillsId) || null}
-                        onChange={(e, newValue) =>
-                          updateOccupationalSkill(index, "workSkillsId", newValue?.id)
-                        }
-                        options={workSkills || []}
-                        getOptionLabel={(option) => option?.name || ""}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Chọn kĩ năng công việc" />
-                        )}
-                      />
-                    </Grid>
-                    <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
-                      <Autocomplete
-                        fullWidth
-                        value={occupations.find((item) => item.id === skill.occupationId) || null}
-                        onChange={(e, newValue) =>
-                          updateOccupationalSkill(index, "occupationId", newValue?.id)
-                        }
-                        options={occupations || []}
-                        getOptionLabel={(option) => option?.name || ""}
-                        renderInput={(params) => (
-                          <TextField {...params} label="Chọn nghề nghiệp" />
-                        )}
-                      />
+                    <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
+                      <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
+                        <Autocomplete
+                          fullWidth
+                          value={workSkills.find((item) => item.id === skill.workSkillsId) || null}
+                          onChange={(e, newValue) =>
+                            updateOccupationalSkill(index, "workSkillsId", newValue?.id)
+                          }
+                          options={workSkills || []}
+                          getOptionLabel={(option) => option?.name || ""}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Chọn kĩ năng công việc" />
+                          )}
+                        />
+                      </Grid>
                     </Grid>
                     <Grid size={{ md: 12 }}>
                       <Typography variant="h6">Nội dung</Typography>
@@ -516,7 +504,10 @@ export default function OccupationView() {
                     payScale={row?.payScale || ""}
                     workEnvironment={row?.workEnvironment || ""}
                     status={row?.status || ""}
-                    avatarUrl={row?.image || ""}
+                    image={row?.image || ""}
+                    entryLevelEducationId={row?.entryLevelEducation?.id || ""}
+                    occupationalGroupId={row?.occupationalGroup?.id || ""}
+                    occupationalSkills={row?.occupationalSkills || []}
                   />
                 ))}
 
