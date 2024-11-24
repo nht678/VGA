@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useEffect } from 'react';
-
+import { useEffect, useState, useRef } from 'react';
+import * as signalR from '@microsoft/signalr';
 import Typography from '@mui/material/Typography';
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,7 +12,16 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 
 import { List as ListMui, ListItemButton as ListItemButtonMui, ListItemText as ListItemTextMui, Menu as MenuMui, MenuItem as MenuItemMui } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Divider from '@mui/material/Divider';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
 import { signoutUser } from '../store/account/action';
+import notificationService from '../services/notifycation';
+
+
 
 
 const user = {
@@ -66,45 +75,93 @@ export default function Header() {
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
     console.log('isAuthenticated1', isAuthenticated);
+    const [isOpen, setIsOpen] = useState(false);
+    console.log('isOpen', isOpen);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-    const open = Boolean(anchorEl);
-    console.log('open', open);
-    const handleClickListItem = (event) => {
-        setAnchorEl(event.currentTarget);
+    const toggleList = () => {
+        setIsOpen((prev) => !prev);
     };
-
-    const handleMenuItemClick = (event, index) => {
-        setSelectedIndex(index);
-        setAnchorEl(null);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const accountId = localStorage.getItem('accountId');
-
     const handleLogout = (e) => {
         e.preventDefault();
         dispatch(signoutUser(accountId, navigate));
-        // navigate('/signin', { replace: true });
-        // message.success('Đăng xuất thành công');
-
     };
-    // useEffect(() => {
-    //     if (!isAuthenticated) {
-    //         navigate('/signin', { replace: true });
-    //         message.success('Đăng xuất thành công');
-    //     }
-    // }, [isAuthenticated]);
+    const accountId = localStorage.getItem('accountId');
 
+
+    const [showAll, setShowAll] = useState(false);
+
+    // Xử lý danh sách thông báo dựa vào trạng thái showAll
+
+    const [notification, setNotification] = useState([]);
+    const visibleNotifications = showAll ? notification : notification.slice(0, 5);
+    const listRef = useRef(null);
+    console.log('listRef', listRef);
+
+
+    useEffect(() => {
+        const fetchNotification = async () => {
+            const response = await notificationService.getNotificationById(accountId);
+            setNotification(response || []); // Đặt giá trị mặc định là mảng rỗng nếu không có dữ liệu
+        };
+        fetchNotification();
+    }, [accountId]);
+
+    let token = localStorage.getItem('token');
+    const [messages, setMessages] = useState([]);
+    const [status, setStatus] = useState('');
+
+    const accessToken = token;  // Token JWT của bạn
+
+    useEffect(() => {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub`, {
+                accessTokenFactory: () => accessToken
+            })
+            .withAutomaticReconnect()
+            .build();
+
+        // Kết nối SignalR
+        connection.start()
+            .then(() => {
+                setStatus('Connected to SignalR');
+                console.log('Connected to SignalR hub.');
+
+                // Nhận thông báo từ server
+                connection.on('ReceiveNotification', (notitfycation) => {
+                    console.log('Received notification:', notitfycation);
+                    setNotification(prevMessages => [...prevMessages, notitfycation]);
+                });
+            })
+            .catch(err => {
+                setStatus(`Connection failed: ${err}`);
+                console.error(err);
+            });
+
+        // Clean up khi component unmount
+        return () => {
+            connection.stop();
+        };
+    }, [accessToken]);
+
+    // Đóng thông báo khi click bên ngoài
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (listRef.current && !listRef.current.contains(event.target)) {
+                setIsOpen(false); // Đóng thông báo
+                setShowAll(false); // Ẩn tất cả thông báo
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [listRef, setIsOpen]);
 
     return (
 
         <>
-            <div className=" w-full z-10   ">
+            <div className=" w-full z-10 ">
                 <Disclosure as="nav" className="bg-gray-800">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 items-center justify-between">
@@ -132,73 +189,23 @@ export default function Header() {
                                                 {item.name}
                                             </Link>
                                         ))}
-                                        {/* {navigation.map((item) => (
-                                            <Link
-                                                key={item.name}
-                                                to={item.href}
-                                                aria-current={item.current ? 'page' : undefined}
-                                                className={classNames(
-                                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                    'rounded-md px-3 py-2 text-sm font-medium',
-                                                )}
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        ))} */}
                                     </div>
                                 </div>
                             </div>
-                            <div className="hidden md:block">
+                            <div className="hidden md:block relative">
                                 <div className="ml-4 flex items-center md:ml-6">
                                     <button
+                                        onClick={toggleList}
                                         type="button"
                                         className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                     >
                                         <span className="absolute -inset-1.5" />
                                         <span className="sr-only">View notifications</span>
-                                        <BellIcon onClick={handleClickListItem} aria-hidden="true" className="h-6 w-6" />
-                                        {/* <div>
-                                            <ListMui
-                                                component="nav"
-                                                aria-label="Device settings"
-                                            // sx={{ bgcolor: 'background.paper' }}
-                                            >
-                                                <ListItemButtonMui
-                                                    id="lock-button"
-                                                    aria-haspopup="listbox"
-                                                    aria-controls="lock-menu"
-                                                    aria-label="when device is locked"
-                                                    aria-expanded={open ? 'true' : undefined}
-                                                    onClick={handleClickListItem}
-                                                >
-                                                    <ListItemTextMui
-                                                        primary="When device is locked"
-                                                        secondary={options[selectedIndex]}
-                                                    />
-                                                </ListItemButtonMui>
-                                            </ListMui>
-                                            <MenuMui
-                                                id="lock-menu"
-                                                anchorEl={anchorEl}
-                                                open={open}
-                                                onClose={handleClose}
-                                                MenuListProps={{
-                                                    'aria-labelledby': 'lock-button',
-                                                    role: 'listbox',
-                                                }}
-                                            >
-                                                {options.map((option, index) => (
-                                                    <MenuItemMui
-                                                        key={option}
-                                                        disabled={index === 0}
-                                                        selected={index === selectedIndex}
-                                                        onClick={(event) => handleMenuItemClick(event, index)}
-                                                    >
-                                                        {option}
-                                                    </MenuItemMui>
-                                                ))}
-                                            </MenuMui>
-                                        </div> */}
+                                        <BellIcon
+                                            aria-hidden="true"
+                                            className="h-6 w-6 cursor-pointer"
+                                        />
+
                                     </button>
 
                                     {/* Profile dropdown */}
@@ -216,15 +223,6 @@ export default function Header() {
                                         >
                                             {userNavigation.map((item) => (
                                                 <MenuItem MenuItem key={item.name} >
-                                                    {/* {item.onClick ? (
-                                                        <Button
-                                                            sx={{ border: 'none' }}
-                                                            onClick={handleLogout}
-                                                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
-                                                        >
-                                                            {item.name}
-                                                        </Button>
-                                                    ) : ( */}
                                                     <Link
                                                         to={item.href}
                                                         onClick={item.name === 'Đăng xuất' ? handleLogout : null}
@@ -232,76 +230,103 @@ export default function Header() {
                                                     >
                                                         {item.name}
                                                     </Link>
-                                                    {/* )} */}
                                                 </MenuItem>
                                             ))}
                                         </MenuItems>
                                     </Menu>
                                 </div>
-                            </div>
-                            <div className="-mr-2 flex md:hidden">
-                                {/* Mobile menu button */}
-                                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                    <span className="absolute -inset-0.5" />
-                                    <span className="sr-only">Open main menu</span>
-                                    <Bars3Icon aria-hidden="true" className="block h-6 w-6 group-data-[open]:hidden" />
-                                    <XMarkIcon aria-hidden="true" className="hidden h-6 w-6 group-data-[open]:block" />
-                                </DisclosureButton>
-                            </div>
-                        </div>
-                    </div >
+                                {isOpen && (
+                                    <div ref={listRef} className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
+                                        <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper", maxHeight: '300px', overflowY: 'auto' }}>
+                                            {visibleNotifications.map((item, index) => (
+                                                <div
+                                                    key={index}
+                                                    style={{
 
-                    {/* <DisclosurePanel className="md:hidden">
-                        <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-                            {navigation.map((item) => (
-                                <DisclosureButton
-                                    key={item.name}
-                                    as="a"
-                                    href={item.href}
-                                    aria-current={item.current ? 'page' : undefined}
-                                    className={classNames(
-                                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                        'block rounded-md px-3 py-2 text-base font-medium',
-                                    )}
-                                >
-                                    {item.name}
-                                </DisclosureButton>
-                            ))}
-                        </div>
-                        <div className="border-t border-gray-700 pb-3 pt-4">
-                            <div className="flex items-center px-5">
-                                <div className="flex-shrink-0">
-                                    <img alt="" src={user.imageUrl} className="h-10 w-10 rounded-full" />
-                                </div>
-                                <div className="ml-3">
-                                    <div className="text-base font-medium leading-none text-white">{user.name}</div>
-                                    <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
-                                </div>
-                                <button
-                                    type="button"
-                                    className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                >
-                                    <span className="absolute -inset-1.5" />
-                                    <span className="sr-only">View notifications</span>
-                                    <BellIcon aria-hidden="true" className="h-6 w-6" />
-                                </button>
+                                                        backgroundColor: item.status === 0 ? "#f0f8ff" : "white", // Màu nền khi chưa đọc
+                                                        transition: "background-color 0.3s", // Hiệu ứng hover
+                                                    }}
+                                                >
+                                                    <ListItem
+                                                        alignItems="flex-start"
+                                                        sx={{
+                                                            "&:hover": {
+                                                                backgroundColor: "#e0e0e0", // Màu nền khi hover
+                                                                cursor: "pointer",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <ListItemAvatar>
+                                                            <Avatar
+                                                                alt={item.name}
+                                                                src={item.avatar || "/static/images/avatar/default.jpg"}
+                                                            />
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={item?.title}
+                                                            secondary={
+                                                                <>
+                                                                    <Typography
+                                                                        component="span"
+                                                                        variant="body2"
+                                                                        sx={{
+                                                                            color: "text.primary",
+                                                                            display: "inline",
+                                                                            fontWeight: item.status === 0 ? "bold" : "normal", // Chữ đậm nếu chưa đọc
+                                                                        }}
+                                                                    >
+                                                                        {item?.message}
+                                                                    </Typography>
+                                                                </>
+                                                            }
+                                                        />
+
+                                                    </ListItem>
+                                                    {index < notification.length - 1 && (
+                                                        <Divider variant="inset" component="li" />
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {/* Nút Xem thêm */}
+                                            {notification.length > 5 && !showAll && (
+                                                <ListItem
+                                                    button
+                                                    onClick={() => setShowAll(true)}
+                                                    sx={{
+                                                        textAlign: "center",
+                                                        "&:hover": { backgroundColor: "#e0e0e0", cursor: "pointer" },
+                                                    }}
+                                                >
+                                                    <Typography variant="body2" sx={{ color: "primary.main" }}>
+                                                        Xem thêm
+                                                    </Typography>
+                                                </ListItem>
+                                            )}
+
+                                        </List>
+                                    </div>
+                                )}
                             </div>
-                            <div className="mt-3 space-y-1 px-2">
-                                {userNavigation.map((item) => (
-                                    <DisclosureButton
-                                        key={item.name}
-                                        as="a"
-                                        href={item.href}
-                                        className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                                    >
-                                        {item.name}
-                                    </DisclosureButton>
-                                ))}
-                            </div>
+
+
                         </div>
-                    </DisclosurePanel> */}
+
+                        <div className="-mr-2 flex md:hidden">
+                            {/* Mobile menu button */}
+                            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                <span className="absolute -inset-0.5" />
+                                <span className="sr-only">Open main menu</span>
+                                <Bars3Icon aria-hidden="true" className="block h-6 w-6 group-data-[open]:hidden" />
+                                <XMarkIcon aria-hidden="true" className="hidden h-6 w-6 group-data-[open]:block" />
+                            </DisclosureButton>
+                        </div>
+                    </div>
+
+
                 </Disclosure >
+
             </div >
+
         </>
 
     );

@@ -89,7 +89,6 @@ export default function UserTableRow({
     handleCloseDialog();
   }
   const handleBan = async () => {
-    debugger
     const changeStatus = status === 1 ? 2 : 1;
     await dispatch(actUserBan({ changeStatus, accountId }));
     if (successHighSchool) {

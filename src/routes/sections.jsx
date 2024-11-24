@@ -49,6 +49,7 @@ export const ConsultantAccountView = lazy(() => import('src/sections/adminAccoun
 export const HighSchoolAccountView = lazy(() => import('src/sections/adminAccount/highschool/view/highschoolaccount-view'));
 export const UserAccountView = lazy(() => import('src/sections/adminAccount/user/view/userAccount-view'));
 export const UniversityAccountView = lazy(() => import('src/sections/adminAccount/university/view/universityAccount-view'));
+export const TestLesson = lazy(() => import('src/pages/testlesson'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -106,6 +107,8 @@ export default function Router() {
         { path: 'consultantsLevel', element: role === '1' ? <ConsultantLevelView /> : <Navigate to="/404" replace /> },
         { path: 'userAccount', element: role === '1' ? <UserAccountView /> : <Navigate to="/404" replace /> },
         { path: 'universityAccount', element: role === '1' ? <UniversityAccountView /> : <Navigate to="/404" replace /> },
+        { path: 'testlesson', element: role === '1' ? <TestLesson /> : <Navigate to="/404" replace /> },
+
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 
       ],

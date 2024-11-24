@@ -170,13 +170,23 @@ const NavConfigComponent = () => {
 
           ]
         },
-        { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
+
         {
           title: 'Tài khoản', path: '#1', children: [
             { title: 'Trường đại học', path: '/universityAccount' },
             { title: 'Trường cấp 3', path: '/highschoolAccount' },
             { title: 'Tư vấn viên', path: '/consultantAccount' },
             { title: 'Học sinh', path: '/userAccount' },
+          ]
+        },
+        {
+          title: 'Quản lý cấp độ tư vấn viên', path: '#2', children: [
+            { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
+          ]
+        },
+        {
+          title: 'Quản lý bài kiểm tra', path: '#3', children: [
+            { title: 'Bài kiểm tra', path: '/testlesson' },
           ]
         },
         // {
@@ -186,7 +196,7 @@ const NavConfigComponent = () => {
         //   ]
         // },
         {
-          title: 'Quản lý ngành nghề', path: '#3', children: [
+          title: 'Quản lý ngành nghề', path: '#4', children: [
             { title: 'Ngành học', path: '/major' },
             { title: 'Nghề nghiệp', path: '/occupation' },
             { title: 'Phương thức tuyển sinh', path: '/admissionMedthod' },
