@@ -167,6 +167,7 @@ const NavConfigComponent = () => {
           title: 'Thông tin thống kê', path: '#', children: [
             { title: 'Thống kê', path: '/dashboard' },
             { title: 'Giao dịch', path: '/transactionsAdmin' },
+            { title: 'Yêu cầu rút tiền', path: '/withdrawalRequest' }
 
           ]
         },

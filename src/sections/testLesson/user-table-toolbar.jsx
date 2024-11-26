@@ -64,7 +64,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Tìm Kiếm học sinh..."
+          placeholder="Tìm Kiếm..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify
@@ -84,9 +84,9 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         </Tooltip>
       ) : (
         <Box>
-          <Typography component="div" variant="h6">
+          {/* <Typography component="div" variant="h6">
             {filterYear}
-          </Typography>
+          </Typography> */}
           <Tooltip title="Filter list">
             <>
               <IconButton
@@ -116,11 +116,11 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
                   },
                 }}
               >
-                {options.map((option) => (
+                {/* {options.map((option) => (
                   <MenuItem key={option} selected={option === 'Pyxis'} onClick={() => handleFilter(option)}>
                     {option}
                   </MenuItem>
-                ))}
+                ))} */}
               </Menu>
             </>
           </Tooltip>

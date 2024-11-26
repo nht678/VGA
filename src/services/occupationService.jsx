@@ -25,13 +25,8 @@ const occupationService = {
             }
         )
     ,
-    updateOccupation: (data) =>
-        BASE_API.put(`/occupation/${data.id}`, data.formData,
-            {
-                headers: {
-                    Authorization: `Bearer ${TOKEN}`,
-                },
-            }
+    updateOccupation: ({ formData, id }) =>
+        BASE_API.put(`/occupation/${id}`, formData,
         )
     ,
     deleteOccupation: (id) =>

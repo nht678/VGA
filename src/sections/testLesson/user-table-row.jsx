@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -19,15 +19,23 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/system/Grid';
+import Box from '@mui/material/Box';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Calendar, theme, Image, Row } from 'antd';
 import Autocomplete from '@mui/material/Autocomplete';
 import InfoIcon from '@mui/icons-material/Info';
-import { Chip } from '@mui/material';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 import { useDispatch, useSelector } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync, actUserBan } from 'src/store/users/action';
-// import DeleteDialog from '../../pages/delete';
+import { actDeleteTestLessonAsync, actResetSuccess, actGetquestionbyTestIdAsync } from 'src/store/testLesson/action';
+import DeleteDialog from '../../pages/delete';
 // import BanAccountDialog from '../banAccounDialog';
 
 
@@ -70,6 +78,7 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
+  testTypeId,
   name,
   description,
   id,
@@ -78,22 +87,16 @@ export default function UserTableRow({
 
   console.log('id', id);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const { testLessons = [], total, success, typestest = [], questions = [] } = useSelector((state) => state.testLessonReducer);
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [formData, setformData] = useState({
 
   });
   const [errors, setErrors] = useState({});
-  const getCurrentYear = () => new Date().getFullYear();
 
-  // handle change
-  const handleChange = (e) => {
-    setformData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
 
+  const testTypeName = typestest.find((test) => test.id === testTypeId)?.name || 'N/A';
   // Hàm validate form
   const validateForm = () => {
     let newErrors = {};
@@ -143,19 +146,15 @@ export default function UserTableRow({
     handleCloseDialog();
   };
   const handleDelete = () => {
-    dispatch(actUserDeleteAsync(id));
-    if (usersSuccess) {
-      dispatch(resetUserSuccess());
+    dispatch(actDeleteTestLessonAsync(id));
+    if (success) {
+      dispatch(actResetSuccess());
     }
     handleCloseDialog();
   }
 
   const { token } = theme.useToken();
-  const wrapperStyle = {
-    width: '100%',
-    border: `1px solid ${token.colorBorderSecondary}`,
-    borderRadius: token.borderRadiusLG,
-  };
+
 
 
   const handleOpenMenu = (event) => {
@@ -180,12 +179,35 @@ export default function UserTableRow({
     setDialog(null);
   };
   const [value, setValue] = useState(options[0]);
-  const handleYearChange = (event, newValue) => {
-    setValue(newValue);
-    setformData({ ...formData, schoolYears: newValue?.value });
+
+  useEffect(() => {
+    dispatch(actGetquestionbyTestIdAsync(id));
+  }, [id]);
+
+  const answerValue = [
+    { key: "Extraversion (E)", value: 1 },
+    { key: "Introversion (I)", value: 2 },
+    { key: "Sensing (S)", value: 3 },
+    { key: "Intuition (N)", value: 4 },
+    { key: "Thinking (T)", value: 5 },
+    { key: "Feeling (F)", value: 6 },
+    { key: "Judging (J)", value: 7 },
+    { key: "Perceiving (P)", value: 8 },
+  ];
+
+  const [editedQuestions, setEditedQuestions] = useState(questions);
+
+  const handleQuestionChange = (index, event) => {
+    const newQuestions = [...editedQuestions];
+    newQuestions[index].content = event.target.value; // Cập nhật câu hỏi
+    setEditedQuestions(newQuestions);
   };
 
-
+  const handleAnswerChange = (questionIndex, answerIndex, event) => {
+    const newQuestions = [...editedQuestions];
+    newQuestions[questionIndex].answerModels[answerIndex].content = event.target.value; // Cập nhật câu trả lời
+    setEditedQuestions(newQuestions);
+  };
 
   return (
     <>
@@ -200,6 +222,7 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{testTypeName}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{description}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -208,28 +231,95 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      {/* <Dialog
-        open={dialog === 'edit'}
+      <Dialog
+        open={dialog === "Question"}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        maxWidth="md"
+        fullWidth
       >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          Cập nhật bài kiểm tra
+        <DialogTitle id="alert-dialog-title" sx={{ textAlign: "center" }}>
+          Danh sách các câu hỏi
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <Grid container spacing={2}>
+            {editedQuestions.map((question, index) => (
+              <Grid size={{ md: 12 }} container key={question.questionId}>
+                <Typography variant="h6" gutterBottom>
+                  Câu hỏi {index + 1}:
+                </Typography>
 
-          </DialogContentText>
+                <Grid size={{ md: 12 }} container>
+                  <TextField
+                    fullWidth
+                    label="Câu hỏi"
+                    value={question.content}
+                    onChange={(e) => handleQuestionChange(index, e)} // Sửa đổi câu hỏi
+                    variant="outlined"
+                    margin="dense"
+                  />
+                  <Typography variant="body2" gutterBottom>
+                    Nhóm: {question.group}
+                  </Typography>
+
+                </Grid>
+
+
+                {question.answerModels.map((answer, idx) => (
+                  <Grid size={{ md: 12 }} container key={answer.id} mb={1}>
+                    <Grid size={{ md: 8 }} >
+
+                      <TextField
+                        fullWidth
+                        label={`Câu trả lời ${idx + 1}`}
+                        value={answer.content}
+                        onChange={(e) => handleAnswerChange(index, idx, e)} // Sửa đổi câu trả lời
+                        variant="outlined"
+                        margin="dense"
+                      />
+                    </Grid>
+                    <Grid size={{ md: 4 }} >
+
+                      <Autocomplete
+                        value={answerValue.find((opt) => opt.value === answer.answerValue)} // Tìm kiếm giá trị đã chọn
+                        options={answerValue} // Dữ liệu cho autocomplete
+                        getOptionLabel={(option) => option.key} // Định dạng giá trị hiển thị trong danh sách
+                        onChange={(event, newValue) => {
+                          const newQuestions = [...editedQuestions];
+                          newQuestions[index].answerModels[idx].answerValue = newValue?.value || null; // Cập nhật giá trị answerValue
+                          setEditedQuestions(newQuestions);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            label="Giá trị trả lời"
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                ))}
+              </Grid>
+            ))}
+          </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdate} autoFocus>
+          {/* <Button variant="contained" color="primary" onClick={handleUpdateQuestion}>
             Cập nhật
+          </Button> */}
+          <Button variant="outlined" color="secondary" onClick={handleClose}>
+            Hủy bỏ
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
 
+
+
+      <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
 
       <Popover
         open={!!open}
@@ -241,9 +331,21 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
+        <MenuItem onClick={() => handleClickOpenDialog('edit')}>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+          Cập nhật
+        </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+          Xóa
+        </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết
+        </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Question')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Các câu hỏi
         </MenuItem>
       </Popover>
     </>
@@ -255,4 +357,5 @@ UserTableRow.propTypes = {
   id: PropTypes.string,
   rowKey: PropTypes.number,
   description: PropTypes.string,
+  testTypeId: PropTypes.string,
 };

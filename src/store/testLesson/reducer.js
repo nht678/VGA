@@ -1,11 +1,12 @@
 import { success } from 'src/theme/palette';
-import { GET_TEST_LESSONS, CREATE_TEST_LESSON, UPDATE_TEST_LESSON, DELETE_TEST_LESSON, GET_TYPES_TEST_LESSON, UPLOAD_FILE_TEST } from './action';
+import { GET_TEST_LESSONS, CREATE_TEST_LESSON, UPDATE_TEST_LESSON, DELETE_TEST_LESSON, GET_TYPES_TEST_LESSON, UPLOAD_FILE_TEST, GET_QUESTION_BY_TEST_ID } from './action';
 
 const initialState = {
     testLessons: [],
     success: false,
     total: 0,
     typestest: [],
+    questions: [],
 };
 
 const testLessonReducer = (state = initialState, action) => {
@@ -44,6 +45,11 @@ const testLessonReducer = (state = initialState, action) => {
             return {
                 ...state,
                 success: true,
+            };
+        case GET_QUESTION_BY_TEST_ID:
+            return {
+                ...state,
+                questions: action.payload,
             };
         default:
             return state;

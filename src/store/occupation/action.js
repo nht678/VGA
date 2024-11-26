@@ -60,7 +60,7 @@ export const actAddOccupationAsync = (data) => async (dispatch) => {
 
 export const actUpdateOccupationAsync = ({ formData, id }) => async (dispatch) => {
     try {
-        const response = await occupationService.updateOccupation({ id, formData });
+        const response = await occupationService.updateOccupation({ formData, id });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
             dispatch(actUpdateOccupation(response.data));

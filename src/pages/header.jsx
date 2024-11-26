@@ -237,7 +237,7 @@ export default function Header() {
                                 </div>
                                 {isOpen && (
                                     <div ref={listRef} className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
-                                        <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper", maxHeight: '300px', overflowY: 'auto' }}>
+                                        <List sx={{ width: "460px", maxWidth: 460, bgcolor: "background.paper", maxHeight: '600px', overflowY: 'auto' }}>
                                             {visibleNotifications.map((item, index) => (
                                                 <div
                                                     key={index}

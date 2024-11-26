@@ -90,11 +90,36 @@ export default function TransactionAdminView() {
     setGoldBalance(wallet?.goldBalance);
   }, [wallet]); // Mảng phụ thuộc là `wallet`
 
+  const validateForm = () => {
+    let newError = {};
+
+    if (!gold) {
+      debugger
+      newError.gold = 'Vui lòng nhập số điểm';
+    } else if (!/^-?\d+(\.\d+)?$/.test(gold)) {
+      newError.gold = 'Điểm phải là một số hợp lệ';
+    } else if (Number(gold) <= 0) {
+      newError.gold = 'Điểm phải lớn hơn 0';
+    }
+    if (!formData.account_id_receiving) {
+      newError.account_id_receiving = 'Vui lòng chọn trường đại học';
+    }
+
+
+    setError(newError);
+    return Object.keys(newError).length === 0; // Trả về true nếu không có lỗi
+  };
 
   const handledistribute = async () => {
+    if (!validateForm()) return;
     await dispatch(createDistributionofAdminUniAsync({ formData, gold }));
     if (success) {
       dispatch(resetTransaction());
+      setFormData({
+        account_id_tranferring: accountId,
+        account_id_receiving: '',
+      });
+      setGold(null);
     }
     handleClose();
   }
@@ -118,6 +143,7 @@ export default function TransactionAdminView() {
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
+    debugger
     const value1 = e.target.value;
     setGold(value1 ? parseInt(value1, 10) : null);
   };
@@ -190,7 +216,10 @@ export default function TransactionAdminView() {
                           fullWidth
                           name='gold'
                           label="Điểm"
+                          value={gold || ''} // Gán giá trị từ state `gold`
                           onChange={handlechange}
+                          error={!!error.gold}
+                          helperText={error.gold}
                         />
                       </Grid>
                       <Grid size={{ md: 12 }}>

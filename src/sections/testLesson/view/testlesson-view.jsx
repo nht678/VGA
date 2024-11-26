@@ -34,8 +34,7 @@ import { actGetTestLessonsAsync, actResetSuccess, actGetTypesTestLessonAsync, ac
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
-import { uploadFileAsync } from 'src/store/uploadfile/action';
-import LoadingPage from 'src/pages/loading';
+
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
@@ -187,6 +186,8 @@ export default function TestLessonView() {
   };
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedTestType, setSelectedTestType] = useState(''); // Loại bài test
+  console.log('selectedTestType', selectedTestType);
 
   const props = {
     name: 'file',
@@ -197,6 +198,81 @@ export default function TestLessonView() {
     },
   };
 
+
+  // const handleUpload = () => {
+  //   if (!selectedFile) {
+  //     message.error('Please select a file first!');
+  //     return;
+  //   }
+
+  //   const reader = new FileReader();
+
+  //   reader.onload = (e) => {
+  //     const data = new Uint8Array(e.target.result);
+  //     const workbook = XLSX.read(data, { type: 'array' });
+
+  //     // Lấy sheet đầu tiên
+  //     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  //     // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
+  //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+  //     // Tách header và rows
+  //     const [headers, ...rows] = jsonData;
+
+  //     // Lọc bỏ các hàng trống
+  //     const filteredRows = rows.filter(row =>
+  //       row.some(cell => cell !== undefined && cell !== null && cell !== '')
+  //     );
+
+  //     // Lọc ra các cột Content, Answer1, Answer2 và chuyển Key1, Key2 thành Value1, Value2
+  //     const formattedData = filteredRows.map(row => {
+  //       const obj = {};
+  //       headers.forEach((header, index) => {
+  //         if (header === 'Content') {
+  //           obj.Content = row[index];
+  //         } else if (header === 'Answer1') {
+  //           obj.Answer1 = row[index];
+  //         } else if (header === 'Answer2') {
+  //           obj.Answer2 = row[index];
+  //         } else if (header === 'Key1') {
+  //           obj.Value1 = row[index]; // Chuyển Key1 thành Value1
+  //         } else if (header === 'Key2') {
+  //           obj.Value2 = row[index]; // Chuyển Key2 thành Value2
+  //         }
+  //       });
+  //       return obj;
+  //     });
+
+  //     // Lọc bỏ các đối tượng trống
+  //     const nonEmptyData = formattedData.filter(item =>
+  //       Object.keys(item).some(key => item[key] !== undefined && item[key] !== null && item[key] !== '')
+  //     );
+
+  //     // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
+  //     const payload = nonEmptyData;
+
+  //     const payloadString = JSON.stringify(payload);
+  //     const formUpload = new FormData();
+  //     formUpload.append('JsonData', payloadString);
+  //     formUpload.append('Name', formData.Name);
+  //     formUpload.append('TestTypeId', formData.TestTypeId);
+  //     formUpload.append('Description', formData.Description);
+
+  //     dispatch(actUploadFileTestAsync(formUpload));
+  //     if (success) {
+  //       dispatch(actResetSuccess());
+  //       setformData({
+  //         Name: '',
+  //         Description: '',
+  //         TestTypeId: '',
+  //       });
+  //     }
+  //     setOpen(false);
+  //   };
+
+  //   reader.readAsArrayBuffer(selectedFile);
+  // };
 
   const handleUpload = () => {
     if (!selectedFile) {
@@ -210,54 +286,64 @@ export default function TestLessonView() {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
 
-      // Lấy sheet đầu tiên
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      // Xác định worksheet dựa trên loại bài test
+      const worksheet =
+        selectedTestType === 'MBTI Test'
+          ? workbook.Sheets[workbook.SheetNames[0]] // MBTI: Worksheet 0
+          : workbook.Sheets[workbook.SheetNames[1]]; // Holland: Worksheet 1
 
-      // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
+      // Chuyển đổi sheet thành JSON
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
       // Tách header và rows
       const [headers, ...rows] = jsonData;
 
       // Lọc bỏ các hàng trống
-      const filteredRows = rows.filter(row =>
-        row.some(cell => cell !== undefined && cell !== null && cell !== '')
+      const filteredRows = rows.filter((row) =>
+        row.some((cell) => cell !== undefined && cell !== null && cell !== '')
       );
 
-      // Lọc ra các cột Content, Answer1, Answer2 và chuyển Key1, Key2 thành Value1, Value2
-      const formattedData = filteredRows.map(row => {
-        const obj = {};
-        headers.forEach((header, index) => {
-          if (header === 'Content') {
-            obj.Content = row[index];
-          } else if (header === 'Answer1') {
-            obj.Answer1 = row[index];
-          } else if (header === 'Answer2') {
-            obj.Answer2 = row[index];
-          } else if (header === 'Key1') {
-            obj.Value1 = row[index]; // Chuyển Key1 thành Value1
-          } else if (header === 'Key2') {
-            obj.Value2 = row[index]; // Chuyển Key2 thành Value2
-          }
+      // Xử lý dữ liệu dựa trên loại bài test
+      let formattedData;
+      if (selectedTestType === 'MBTI Test') {
+        // MBTI Test: Content, Answer1, Answer2, Key1 -> Value1, Key2 -> Value2
+        formattedData = filteredRows.map((row) => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            if (header === 'Content') obj.Content = row[index];
+            else if (header === 'Answer1') obj.Answer1 = row[index];
+            else if (header === 'Answer2') obj.Answer2 = row[index];
+            else if (header === 'Key1') obj.Value1 = row[index];
+            else if (header === 'Key2') obj.Value2 = row[index];
+          });
+          return obj;
         });
-        return obj;
-      });
+      } else if (selectedTestType === 'Holland Test') {
+        // Holland Test: Content, Group (key trong Excel)
+        formattedData = filteredRows.map((row) => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            if (header === 'Content') obj.Content = row[index];
+            else if (header === 'Key') obj.Group = row[index]; // Đổi key thành Group
+          });
+          return obj;
+        });
+      }
 
       // Lọc bỏ các đối tượng trống
-      const nonEmptyData = formattedData.filter(item =>
-        Object.keys(item).some(key => item[key] !== undefined && item[key] !== null && item[key] !== '')
+      const nonEmptyData = formattedData.filter((item) =>
+        Object.keys(item).some((key) => item[key] !== undefined && item[key] !== null && item[key] !== '')
       );
 
-      // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
-      const payload = nonEmptyData;
-
-      const payloadString = JSON.stringify(payload);
+      // Chuẩn bị dữ liệu gửi đi
+      const payloadString = JSON.stringify(nonEmptyData);
       const formUpload = new FormData();
       formUpload.append('JsonData', payloadString);
       formUpload.append('Name', formData.Name);
       formUpload.append('TestTypeId', formData.TestTypeId);
       formUpload.append('Description', formData.Description);
 
+      // Dispatch upload
       dispatch(actUploadFileTestAsync(formUpload));
       if (success) {
         dispatch(actResetSuccess());
@@ -266,6 +352,7 @@ export default function TestLessonView() {
           Description: '',
           TestTypeId: '',
         });
+        setSelectedFile(null);
       }
       setOpen(false);
     };
@@ -337,20 +424,14 @@ export default function TestLessonView() {
             </DialogTitle>
             <DialogContent>
               <Grid container spacing={2}>
-                <Grid size={{ md: 12 }}>
-                  <DialogContentText sx={{ display: 'flex', justifyContent: 'center' }} id="alert-dialog-description">
-                    <Upload  {...props} >
-                      <AntButton icon={<UploadOutlined />}>Chọn để Upload file</AntButton>
-                    </Upload>
-                  </DialogContentText>
-                </Grid>
                 <Grid size={{ md: 6 }}>
                   <Autocomplete
                     id="controllable-states-demo"
                     options={typestest}
-                    onChange={(e, newValue) =>
-                      handleChangeField('TestTypeId', newValue?.id)
-                    }
+                    onChange={(e, newValue) => {
+                      handleChangeField('TestTypeId', newValue?.id);
+                      setSelectedTestType(newValue?.name);
+                    }}
                     getOptionLabel={(option) => option?.name || ''}
                     renderInput={(params) => <TextField {...params} label="Chọn loại kiểm tra" />}
                   />
@@ -373,6 +454,14 @@ export default function TestLessonView() {
                     onChange={(e) => handleChangeField('Description', e.target.value)}
                   />
                 </Grid>
+                <Grid size={{ md: 12 }}>
+                  <DialogContentText sx={{ display: 'flex', justifyContent: 'center' }} id="alert-dialog-description">
+                    <Upload  {...props} >
+                      <AntButton icon={<UploadOutlined />}>Chọn để Upload file</AntButton>
+                    </Upload>
+                  </DialogContentText>
+                </Grid>
+
               </Grid>
             </DialogContent>
             <DialogActions>
@@ -402,6 +491,7 @@ export default function TestLessonView() {
               <UserTableHead
                 headLabel={[
                   { id: 'name', label: 'Tên' },
+                  { id: 'testTypeId', label: 'Loại bài kiểm tra', align: 'center' },
                   { id: 'description', label: 'Mô tả', align: 'center' },
                   { id: '' },
                 ]}
@@ -414,6 +504,7 @@ export default function TestLessonView() {
                     rowKey={index + 1}
                     id={row?.id || ''} // Kiểm tra row.id
                     description={row?.description || ''} // Kiểm tra row.description
+                    testTypeId={row?.testTypeId || ''} // Kiểm tra row.testTypeId
                   />
                 ))}
               </TableBody>

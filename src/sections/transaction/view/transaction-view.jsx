@@ -49,8 +49,7 @@ export default function TransactionView() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [error, setError] = useState({});
-  // const [walletHighSchoolId, setWalletHighSchoolId] = useState('');
-  // console.log('walletHighSchoolId', walletHighSchoolId);
+
   const [goldBalance, setGoldBalance] = useState('');
 
 
@@ -75,35 +74,48 @@ export default function TransactionView() {
 
   // write code here
 
-  // const validateForm = () => {
-  //   let newError = {};
-  //   if (!formData.name) {
-  //     newError.name = 'Tên không được để trống';
-  //   }
-  //   if (!formData.description) {
-  //     newError.description = 'Mô tả không được để trống';
-  //   }
-  //   setError(newError);
-  //   return Object.keys(newError).length === 0;
-  // };
+  const validateForm = () => {
+    let newError = {};
+
+    if (!formData.gold) {
+      newError.gold = 'Vui lòng nhập số điểm';
+    } else if (!/^-?\d+(\.\d+)?$/.test(formData.gold)) {
+      newError.gold = 'Điểm phải là một số hợp lệ';
+    } else if (Number(formData.gold) <= 0) {
+      newError.gold = 'Điểm phải lớn hơn 0';
+    } else if (Number(formData.gold) > goldBalance) {
+      newError.gold = 'Điểm phân phối không được lớn hơn số điểm hiện có';
+    }
+    if (!formData.years) {
+      newError.years = 'Vui lòng chọn năm';
+    }
 
 
+    setError(newError);
+    return Object.keys(newError).length === 0; // Trả về false nếu có lỗi
+  };
   const handledistribute = async () => {
     // Đợi createDistributionAsync hoàn tất
+    // validate form
+    if (!validateForm()) return;
     await dispatch(createDistributionAsync(formData));
     if (success) {
       dispatch(resetTransaction());
+      setFormData({
+        accountId: accountId,
+        gold: '',
+        years: '',
+      });
+      dispatch(resetTransaction());
+      handleClose();
     }
 
-    handleClose();
 
     // Xử lý lỗi (hiển thị thông báo lỗi, v.v.)
   }
 
 
 
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
   console.log('inputValue', inputValue);
 
@@ -135,9 +147,11 @@ export default function TransactionView() {
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: name === 'gold' ? parseInt(value, 10) || 0 : value, // Chỉ parse 'gold'
     });
   };
 
@@ -233,6 +247,8 @@ export default function TransactionView() {
                           name='gold'
                           label="Điểm"
                           onChange={handlechange}
+                          error={!!error.gold}
+                          helperText={error.gold}
                         />
                       </Grid>
 
@@ -249,6 +265,7 @@ export default function TransactionView() {
                           getOptionLabel={(option) => option?.name || ''}
                           renderInput={(params) => <TextField {...params} label="Chọn năm" />}
                         />
+                        {error.years && <Typography variant='caption' color="error"> {error.years}</Typography>}
 
                       </Grid>
 

@@ -18,7 +18,7 @@ const testLessonService = {
         return response;
     },
     deleteTestLesson: async (id) => {
-        const response = await BASE_API.delete(`/personal-tests/${id}`);
+        const response = await BASE_API.delete(`/personal-test/${id}`);
         return response;
     },
     getTypesTestLesson: async () => {
@@ -26,9 +26,13 @@ const testLessonService = {
         return response;
     },
     uploadFileTest: async (data) => {
-        const response = await BASE_API.post(`/personal-tests`, data);
+        const response = await BASE_API.post(`/personal-test`, data);
         return response;
-    }
+    },
+    getQuestionByTestId: async (id) => {
+        const response = await BASE_API.get(`/questions-by-test/${id}/`);
+        return response;
+    },
 
 };
 

@@ -143,7 +143,6 @@ export default function UserTableRow({
     dispatch(updateConsultant(id, formData));
     handleCloseDialog();
   };
-  console.log('formData1', formData);
   const handleDelete = () => {
     dispatch(deleteConsultant(id));
     handleCloseDialog();

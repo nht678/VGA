@@ -2,7 +2,7 @@ import { BASE_API, TOKEN } from "./api";
 
 
 const transactionService = {
-    getTransaction: async ({ page, pageSize, transactionType, accountId }) => {
+    getTransaction: async ({ page, pageSize, transactionType, accountId, search }) => {
         const params = {
             'current-page': page,
             'page-size': pageSize,
@@ -15,6 +15,9 @@ const transactionService = {
         }
         if (accountId) {
             params.account_id = accountId;
+        }
+        if (search) {
+            params.search = search;
         }
         const response = await BASE_API.get(`/transactions`, {
             params,
@@ -45,6 +48,12 @@ const transactionService = {
                     Authorization: `Bearer ${TOKEN}`,
                 },
             }
+        );
+        return response;
+    },
+    requestWithdrawal: async (id, data) => {
+        const response = await BASE_API.put(`/transaction/process/${id}`, data,
+
         );
         return response;
     }

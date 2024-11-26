@@ -55,12 +55,12 @@ export default function Payment() {
                         />
                     </Box>
                     <Box sx={{ textAlign: 'center', my: '10px' }}>
-                        Chọn game để nạp
+                        Chọn nạp điểm
                     </Box>
                     <Box>
                         <Grid container spacing={2} justifyContent="center">
                             <Grid item md={3}>
-                                {role === '2' ? (
+                                {role ? (
                                     <Link to="/paymentbegin">
                                         <Box
                                             sx={{
@@ -88,7 +88,7 @@ export default function Payment() {
                                             >
                                                 <img
                                                     src="https://contentgarena-a.akamaihd.net/GOP/newshop_banners/EDFD8F8D399786C0.jpg?v=1731394594"
-                                                    alt="Free Fire"
+                                                    alt="chưa có"
                                                     style={{
                                                         width: '100px',
                                                         height: '100px',
@@ -130,7 +130,7 @@ export default function Payment() {
                                             >
                                                 <img
                                                     src="https://contentgarena-a.akamaihd.net/GOP/newshop_banners/EDFD8F8D399786C0.jpg?v=1731394594"
-                                                    alt="Free Fire"
+                                                    alt="chưa có"
                                                     style={{
                                                         width: '100px',
                                                         height: '100px',

@@ -8,6 +8,7 @@ export const DELETE_TEST_LESSON = "DELETE_TEST_LESSON";
 export const GET_TYPES_TEST_LESSON = "GET_TYPES_TEST_LESSON";
 export const RESET_SUCCESS = "RESET_SUCCESS";
 export const UPLOAD_FILE_TEST = "UPLOAD_FILE_TEST";
+export const GET_QUESTION_BY_TEST_ID = "GET_QUESTION_BY_TEST_ID";
 
 export function actGetTestLessons(data) {
     return {
@@ -46,6 +47,13 @@ export function actResetSuccess() {
 export function actUploadFileTest(data) {
     return {
         type: UPLOAD_FILE_TEST,
+        payload: data,
+    };
+}
+
+export function actGetquestionbyTestId(data) {
+    return {
+        type: GET_QUESTION_BY_TEST_ID,
         payload: data,
     };
 }
@@ -124,11 +132,20 @@ export const actUploadFileTestAsync = (data) => async (dispatch) => {
         debugger
         const response = await testLessonService.uploadFileTest(data);
         if (response.status === 200 || response.status === 201) {
-            dispatch(actUploadFileTest(response));
+            dispatch(actUploadFileTest(response.data));
             message.success('Upload thành công');
         } else {
             message.error('Upload thất bại');
         }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const actGetquestionbyTestIdAsync = (id) => async (dispatch) => {
+    try {
+        const response = await testLessonService.getQuestionByTestId(id);
+        dispatch(actGetquestionbyTestId(response.data));
     } catch (error) {
         console.error(error);
     }

@@ -32,8 +32,12 @@ export default function PaymentBegin() {
 
 
     const items = [
-        { price: 2000, points: 20 },
-        { price: 3000, points: 50 },
+        { price: 10000, points: 10 },
+        { price: 20000, points: 20 },
+        { price: 50000, points: 50 },
+        { price: 100000, points: 100 },
+        { price: 200000, points: 200 },
+        { price: 500000, points: 500 },
     ];
 
     const handleSelectRow = (index) => {
@@ -134,7 +138,7 @@ export default function PaymentBegin() {
                                         </Grid>
                                         <Grid size={{ md: 6 }}>
                                             <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                                                Sò x {item.points} điểm
+                                                {item.points} điểm
                                             </Typography>
                                         </Grid>
                                     </Grid>
@@ -155,7 +159,7 @@ export default function PaymentBegin() {
                                 </Grid>
                                 <Grid size={{ md: 6 }}>
                                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                                        Sò x {selectedRow !== null ? items[selectedRow].points : '-'} điểm
+                                        {selectedRow !== null ? items[selectedRow].points : '-'} điểm
                                     </Typography>
                                 </Grid>
                             </Grid>

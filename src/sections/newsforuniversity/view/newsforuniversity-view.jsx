@@ -141,13 +141,6 @@ export default function NewsForUniversityView() {
     },
   };
 
-  // Hàm upload từng file và lấy URL sau khi upload
-  // const uploadImage = async (file) => {
-  //   const storageRef = ref(storage, `images/${file.name}`);
-  //   await uploadBytes(storageRef, file);
-  //   return getDownloadURL(storageRef);
-  // };
-
   // Hàm upload tất cả ảnh đã chọn lên Firebase và lấy URL
   const handleUpload = async () => {
     const uploadedUrls = await Promise.all(

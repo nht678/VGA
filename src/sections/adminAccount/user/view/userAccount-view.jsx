@@ -284,15 +284,10 @@ export default function UserAccountView() {
   const handleFilter = (selectedYear) => {
     setFilterYear(selectedYear);
     // Gọi API với giá trị filter
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: selectedYear }));
     handleClose(); // Đóng menu sau khi chọn
   };
 
-  // const [inputValue, setInputValue] = useState('');
-  const handleYearChange = (event, newValue) => {
-    setValue(newValue);
-    setformData({ ...formData, schoolYears: newValue?.value });
-  };
 
 
   useEffect(() => {

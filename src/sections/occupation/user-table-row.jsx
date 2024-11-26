@@ -25,12 +25,12 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
+
 import { UploadOutlined } from '@ant-design/icons';
 import { Button as ButtonAnt, message, Upload } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 
-import { actGetOccupationsAsync, actAddOccupationAsync, resetOccupation } from 'src/store/occupation/action';
+import { actUpdateOccupationAsync, resetOccupation, actDeleteOccupationAsync } from 'src/store/occupation/action';
 import { actGetEntryLevelEducationsAsync } from 'src/store/entryLevelEducation/action';
 import { actGetOccupationGroupAsync } from 'src/store/occupationGroup/action';
 import { actGetWorkSkillsAsync } from 'src/store/workSkill/action';
@@ -114,6 +114,14 @@ export default function UserTableRow({
         },
       ],
   });
+
+  const handleUpdateOccupation = () => {
+    dispatch(actUpdateOccupationAsync({ formData, id }));
+    if (successOccupation) {
+      dispatch(resetOccupation());
+    }
+    handleCloseDialog();
+  }
 
 
 
@@ -244,14 +252,14 @@ export default function UserTableRow({
   };
 
 
-  // const handleDelete = () => {
-  //   // console.log("id",id);
-  //   dispatch(actLevelDeleteAsync(id));
-  //   if (successLevel) {
-  //     dispatch(resetLevelSuccess());
-  //   }
-  //   handleCloseDialog();
-  // }
+  const handleDelete = () => {
+    // console.log("id",id);
+    dispatch(actDeleteOccupationAsync(id));
+    if (successOccupation) {
+      dispatch(resetOccupation());
+    }
+    handleCloseDialog();
+  }
 
   const validateForm = () => {
     let newError = {};
@@ -458,7 +466,7 @@ export default function UserTableRow({
                   <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
                     <Autocomplete
                       fullWidth
-                      value={workSkills.find((item) => item.id === skill.workSkillsId) || null}
+                      value={workSkills.find((item) => item.id === skill?.workSkills?.id) || null}
                       onChange={(e, newValue) =>
                         updateOccupationalSkill(index, "workSkillsId", newValue?.id)
                       }
@@ -496,9 +504,9 @@ export default function UserTableRow({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          {/* <Button onClick={handleUpdateLevel} autoFocus>
+          <Button onClick={handleUpdateOccupation} autoFocus>
             Cập nhật
-          </Button> */}
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -507,7 +515,7 @@ export default function UserTableRow({
       <DeleteDialog
         open={dialog}
         onClose={handleCloseDialog}
-      // handleDelete={handleDelete}
+        handleDelete={handleDelete}
       />
 
       <Popover

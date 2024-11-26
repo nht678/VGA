@@ -224,50 +224,71 @@ export default function UserView() {
       // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      // Tách header và rows
+      // Tách headers và rows
       const [headers, ...rows] = jsonData;
 
       // Lọc bỏ các hàng trống
-      const filteredRows = rows.filter(row =>
-        row.some(cell => cell !== undefined && cell !== null && cell !== '')
+      const filteredRows = rows.filter((row) =>
+        row.some((cell) => cell !== undefined && cell !== null && cell !== '')
       );
 
-      // Chuyển đổi các hàng còn lại thành các object dựa trên headers
-      const formattedData = filteredRows.map(row => {
+      // Format dữ liệu
+      const formattedData = filteredRows.map((row) => {
         const obj = {};
+
         headers.forEach((header, index) => {
-          obj[header] = row[index];
+          if (header === 'DateOfBirth') {
+            // Đổi thành excelSerialDate: DateOfBirth
+            obj.excelSerialDate = row[index];
+          } else if (header === 'Phone') {
+            // Đảm bảo số 0 ở đầu số điện thoại
+            obj.Phone = row[index]?.toString().padStart(10, '0');
+          } else {
+            obj[header] = row[index];
+          }
         });
+
         return obj;
       });
 
-      // Lấy ngày gửi hiện tại
-      const currentDate = new Date().toISOString();  // ISO format (yyyy-mm-ddThh:mm:ss)
+      // Lấy ngày upload hiện tại
+      const currentDate = new Date().toISOString(); // ISO format (yyyy-mm-ddThh:mm:ss)
 
-      // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
+      // Chuẩn bị payload gửi đi
       const payload = {
         data: formattedData,
         fileName: selectedFile.name,
         uploadDate: currentDate,
       };
+
       const payloadString = JSON.stringify(payload);
       const formUpload = new FormData();
       formUpload.append('stringJson', payloadString);
       formUpload.append('highschoolId', userInfo.userId);
       formUpload.append('schoolYear', year);
-      // Log FormData entries to console
-      // formUpload.forEach((value1, key) => {
-      //   console.log(`${key}:`, value1);
-      // });
 
+      // Dispatch hành động tải lên
       dispatch(uploadFileAsync(formUpload));
-      dispatch(resetUserSuccess());
+      if (usersSuccess || uploadSuccess) {
+        message.success('Upload file thành công');
+        setformData({
+          name: '',
+          email: '',
+          password: '',
+          phone: '',
+          dateOfBirth: '',
+          schoolYears: '',
+          highSchoolId: userInfo ? userInfo.userId : '',
+        });
+        setSelectedFile(null);
+        dispatch(resetUserSuccess());
+      }
       setOpen(false);
     };
 
     reader.readAsArrayBuffer(selectedFile);
-
   };
+
 
 
   const handleFilterByName = async (event) => {
