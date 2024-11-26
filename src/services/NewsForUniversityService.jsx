@@ -2,26 +2,24 @@ import { BASE_API, TOKEN } from "./api";
 
 const newsForUniversityService = {
     getNewsForUniversity: ({ page, pageSize, search, universityid }) => {
-        const params = {
-            'current-page': page,
-            'page-size': pageSize,
-            'university-id': universityid,
-        };
+        // const params = {
+        //     'current-page': page,
+        //     'page-size': pageSize,
+        //     'university-id': universityid,
+        // };
+        const params = {};
+        if (page) params['current-page'] = page;
+        if (pageSize) params['page-size'] = pageSize;
+        if (universityid) params['university-id'] = universityid;
         if (search) {
             params.name = search;
         }
         return BASE_API.get(`/news`, {
             params,
-            headers: {
-                Authorization: `Bearer ${TOKEN}`,
-            },
         });
     },
     getNewsByIdForUniversity: (id) =>
         BASE_API.get(`/news/${id}`, {
-            headers: {
-                Authorization: `Bearer ${TOKEN}`,
-            },
         })
     ,
     addNewsForUniversity: (data) =>
