@@ -274,24 +274,24 @@ export default function UserAccountView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterValue, schoolYears: filterYear }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterValue, schoolYears: filterYear }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterValue, schoolYears: filterYear }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterValue, schoolYears: filterYear }));
     }
   };
 
   const handleFilter = (selectedYear) => {
     setFilterYear(selectedYear);
     // Gọi API với giá trị filter
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: selectedYear }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName, schoolYears: selectedYear }));
     handleClose(); // Đóng menu sau khi chọn
   };
 
 
 
   useEffect(() => {
-    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
+    dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName, schoolYears: filterYear }));
   }, [usersSuccess, uploadSuccess]);
 
 
@@ -303,7 +303,6 @@ export default function UserAccountView() {
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} sx={{ justifyContent: 'center' }}>
         <Typography sx={{ mt: 5, mb: 5, }} variant="h4">Danh sách học sinh năm:{filterYear}</Typography>
-
       </Stack>
 
       <Card>

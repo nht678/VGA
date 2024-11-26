@@ -6,7 +6,7 @@ export default function TransactionUniversityPage() {
     return (
         <>
             <Helmet>
-                <title>Transaction University</title>
+                <title>Giao dịch đại học</title>
             </Helmet>
             <TransactionUniversity />
         </>

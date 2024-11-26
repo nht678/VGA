@@ -331,6 +331,11 @@ export default function UserView() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Danh sách học sinh năm:{filterYear}</Typography>
         <Box>
+          <a href='https://drive.google.com/drive/folders/1P4HPFkbpw0vXuYznHgA4ZtraYqkuNmJR?hl=vi'>
+            <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} >
+              Mẫu danh sách học sinh
+            </Button>
+          </a>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateStudent')}>
             Tạo học sinh
           </Button>

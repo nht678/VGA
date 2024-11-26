@@ -44,9 +44,9 @@ const PaymentSuccess = () => {
         </div>
         <Link to={`/payment`}>
           <Button
-            label="Về trang chủ"
-            containerStyles="font-semibold text-black p-3 bg-primary rounded-full hover:opacity-80 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
-          />
+          >
+            Về trang chủ
+          </Button>
         </Link>
       </div>
     </Container>

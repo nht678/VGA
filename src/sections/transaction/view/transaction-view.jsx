@@ -85,6 +85,8 @@ export default function TransactionView() {
       newError.gold = 'Điểm phải lớn hơn 0';
     } else if (Number(formData.gold) > goldBalance) {
       newError.gold = 'Điểm phân phối không được lớn hơn số điểm hiện có';
+    } else if (formData.gold.length > 7) {
+      newError.gold = 'Điểm chỉ được tối đa 7 chữ số';
     }
     if (!formData.years) {
       newError.years = 'Vui lòng chọn năm';
@@ -322,6 +324,7 @@ export default function TransactionView() {
                         : ''
                     }
                     avatarUrl={row?.avatarUrl}
+                    accountName={row?.accountName}
                   />
                 ))}
               </TableBody>

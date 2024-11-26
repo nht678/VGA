@@ -62,6 +62,12 @@ export default function ConsultantAccountView() {
     description: '',
     consultantLevelId: '',
     universityId: userId,
+    certifications: [
+      {
+        description: "",
+        imageUrl: ""
+      }
+    ]
   });
 
   const [filterName, setFilterName] = useState('');
@@ -129,7 +135,7 @@ export default function ConsultantAccountView() {
     dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
     dispatch(actLevelGetAsync({}));
     // dispatch(actLevelGetAsync)
-  }, [page, rowsPerPage]);
+  }, [successConsultant]);
 
   const handleAddConsultant = () => {
     if (!validateForm()) return;
@@ -208,130 +214,7 @@ export default function ConsultantAccountView() {
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Tư vấn viên</Typography>
-        <Box>
-          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateConsultant')}>
-            Tạo người tư vấn
-          </Button>
-
-          <Dialog
-            open={open === 'CreateConsultant'}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-              Tạo người tư vấn
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      name='name'
-                      label="Tên"
-                      onChange={handleChange}
-                      error={!!errors.name}
-                      helperText={errors.name}
-                    />
-                  </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      id='Email'
-                      name='email'
-                      label="Email"
-                      onChange={handleChange}
-                      error={!!errors.email}
-                      helperText={errors.email}
-                    />
-                  </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      label="Mật khẩu"
-                      name='password'
-                      onChange={handleChange}
-                      error={!!errors.password}
-                      helperText={errors.password}
-                    />
-                  </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <TextField
-                      fullWidth
-                      label="Số điện thoại"
-                      name='phone'
-                      onChange={handleChange}
-                      error={!!errors.phone}
-                      helperText={errors.phone}
-                    />
-                  </Grid>
-
-                  <Grid size={{ md: 6 }}>
-                    <Typography variant="h6">Description</Typography>
-                    <textarea
-                      style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
-                      label="Mô tả"
-                      name='description'
-                      placeholder='Hãy viết mô tả...'
-                      onChange={handleChange}
-                    />
-                    {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>} {/* Hiển thị lỗi nếu có */}
-                  </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <Typography variant="h6">Level</Typography>
-                    <Autocomplete
-                      onChange={handleLevelChange}
-                      inputValue={inputValue}
-                      onInputChange={(event, newInputValue) => {
-                        setInputValue(newInputValue);
-                      }}
-                      id="controllable-states-demo"
-                      options={consultantLevels || []} // Đảm bảo options luôn là một mảng
-                      getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
-                      renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
-                      error={!!errors.consultantLevelId}
-                      helperText={errors.consultantLevelId}
-                    />
-                    {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>} {/* Hiển thị lỗi nếu có */}
-                  </Grid>
-
-
-                  <Grid item xs={12}>
-                    <Typography variant="h6">Ngày sinh</Typography>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
-                    {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>} {/* Hiển thị lỗi nếu có */}
-                  </Grid>
-                  <Grid size={{ md: 6 }}>
-                    <RadioGroup
-                      row
-                      aria-labelledby="demo-row-radio-buttons-group-label"
-                      name="gender"
-                      onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
-                    >
-                      <FormControlLabel value control={<Radio />} label="Nam" />
-                      <FormControlLabel value={false} control={<Radio />} label="Nữ" />
-                    </RadioGroup>
-                    {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
-                  </Grid>
-
-                </Grid>
-
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Hủy bỏ</Button>
-              <Button onClick={handleAddConsultant} autoFocus>
-                Tạo mới
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-
-
-        </Box>
       </Stack>
-
       <Card>
         <UserTableToolbar
           numSelected={0}
@@ -355,6 +238,7 @@ export default function ConsultantAccountView() {
                   { id: 'gender', label: 'Giới tính' },
                   { id: 'consultantLevelId', label: 'Level', align: 'center' },
                   { id: 'dateOfBirth', label: 'Ngày sinh' },
+                  { id: 'status', label: 'Trạng thái', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -372,6 +256,9 @@ export default function ConsultantAccountView() {
                     consultantLevelId={row?.consultantLevel?.id || ''}
                     gender={row?.gender || ''}
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
+                    status={row?.accountStatus || ''}
+                    accountId={row?.accountId || ''}
+                    walletBalance={row?.walletBalance || ''}
                   />
                 ))}
               </TableBody>

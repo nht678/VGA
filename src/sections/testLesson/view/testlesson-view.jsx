@@ -409,6 +409,11 @@ export default function TestLessonView() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} >
         <Typography sx={{ mt: 5, mb: 5, }} variant="h4">Danh sách bài kiểm tra</Typography>
         <Box>
+          <a href='https://drive.google.com/drive/folders/1P4HPFkbpw0vXuYznHgA4ZtraYqkuNmJR?hl=vi'>
+            <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} >
+              Mẫu danh sách câu hỏi
+            </Button>
+          </a>
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
             Tạo bài kiểm tra từ file
           </Button>

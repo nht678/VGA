@@ -250,9 +250,8 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={code} src={avatarUrl} />
             <Typography variant="subtitle2" component='div' noWrap>
-              {code}
+              {code?.length > 30 ? `${code.slice(0, 30)}...` : code}
             </Typography>
           </Stack>
         </TableCell>

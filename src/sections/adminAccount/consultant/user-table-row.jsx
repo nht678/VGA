@@ -28,10 +28,13 @@ import { styled } from '@mui/material/styles';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import { Calendar, theme, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateConsultant, deleteConsultant } from 'src/store/consultant/action';
+import { resetConsultantSuccess, updateConsultant, deleteConsultant } from 'src/store/consultant/action';
+import { actUserBan } from 'src/store/users/action';
+import DeleteDialog from 'src/pages/delete';
 // import DeleteDialog from '../../pages/delete';
 
 const getColorByLevel = (level) => {
@@ -49,6 +52,33 @@ const getColorByLevel = (level) => {
   }
 };
 
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 1:
+      return 'Active';
+    case 2:
+      return 'Inactive';
+    case 3:
+      return 'Blocked';
+    default:
+      return 'Unknown';
+  }
+};
+
+// Hàm lấy màu cho Chip dựa trên trạng thái
+const getStatusColor = (status) => {
+  switch (status) {
+    case 1:
+      return 'success'; // Xanh lá
+    case 2:
+      return 'default'; // Xám
+    case 3:
+      return 'error';   // Đỏ
+    default:
+      return 'default';
+  }
+};
+
 export default function UserTableRow({
   name,
   avatarUrl,
@@ -60,7 +90,11 @@ export default function UserTableRow({
   consultantLevelId,
   gender,
   rowKey,
+  status,
+  walletBalance,
+  accountId,
 }) {
+  console.log('walletBalance', walletBalance);
   let userId = localStorage.getItem('userId');
 
   const [open, setOpen] = useState(null);
@@ -78,11 +112,23 @@ export default function UserTableRow({
     universityId: userId,
   });
   const { consultantLevels } = useSelector((state) => state.levelReducer);
+  const { consultants, total = 0, successConsultant } = useSelector((state) => state.consultantReducer);
   const [inputValue, setInputValue] = useState(''); // Giá trị input
   const [value, setValue] = useState(null); // Giá trị đã chọn
   const handleLevelChange = (event, newValue) => {
     setValue(newValue);
     setformData({ ...formData, consultantLevelId: newValue?.id || '' });
+  };
+
+
+  const handleBan = async () => {
+    const changeStatus = status === 1 ? 2 : 1;
+    await dispatch(actUserBan({ changeStatus, accountId }));
+    if (successConsultant) {
+      dispatch(resetConsultantSuccess());
+    }
+    handleCloseDialog();
+    handleCloseMenu();
   };
 
 
@@ -192,7 +238,6 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>
@@ -200,7 +245,6 @@ export default function UserTableRow({
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{email}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{phone}</TableCell>
-
 
         <TableCell sx={{ textAlign: 'center' }}>
           {description}
@@ -218,6 +262,13 @@ export default function UserTableRow({
         <TableCell>
           {dateOfBirth}
         </TableCell>
+        <TableCell align="center">
+          <Chip
+            label={getStatusLabel(status)}
+            color={getStatusColor(status)}
+            variant="outlined"
+          />
+        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -225,123 +276,6 @@ export default function UserTableRow({
           </IconButton>
         </TableCell>
       </TableRow>
-      <Dialog
-        open={dialog === 'edit'}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          Cập nhật tư vấn viên
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={name}
-                  name='name'
-                  label="Tên"
-                  onChange={handleChange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={email}
-                  id='Email'
-                  name='email'
-                  label="Email"
-                  onChange={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Mật khẩu"
-                  name='password'
-                  onChange={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={phone}
-                  label="Số điện thoại"
-                  name='phone'
-                  onChange={handleChange}
-                  error={!!errors.phone}
-                  helperText={errors.phone}
-                />
-              </Grid>
-
-              <Grid size={{ md: 6 }}>
-                <Typography variant="h6" component='div'>Description</Typography>
-                <textarea
-                  style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
-                  label="Mô tả"
-                  defaultValue={description}
-                  name='description'
-                  placeholder='Hãy viết mô tả...'
-                  onChange={handleChange}
-                />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <Typography variant="h6" component='div'>Cấp độ</Typography>
-                <Autocomplete
-                  onChange={handleLevelChange}
-                  inputValue={inputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue);
-                  }}
-                  id="controllable-states-demo"
-                  options={consultantLevels || []} // Đảm bảo options luôn là một mảng
-                  getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
-                  renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
-                />
-                {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>}
-              </Grid>
-
-
-              <Grid item xs={12}>
-                <Typography variant="h6" component='div'>Ngày sinh</Typography>
-                <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
-                {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>}
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="gender"
-                  onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
-                >
-                  <FormControlLabel value control={<Radio />} label="Nam" />
-                  <FormControlLabel value={false} control={<Radio />} label="Nữ" />
-                </RadioGroup>
-                {errors.gender && <Typography variant='caption' color="error">{errors.gender}</Typography>}
-              </Grid>
-
-            </Grid>
-
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdate} autoFocus>
-            Cập nhật
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-
       <Dialog
         open={dialog === 'Detail'}
         onClose={handleClose}
@@ -460,13 +394,29 @@ export default function UserTableRow({
                   {`Level ${consultantLevelId}`}
                 </Typography>
               </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tình trạng:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Số dư ví:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {walletBalance}
+                </Typography>
+              </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
-
-
-
-
       </Dialog >
 
       {/* <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} /> */}
@@ -484,9 +434,9 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Cập nhật
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleBan} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Xóa
+          {status === 1 ? 'Chặn' : 'Mở chặn'}
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
@@ -508,4 +458,7 @@ UserTableRow.propTypes = {
   gender: PropTypes.bool,
   consultantLevelId: PropTypes.number,
   rowKey: PropTypes.number,
+  status: PropTypes.bool,
+  walletBalance: PropTypes.number,
+  accountId: PropTypes.string,
 };

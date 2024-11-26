@@ -62,6 +62,7 @@ export default function UserTableRow({
   goldAmount,
   rowKey,
   transactionType,
+  accountName,
 }) {
 
 
@@ -111,7 +112,7 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" component='div' noWrap>
-              {nameHighSchool}
+              {accountName}
             </Typography>
           </Stack>
         </TableCell>
@@ -174,7 +175,7 @@ export default function UserTableRow({
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                      {name}
+                      {accountName}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -253,5 +254,6 @@ UserTableRow.propTypes = {
   goldAmount: PropTypes.number,
   rowKey: PropTypes.number,
   transactionType: PropTypes.string,
+  accountName: PropTypes.string,
 
 };

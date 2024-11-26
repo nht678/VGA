@@ -163,6 +163,7 @@ export default function WithdrawalRequestView() {
                         : ''
                     }
                     avatarUrl={row?.avatarUrl}
+                    accountName={row?.accountName}
                   />
                 ))}
               </TableBody>

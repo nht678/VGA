@@ -320,7 +320,6 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={image} />
             <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>

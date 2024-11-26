@@ -288,7 +288,6 @@ export default function UploadFile() {
 
                       <TableCell component="th" scope="row" padding="none">
                         <Stack direction="row" alignItems="center" spacing={2}>
-                          <Avatar alt={row.name} src={row.avatarUrl} />
                           <Typography variant="subtitle2" noWrap>
                             {row.name}
                           </Typography>

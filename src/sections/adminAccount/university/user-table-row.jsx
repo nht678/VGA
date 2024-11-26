@@ -242,7 +242,6 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" component='div' noWrap>
               {name}
             </Typography>
@@ -538,11 +537,11 @@ export default function UserTableRow({
       </Dialog >
 
 
-      <DeleteDialog
+      {/* <DeleteDialog
         open={dialog}
         onClose={handleCloseDialog}
         handleDelete={handleDelete}
-      />
+      /> */}
 
       <Popover
         open={!!openMenu}
@@ -558,10 +557,10 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Cập nhật
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
+        {/* <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết

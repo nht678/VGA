@@ -77,7 +77,6 @@ export default function TransactionUniversity() {
   const validateForm = () => {
     let newError = {};
     debugger
-
     if (!gold) {
       debugger
       newError.gold = 'Vui lòng nhập số điểm';
@@ -87,6 +86,8 @@ export default function TransactionUniversity() {
       newError.gold = 'Điểm phải lớn hơn 0';
     } else if (Number(gold) > goldBalance) {
       newError.gold = 'Số điểm phân phối không được lớn hơn số điểm hiện có';
+    } else if (gold.length > 7) {
+      newError.gold = 'Điểm chỉ được tối đa 7 chữ số';
     }
     if (!formData.account_id_receiving) {
       newError.years = 'Vui lòng chọn trường cấp 3';
@@ -292,6 +293,7 @@ export default function TransactionUniversity() {
                         : ''
                     }
                     avatarUrl={row?.avatarUrl}
+                    accountName={row?.accountName}
                   />
                 ))}
               </TableBody>

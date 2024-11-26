@@ -90,9 +90,10 @@ export default function TransactionAdminView() {
     setGoldBalance(wallet?.goldBalance);
   }, [wallet]); // Mảng phụ thuộc là `wallet`
 
+  console.log('error', error);
   const validateForm = () => {
     let newError = {};
-
+    debugger
     if (!gold) {
       debugger
       newError.gold = 'Vui lòng nhập số điểm';
@@ -100,11 +101,15 @@ export default function TransactionAdminView() {
       newError.gold = 'Điểm phải là một số hợp lệ';
     } else if (Number(gold) <= 0) {
       newError.gold = 'Điểm phải lớn hơn 0';
+    } else if (gold.length > 7) {
+      newError.gold = 'Điểm chỉ được tối đa 7 chữ số';
     }
     if (!formData.account_id_receiving) {
       newError.account_id_receiving = 'Vui lòng chọn trường đại học';
     }
-
+    // if(!newError.gold){
+    //   setGold(parseInt(gold, 10));
+    // }
 
     setError(newError);
     return Object.keys(newError).length === 0; // Trả về true nếu không có lỗi
@@ -143,10 +148,11 @@ export default function TransactionAdminView() {
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
-    debugger
     const value1 = e.target.value;
-    setGold(value1 ? parseInt(value1, 10) : null);
+    // setGold(value1 ? parseInt(value1, 10) : null);
+    setGold(value1);
   };
+  console.log('gold', gold);
 
 
   const handleChangePage = (event, newPage) => {
@@ -234,6 +240,7 @@ export default function TransactionAdminView() {
                           getOptionLabel={(option) => option?.account?.name || ''}
                           renderInput={(params) => <TextField {...params} label="Chọn trường đại học" />}
                         />
+                        {error.account_id_receiving && <Typography variant='caption' color="error"> {error.account_id_receiving}</Typography>}
                       </Grid>
                     </Grid>
 
@@ -287,6 +294,7 @@ export default function TransactionAdminView() {
                         : ''
                     }
                     avatarUrl={row?.avatarUrl}
+                    accountName={row?.accountName}
                   />
                 ))}
               </TableBody>

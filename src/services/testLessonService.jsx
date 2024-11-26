@@ -26,7 +26,7 @@ const testLessonService = {
         return response;
     },
     uploadFileTest: async (data) => {
-        const response = await BASE_API.post(`/personal-test`, data);
+        const response = await BASE_API.post(`/personal-tests`, data);
         return response;
     },
     getQuestionByTestId: async (id) => {

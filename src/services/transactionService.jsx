@@ -7,15 +7,16 @@ const transactionService = {
             'current-page': page,
             'page-size': pageSize,
             'sort-by-date-time': true,
-            'descending': true
+            'descending': true,
+            'account-id': accountId,
         };
 
         if (transactionType) {
             params['transaction-type'] = transactionType;
         }
-        if (accountId) {
-            params.account_id = accountId;
-        }
+        // if (accountId) {
+        //     params.account_id = accountId;
+        // }
         if (search) {
             params.search = search;
         }
