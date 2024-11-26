@@ -256,9 +256,6 @@ export default function UserTableRow({
           {typeUniversity === 1 ? 'Trường công lập' : 'Trường tư thục'}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
-          {description}
-        </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
           {establishedYear}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>

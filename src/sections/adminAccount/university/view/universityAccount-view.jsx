@@ -356,7 +356,6 @@ export default function UniversityAccountView() {
                   { id: 'email', label: 'Email', align: 'center' },
                   { id: 'phone', label: 'Số điện thoại', align: 'center' },
                   { id: 'Type', label: 'Trường', align: 'center' },
-                  { id: 'description', label: 'Mô tả', align: 'center' },
                   { id: 'establishedYear', label: 'Năm thành lập', align: 'center' },
                   { id: 'goldBalance', label: 'Số điểm', align: 'center' },
                   { id: 'status', label: 'Tình trạng', align: 'center' },

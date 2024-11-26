@@ -42,12 +42,12 @@ const PaymentSuccess = () => {
             {`${query.status === "CANCELLED" ? 'Bạn đã huỷ thanh toán đơn hàng,cảm ơn bạn đã sử dụng dịch vụ của chúng tôi' : 'Đơn hàng của bạn đã được thanh toán thành công. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.'} !!`}
           </p>
         </div>
-        <Link to={`/payment`}>
+        <a href="https://zalo.me/s/1244626929459768039/">
           <Button
           >
             Về trang chủ
           </Button>
-        </Link>
+        </a>
       </div>
     </Container>
   );
