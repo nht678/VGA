@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+import { UploadOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -28,10 +31,10 @@ import { styled } from '@mui/material/styles';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
-import { Calendar, theme, Image } from 'antd';
+import { Calendar, theme, Image, Upload, Button as ButtonAnt } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateConsultant, deleteConsultant } from 'src/store/consultant/action';
+import { updateConsultant, deleteConsultant, removeCertificationAsyn } from 'src/store/consultant/action';
 import DeleteDialog from '../../pages/delete';
 
 const getColorByLevel = (level) => {
@@ -60,13 +63,28 @@ export default function UserTableRow({
   consultantLevelId,
   gender,
   rowKey,
+  certifications,
 }) {
+
+  console.log('certifications', certifications);
+
   let userId = localStorage.getItem('userId');
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
-  const [formData, setformData] = useState({
+  const cleanedCertifications = certifications?.map((item) => ({
+    id: item.id,
+    description: item.description,
+    imageUrl: item.imageUrl,
+  })) || [
+      {
+        id: '',
+        description: "",
+        imageUrl: "",
+      },
+    ];
+  const [formData, setFormData] = useState({
     name: name,
     email: email,
     password: '',
@@ -76,19 +94,20 @@ export default function UserTableRow({
     description: description,
     consultantLevelId: '',
     universityId: userId,
+    certifications: cleanedCertifications
   });
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const [inputValue, setInputValue] = useState(''); // Giá trị input
-  const [value, setValue] = useState(null); // Giá trị đã chọn
+  // const [value, setValue] = useState(null); // Giá trị đã chọn
   const handleLevelChange = (event, newValue) => {
-    setValue(newValue);
-    setformData({ ...formData, consultantLevelId: newValue?.id || '' });
+    // setValue(newValue);
+    setFormData({ ...formData, consultantLevelId: newValue?.id || '' });
   };
 
 
   // handle change
   const handleChange = (e) => {
-    setformData({
+    setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
@@ -148,7 +167,7 @@ export default function UserTableRow({
     handleCloseDialog();
   }
   const onPanelChange = (value1, mode) => {
-    setformData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
+    setFormData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();
   const wrapperStyle = {
@@ -181,6 +200,143 @@ export default function UserTableRow({
   };
 
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
+
+  const uploadProps = (index) => ({
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setFormData((prevData) => {
+          const updatedCertifications = [...prevData.certifications];
+          updatedCertifications[index].imageUrl = url; // Gắn URL vào đúng chứng chỉ
+          return { ...prevData, certifications: updatedCertifications };
+        });
+
+        return false;
+      } catch (error) {
+        console.error("Upload failed:", error);
+        return false;
+      }
+    },
+    onRemove: async () => {
+      try {
+        await deleteImageFromFirebase(formData.certifications[index]?.imageUrl);
+        setFormData((prevData) => {
+          const updatedCertifications = [...prevData.certifications];
+          updatedCertifications[index].imageUrl = ""; // Xóa URL từ chứng chỉ cụ thể
+          return { ...prevData, certifications: updatedCertifications };
+        });
+      } catch (error) {
+        console.error("Failed to remove image:", error);
+      }
+    },
+  });
+
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+
+  const fileList = formData.certifications.map((certification) =>
+    certification.imageUrl
+      ? [
+        {
+          uid: "-1",
+          name: "Uploaded Image",
+          status: "done",
+          url: certification.imageUrl, // URL ảnh từ chứng chỉ
+        },
+      ]
+      : []
+  );
+
+  // const [formData1, setFormData1] = useState({
+  //   certifications: [
+
+  const fileList1 = imageUrl
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
+  const uploadProps1 = (index) => ({
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setFormData((prevData) => {
+          const updatedCertifications = [...prevData.certifications];
+          updatedCertifications[index].imageUrl = url; // Gắn URL vào đúng chứng chỉ
+          return { ...prevData, certifications: updatedCertifications };
+        });
+
+        return false;
+      } catch (error) {
+        console.error("Upload failed:", error);
+        return false;
+      }
+    },
+    onRemove: async () => {
+      try {
+        await deleteImageFromFirebase(formData.certifications[index]?.imageUrl);
+        setFormData((prevData) => {
+          const updatedCertifications = [...prevData.certifications];
+          updatedCertifications[index].imageUrl = ""; // Xóa URL từ chứng chỉ cụ thể
+          return { ...prevData, certifications: updatedCertifications };
+        });
+      } catch (error) {
+        console.error("Failed to remove image:", error);
+      }
+    },
+  });
+
+
+
+  const updateCertification = (index, key, value) => {
+    const newCertifications = [...formData.certifications];
+    newCertifications[index][key] = value;
+    setFormData({ ...formData, certifications: newCertifications });
+  }
+
+  const removeCertification = (id1, index) => {
+    const newCertifications = [...formData.certifications];
+    newCertifications.splice(index, 1);
+    setFormData({ ...formData, certifications: newCertifications });
+    dispatch(removeCertificationAsyn(id1));
+  }
+
+  const addCertification = () => {
+    const newCertifications = [...formData.certifications];
+    newCertifications.push({
+      description: "",
+      imageUrl: ""
+    });
+    setFormData({ ...formData, certifications: newCertifications });
+
+  }
+
+  console.log('formData', formData);
+
 
   return (
     <>
@@ -188,10 +344,9 @@ export default function UserTableRow({
         <TableCell>
           {rowKey}
         </TableCell>
-
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" component='div' noWrap>
+            <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -281,7 +436,7 @@ export default function UserTableRow({
               </Grid>
 
               <Grid size={{ md: 6 }}>
-                <Typography variant="h6" component='div'>Description</Typography>
+                <Typography variant="h6">Description</Typography>
                 <textarea
                   style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
                   label="Mô tả"
@@ -293,7 +448,7 @@ export default function UserTableRow({
                 {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>
-                <Typography variant="h6" component='div'>Cấp độ</Typography>
+                <Typography variant="h6">Cấp độ</Typography>
                 <Autocomplete
                   onChange={handleLevelChange}
                   inputValue={inputValue}
@@ -310,7 +465,7 @@ export default function UserTableRow({
 
 
               <Grid item xs={12}>
-                <Typography variant="h6" component='div'>Ngày sinh</Typography>
+                <Typography variant="h6">Ngày sinh</Typography>
                 <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
                 {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>}
               </Grid>
@@ -319,16 +474,52 @@ export default function UserTableRow({
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="gender"
-                  onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                 >
                   <FormControlLabel value control={<Radio />} label="Nam" />
                   <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                 </RadioGroup>
                 {errors.gender && <Typography variant='caption' color="error">{errors.gender}</Typography>}
               </Grid>
+              {formData.certifications.map((certification, index) => (
+                <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px' }}>
+                  <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
+                    <Grid size={{ md: 12 }}>
+                      <Typography variant="h6">Ảnh</Typography>
+                      <Upload {...uploadProps(index)} fileList={fileList[index]} listType="picture">
+                        {!formData.certifications[index]?.imageUrl && (
+                          <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                            Upload
+                          </ButtonAnt>
+                        )}
+                      </Upload>
 
+                    </Grid>
+                    <Grid size={{ md: 12 }}>
+                      <Typography variant="h6">Nội dung</Typography>
+                      <textarea defaultValue={certification?.description} onChange={(e) => updateCertification(index, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                      />
+                    </Grid>
+
+
+                  </Grid>
+                  <Grid size={{ md: 12 }} sx={{ my: 1, justifyContent: 'center', display: 'flex' }}>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => removeCertification(certifications?.id, index)}
+                    >
+                      Xóa
+                    </Button>
+                  </Grid>
+                </Grid>
+              ))}
             </Grid>
-
+            <Grid size={{ md: 12 }} sx={{ mt: 2, justifyContent: 'center', display: 'flex' }}>
+              <Button variant="contained" onClick={() => handleClickOpenDialog('addCertification')}>
+                Thêm chứng chỉ
+              </Button>
+            </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -338,6 +529,45 @@ export default function UserTableRow({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open={dialog === 'addCertification'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+          Thêm chứng chỉ
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Ảnh</Typography>
+                <Upload {...uploadProps(formData.certifications.length)} fileList={fileList[formData.certifications.length]} listType="picture">
+                  {!formData.certifications[formData.certifications.length]?.imageUrl && (
+                    <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                      Upload
+                    </ButtonAnt>
+                  )}
+                </Upload>
+              </Grid>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Nội dung</Typography>
+                <textarea onChange={(e) => updateCertification(formData.certifications.length, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                />
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
+          <Button onClick={addCertification} autoFocus>
+            Thêm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
 
 
       <Dialog
@@ -467,7 +697,7 @@ export default function UserTableRow({
 
       </Dialog >
 
-      <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
+      {/* <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} /> */}
       <Popover
         open={!!open}
         anchorEl={open}
@@ -506,4 +736,5 @@ UserTableRow.propTypes = {
   gender: PropTypes.bool,
   consultantLevelId: PropTypes.number,
   rowKey: PropTypes.number,
+  certifications: PropTypes.array,
 };

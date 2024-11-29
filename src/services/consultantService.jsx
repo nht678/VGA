@@ -56,6 +56,11 @@ const consultantService = {
         );
         return response;
     },
+    removeCertification: async (certificationId) => {
+        const response = await BASE_API.delete(`/certification/${certificationId}`,
+        );
+        return response;
+    },
 };
 export default consultantService;
 

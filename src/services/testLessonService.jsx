@@ -33,6 +33,14 @@ const testLessonService = {
         const response = await BASE_API.get(`/questions-by-test/${id}/`);
         return response;
     },
+    updateQuestion: async (id, data) => {
+        const response = await BASE_API.put(`/question/${id}`, data);
+        return response;
+    },
+    deleteQuestion: async (id) => {
+        const response = await BASE_API.delete(`/question/${id}`);
+        return response;
+    },
 
 };
 

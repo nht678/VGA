@@ -34,7 +34,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { useDispatch, useSelector } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync, actUserBan } from 'src/store/users/action';
-import { actDeleteTestLessonAsync, actResetSuccess, actGetquestionbyTestIdAsync } from 'src/store/testLesson/action';
+import { actDeleteTestLessonAsync, actResetSuccess, actGetquestionbyTestIdAsync, actUpdateQuestionAsync, actDeleteQuestionAsync } from 'src/store/testLesson/action';
 import DeleteDialog from '../../pages/delete';
 // import BanAccountDialog from '../banAccounDialog';
 
@@ -94,6 +94,10 @@ export default function UserTableRow({
 
   });
   const [errors, setErrors] = useState({});
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1); // Tăng giá trị để kích hoạt lại useEffect
+  };
 
 
   const testTypeName = typestest.find((test) => test.id === testTypeId)?.name || 'N/A';
@@ -182,7 +186,8 @@ export default function UserTableRow({
 
   useEffect(() => {
     dispatch(actGetquestionbyTestIdAsync(id));
-  }, [id]);
+  }, [refreshKey]);
+
 
   const answerValue = [
     { key: "Extraversion (E)", value: 1 },
@@ -194,21 +199,153 @@ export default function UserTableRow({
     { key: "Judging (J)", value: 7 },
     { key: "Perceiving (P)", value: 8 },
   ];
+  const groupValue = [
+    { key: 'khong biet', value: 0 },
+    { key: "Realistic", value: 1 },
+    { key: "Investigative", value: 2 },
+    { key: "Artistic", value: 3 },
+    { key: "Social", value: 4 },
+    { key: "Enterprising", value: 5 },
+    { key: "Conventional", value: 6 },
+  ];
 
-  const [editedQuestions, setEditedQuestions] = useState(questions);
+  // Đồng bộ `questions` từ Redux store vào `localQuestions`
+  useEffect(() => {
+    setLocalQuestions(questions);
+  }, [questions]);
 
+
+  const [newQuestion, setNewQuestion] = useState({
+    content: "",
+    group: null,
+    personalTestId: "3fa85f64-5717-4562-b3fc-2c963f66afa6", // personalTestId đã được định nghĩa
+    answers: [{ content: "", answerValue: null }, { content: "", answerValue: null }], // Tạo 2 câu trả lời mặc định
+  });
+
+  // Cập nhật nội dung câu hỏi mới
+  const handleNewQuestionChange = (event) => {
+    setNewQuestion({
+      ...newQuestion,
+      content: event.target.value,
+    });
+  };
+
+  // Cập nhật group của câu hỏi mới
+  const handleNewGroupChange = (newValue) => {
+    setNewQuestion({
+      ...newQuestion,
+      group: newValue?.value || null,
+    });
+  };
+
+  // Cập nhật câu trả lời mới
+  const handleNewAnswerChange = (index, event) => {
+    const updatedAnswers = [...newQuestion.answers];
+    updatedAnswers[index].content = event.target.value;
+    setNewQuestion({
+      ...newQuestion,
+      answers: updatedAnswers,
+    });
+  };
+
+  // Cập nhật giá trị trả lời mới
+  const handleNewAnswerValueChange = (index, newValue) => {
+    const updatedAnswers = [...newQuestion.answers];
+    updatedAnswers[index].answerValue = newValue?.value || null;
+    setNewQuestion({
+      ...newQuestion,
+      answers: updatedAnswers,
+    });
+  };
+
+  // Thêm câu trả lời
+  const handleAddAnswer = () => {
+    const updatedAnswers = [...newQuestion.answers, { content: "", answerValue: null }];
+    setNewQuestion({
+      ...newQuestion,
+      answers: updatedAnswers,
+    });
+  };
+
+  // Thêm câu hỏi mới vào backend
+  const handleAddQuestion = () => {
+    // Kiểm tra xem có ít nhất 2 câu trả lời không
+    if (newQuestion.answers.length < 2) {
+      alert("Vui lòng nhập tối thiểu 2 câu trả lời.");
+      return;
+    }
+
+    // Gọi API thêm mới
+    console.log('newQuestion', newQuestion);
+
+    // Reset form sau khi thêm
+    setNewQuestion({
+      content: "",
+      group: null,
+      personalTestId: id,
+      answers: [{ content: "", answerValue: null }, { content: "", answerValue: null }],
+    });
+  };
+
+  const [localQuestions, setLocalQuestions] = useState([...questions]); // State tạm để chỉnh sửa từng câu hỏi
+  console.log('localQuestions', localQuestions);
+
+  // Xóa câu hỏi và câu trả lời
+  const handleDeleteQuestion = (index) => {
+    const questionToDelete = localQuestions[index];
+    const updatedQuestions = localQuestions.filter(
+      (question) => question.questionId !== questionToDelete.questionId
+    );
+    setLocalQuestions(updatedQuestions);
+
+    // Gọi API xóa
+    dispatch(actDeleteQuestionAsync(questionToDelete.questionId));
+  };
+
+  // Cập nhật nội dung câu hỏi
   const handleQuestionChange = (index, event) => {
-    const newQuestions = [...editedQuestions];
-    newQuestions[index].content = event.target.value; // Cập nhật câu hỏi
-    setEditedQuestions(newQuestions);
+    const updatedQuestions = [...localQuestions];
+    updatedQuestions[index].content = event.target.value;
+    setLocalQuestions(updatedQuestions);
   };
 
+  // Cập nhật group của câu hỏi
+  const handleGroupChange = (index, newValue) => {
+    const updatedQuestions = [...localQuestions];
+    updatedQuestions[index].group = newValue?.value || null;
+    setLocalQuestions(updatedQuestions);
+  };
+
+  // Cập nhật nội dung câu trả lời
   const handleAnswerChange = (questionIndex, answerIndex, event) => {
-    const newQuestions = [...editedQuestions];
-    newQuestions[questionIndex].answerModels[answerIndex].content = event.target.value; // Cập nhật câu trả lời
-    setEditedQuestions(newQuestions);
+    const updatedQuestions = [...localQuestions];
+    updatedQuestions[questionIndex].answerModels[answerIndex].content = event.target.value;
+    setLocalQuestions(updatedQuestions);
   };
 
+  // Cập nhật giá trị trả lời
+  const handleAnswerValueChange = (questionIndex, answerIndex, newValue) => {
+    const updatedQuestions = [...localQuestions];
+    updatedQuestions[questionIndex].answerModels[answerIndex].answerValue = newValue?.value || null;
+    setLocalQuestions(updatedQuestions);
+  };
+
+  // Gửi yêu cầu cập nhật từng câu hỏi
+  const handleUpdateQuestion = (index) => {
+    const questionToUpdate = localQuestions[index];
+    const payload = {
+      content: questionToUpdate.content,
+      group: questionToUpdate.group,
+      answers: questionToUpdate.answerModels.map((answer) => ({
+        id: answer.id,
+        content: answer.content,
+        answerValue: answer.answerValue,
+      })),
+    };
+    dispatch(actUpdateQuestionAsync(questionToUpdate.questionId, payload));
+    console.log('questionToUpdate.questionId', questionToUpdate.questionId);
+    // onUpdate(questionToUpdate.questionId, payload); // Gọi API cập nhật
+  };
   return (
     <>
       <TableRow hover >
@@ -244,52 +381,63 @@ export default function UserTableRow({
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
-            {editedQuestions.map((question, index) => (
-              <Grid size={{ md: 12 }} container key={question.questionId}>
-                <Typography variant="h6" gutterBottom>
-                  Câu hỏi {index + 1}:
-                </Typography>
-
-                <Grid size={{ md: 12 }} container>
+            {questions.map((question, index) => (
+              <Grid container spacing={2} key={question.questionId}>
+                {/* Nội dung câu hỏi */}
+                <Grid size={{ md: 12 }}>
+                  <Typography variant="h6">Câu hỏi {index + 1}:</Typography>
+                </Grid>
+                <Grid size={{ md: 12 }}>
                   <TextField
                     fullWidth
                     label="Câu hỏi"
                     value={question.content}
-                    onChange={(e) => handleQuestionChange(index, e)} // Sửa đổi câu hỏi
+                    onChange={(e) => handleQuestionChange(index, e)}
                     variant="outlined"
                     margin="dense"
                   />
-                  <Typography variant="body2" gutterBottom>
-                    Nhóm: {question.group}
-                  </Typography>
-
                 </Grid>
 
+                {/* Group của câu hỏi */}
+                <Grid size={{ md: 12 }}>
+                  <Autocomplete
+                    value={groupValue.find((opt) => opt.value === question.group)}
+                    options={groupValue}
+                    getOptionLabel={(option) => option.key}
+                    onChange={(event, newValue) => handleGroupChange(index, newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label="Nhóm"
+                        variant="outlined"
+                        margin="dense"
+                      />
+                    )}
+                  />
+                </Grid>
 
-                {question.answerModels.map((answer, idx) => (
-                  <Grid size={{ md: 12 }} container key={answer.id} mb={1}>
-                    <Grid size={{ md: 8 }} >
-
+                {/* Câu trả lời */}
+                {question.answerModels.map((answer, answerIndex) => (
+                  <Grid container spacing={2} key={answer.id}>
+                    <Grid size={{ md: 12 }}>
                       <TextField
                         fullWidth
-                        label={`Câu trả lời ${idx + 1}`}
+                        label={`Câu trả lời ${answerIndex + 1}`}
                         value={answer.content}
-                        onChange={(e) => handleAnswerChange(index, idx, e)} // Sửa đổi câu trả lời
+                        onChange={(e) => handleAnswerChange(index, answerIndex, e)}
                         variant="outlined"
                         margin="dense"
                       />
                     </Grid>
-                    <Grid size={{ md: 4 }} >
-
+                    <Grid size={{ md: 12 }}>
                       <Autocomplete
-                        value={answerValue.find((opt) => opt.value === answer.answerValue)} // Tìm kiếm giá trị đã chọn
-                        options={answerValue} // Dữ liệu cho autocomplete
-                        getOptionLabel={(option) => option.key} // Định dạng giá trị hiển thị trong danh sách
-                        onChange={(event, newValue) => {
-                          const newQuestions = [...editedQuestions];
-                          newQuestions[index].answerModels[idx].answerValue = newValue?.value || null; // Cập nhật giá trị answerValue
-                          setEditedQuestions(newQuestions);
-                        }}
+                        value={answerValue.find((opt) => opt.value === answer.answerValue)}
+                        options={answerValue}
+                        getOptionLabel={(option) => option.key}
+                        onChange={(event, newValue) =>
+                          handleAnswerValueChange(index, answerIndex, newValue)
+                        }
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -303,8 +451,121 @@ export default function UserTableRow({
                     </Grid>
                   </Grid>
                 ))}
+
+                {/* Nút cập nhật */}
+                <Grid size={{ md: 12 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleUpdateQuestion(index)}
+                  >
+                    Cập nhật
+                  </Button>
+                </Grid>
+                {/* Nút xóa */}
+                <Grid size={{ md: 12 }}>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleDeleteQuestion(index)}
+                  >
+                    Xóa
+                  </Button>
+                </Grid>
+                {/* Thêm câu hỏi mới */}
+
               </Grid>
             ))}
+            <Grid container spacing={2}>
+              {/* Thêm câu hỏi mới */}
+              <Grid container spacing={2} mt={3}>
+                <Grid size={{ md: 12 }}>
+                  <Typography variant="h6">Thêm câu hỏi mới:</Typography>
+                </Grid>
+
+                {/* Câu hỏi mới */}
+                <Grid size={{ md: 12 }}>
+                  <TextField
+                    fullWidth
+                    label="Câu hỏi"
+                    value={newQuestion.content}
+                    onChange={handleNewQuestionChange}
+                    variant="outlined"
+                    margin="dense"
+                  />
+                </Grid>
+
+                {/* Nhóm câu hỏi mới */}
+                <Grid size={{ md: 12 }}>
+                  <Autocomplete
+                    value={groupValue.find((opt) => opt.value === newQuestion.group)}
+                    options={groupValue}
+                    getOptionLabel={(option) => option.key}
+                    onChange={(event, newValue) => handleNewGroupChange(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label="Nhóm"
+                        variant="outlined"
+                        margin="dense"
+                      />
+                    )}
+                  />
+                </Grid>
+
+                {/* Câu trả lời mới */}
+                {newQuestion.answers.map((answer, answerIndex) => (
+                  <Grid container spacing={2} key={answerIndex}>
+                    <Grid size={{ md: 6 }}>
+                      <TextField
+                        fullWidth
+                        label={`Câu trả lời ${answerIndex + 1}`}
+                        value={answer.content}
+                        onChange={(e) => handleNewAnswerChange(answerIndex, e)}
+                        variant="outlined"
+                        margin="dense"
+                      />
+                    </Grid>
+                    <Grid size={{ md: 6 }}>
+                      <Autocomplete
+                        value={answerValue.find((opt) => opt.value === answer.answerValue)}
+                        options={answerValue}
+                        getOptionLabel={(option) => option.key}
+                        onChange={(event, newValue) => handleNewAnswerValueChange(answerIndex, newValue)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            label="Giá trị trả lời"
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                ))}
+
+                {/* Nút Thêm câu trả lời */}
+                <Grid item xs={12}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleAddAnswer}
+                  >
+                    Thêm câu trả lời
+                  </Button>
+                </Grid>
+
+                {/* Nút Thêm câu hỏi */}
+                <Grid size={{ md: 12 }}>
+                  <Button variant="contained" color="primary" onClick={handleAddQuestion}>
+                    Thêm mới
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -339,11 +600,18 @@ export default function UserTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+        <MenuItem onClick={() => {
+          handleClickOpenDialog('Detail')
+
+        }
+        }>
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Question')}>
+        <MenuItem onClick={() => {
+          handleClickOpenDialog('Question')
+          handleRefresh();
+        }}>
           <InfoIcon sx={{ mr: 2 }} />
           Các câu hỏi
         </MenuItem>

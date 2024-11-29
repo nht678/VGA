@@ -76,7 +76,7 @@ export default function UserTableRow({
   code,
   establishedYear,
   rowKey,
-  accountId
+  accountId,
 
 }) {
 
@@ -167,7 +167,7 @@ export default function UserTableRow({
     phone: phone,
     password: '',
     description: description,
-    establishedYear: '',
+    establishedYear: establishedYear,
     type: typeUniversity,
     rowKey
   });
@@ -195,7 +195,6 @@ export default function UserTableRow({
 
 
   const handleYearChange = (event, newValue) => {
-    setValue(newValue);
     setFormData({ ...formData, establishedYear: newValue });
   };
 
@@ -223,13 +222,11 @@ export default function UserTableRow({
 
   const handleClose = () => {
     setOpen(false);
-    setDialog('');
   };
 
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
-  console.log('formData', formData)
 
 
 
@@ -351,7 +348,7 @@ export default function UserTableRow({
                     open={open}
                     onClose={handleClose}
                     onOpen={handleOpen}
-                    // value={age}
+                    value={formData.type}
                     label="Trường"
                     onChange={handlechangeType}
                   >
@@ -366,13 +363,10 @@ export default function UserTableRow({
 
               <Grid size={{ md: 6 }}>
                 <Autocomplete
-                  value={value}
                   onChange={handleYearChange}
-                  inputValue={inputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue);
-                  }}
+                  value={options.find((option) => option === formData?.establishedYear) || null}
                   options={options}
+                  getOptionLabel={(option) => option || ''}
                   renderInput={(params) => <TextField {...params} label="Năm thành lập" />}
                 />
                 {errors.establishedYear && <Typography variant='caption' color="error">{errors.establishedYear}</Typography>}
@@ -580,9 +574,9 @@ UserTableRow.propTypes = {
   status: PropTypes.number,
   description: propTypes.string,
   goldBalance: PropTypes.number,
-  code: PropTypes.number,
+  code: PropTypes.string,
   establishedYear: PropTypes.string,
   typeUniversity: PropTypes.number,
   rowKey: PropTypes.number,
-  accountId: PropTypes.string
+  accountId: PropTypes.string,
 };

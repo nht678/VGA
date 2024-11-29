@@ -153,7 +153,7 @@ export default function UniversityAccountView() {
 
 
   const handleYearChange = (event, newValue) => {
-    setValue(newValue);
+    // setValue(newValue);
     setFormData({ ...formData, establishedYear: newValue });
   };
 
@@ -289,6 +289,7 @@ export default function UniversityAccountView() {
                       <Select
                         labelId="demo-controlled-open-select-label"
                         id="demo-controlled-open-select"
+                        value={formData?.typeUniversity}
                         open={open}
                         onClose={handleClose}
                         onOpen={handleOpen}
@@ -305,13 +306,9 @@ export default function UniversityAccountView() {
 
                   <Grid size={{ md: 6 }}>
                     <Autocomplete
-                      value={value}
                       onChange={handleYearChange}
-                      inputValue={inputValue}
-                      onInputChange={(event, newInputValue) => {
-                        setInputValue(newInputValue);
-                      }}
                       options={options}
+                      getOptionLabel={(option) => option || ''}
                       renderInput={(params) => <TextField {...params} label="Năm thành lập" />}
                     />
                     {errors.establishedYear && <Typography variant='caption' color="error">{errors.establishedYear}</Typography>}

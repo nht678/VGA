@@ -30,7 +30,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { actGetTestLessonsAsync, actResetSuccess, actGetTypesTestLessonAsync, actUploadFileTestAsync } from 'src/store/testLesson/action';
+import { actGetTestLessonsAsync, actResetSuccess, actGetTypesTestLessonAsync, actUploadFileTestAsync, actDeleteQuestionAsync } from 'src/store/testLesson/action';
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
@@ -409,11 +409,21 @@ export default function TestLessonView() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} >
         <Typography sx={{ mt: 5, mb: 5, }} variant="h4">Danh sách bài kiểm tra</Typography>
         <Box>
-          <a href='https://drive.google.com/drive/folders/1P4HPFkbpw0vXuYznHgA4ZtraYqkuNmJR?hl=vi'>
-            <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} >
+          <a
+            href="https://drive.google.com/drive/folders/1P4HPFkbpw0vXuYznHgA4ZtraYqkuNmJR?hl=vi"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button
+              sx={{ marginRight: 2 }}
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+            >
               Mẫu danh sách câu hỏi
             </Button>
           </a>
+
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
             Tạo bài kiểm tra từ file
           </Button>

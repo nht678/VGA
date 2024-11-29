@@ -41,6 +41,22 @@ const consultantReducer = (state = initialState, action) => {
                 successConsultant: false,
                 error: null,
             };
+        // case 'REMOVE_CERTIFICATION':
+        //     return {
+        //         ...state,
+        //         consultants: state.consultants.map((consultant) => {
+        //             if (consultant.id === action.payload.consultantId) {
+        //                 return {
+        //                     ...consultant,
+        //                     certifications: consultant.certifications.filter(
+        //                         (certification) => certification.id !== action.payload.certificationId,
+        //                     ),
+        //                 };
+        //             }
+        //             return consultant;
+        //         }),
+        //         successConsultant: true
+        //     };
         default:
             return state;
     }

@@ -9,6 +9,8 @@ export const GET_TYPES_TEST_LESSON = "GET_TYPES_TEST_LESSON";
 export const RESET_SUCCESS = "RESET_SUCCESS";
 export const UPLOAD_FILE_TEST = "UPLOAD_FILE_TEST";
 export const GET_QUESTION_BY_TEST_ID = "GET_QUESTION_BY_TEST_ID";
+export const UPDATE_QUESTION = "UPDATE_QUESTION";
+export const DELETE_QUESTION = "DELETE_QUESTION";
 
 export function actGetTestLessons(data) {
     return {
@@ -62,6 +64,13 @@ export function actGetquestionbyTestId(data) {
 export function actGetTypesTestLesson(data) {
     return {
         type: GET_TYPES_TEST_LESSON,
+        payload: data,
+    };
+}
+
+export function actUpdateQuestion(data) {
+    return {
+        type: UPDATE_QUESTION,
         payload: data,
     };
 }
@@ -146,6 +155,36 @@ export const actGetquestionbyTestIdAsync = (id) => async (dispatch) => {
     try {
         const response = await testLessonService.getQuestionByTestId(id);
         dispatch(actGetquestionbyTestId(response.data));
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const actUpdateQuestionAsync = (id, data) => async (dispatch) => {
+    try {
+        debugger
+        const response = await testLessonService.updateQuestion(id, data);
+        if (response.status === 200 || response.status === 201) {
+            // dispatch(actUpdateQuestion(response));
+            message.success('Cập nhật thành công');
+        } else {
+            message.error('Cập nhật thất bại');
+        }
+    } catch (error) {
+        console.error(error);
+        message.error('Cập nhật thất bại');
+    }
+}
+
+export const actDeleteQuestionAsync = (id) => async (dispatch) => {
+    try {
+        const response = await testLessonService.deleteQuestion(id);
+        if (response.status === 200 || response.status === 201) {
+            // dispatch(actDeleteQuestion(id));
+            message.success('Xóa thành công');
+        } else {
+            message.error('Xóa thất bại');
+        }
     } catch (error) {
         console.error(error);
     }

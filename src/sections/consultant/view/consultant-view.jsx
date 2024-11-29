@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -21,8 +23,8 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/system/Grid';
-import { Calendar, theme, Button as AntButton, message, Upload } from 'antd';
-
+import { Calendar, theme, Button as ButtonAnt, message, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -53,7 +55,7 @@ export default function ConsultantView() {
   let userId = localStorage.getItem('userId');
 
   const [page, setPage] = useState(0);
-  const [formData, setformData] = useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
@@ -62,25 +64,29 @@ export default function ConsultantView() {
     description: '',
     consultantLevelId: '',
     universityId: userId,
+    certifications: [
+      {
+        description: "",
+        imageUrl: ""
+      }
+    ]
   });
 
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  const [value, setValue] = useState(null); // Giá trị đã chọn
   const [inputValue, setInputValue] = useState(''); // Giá trị input
 
   const onPanelChange = (value1, mode) => {
-    setformData({ ...formData, doB: value1.format('YYYY-MM-DD') });
+    setFormData({ ...formData, doB: value1.format('YYYY-MM-DD') });
   };
 
   const [errors, setErrors] = useState({});
 
   // handlechange
   const handleChange = (e) => {
-    setformData({
+    setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
@@ -138,7 +144,7 @@ export default function ConsultantView() {
       // message.success('Add Consultant Success');
       dispatch(resetConsultantSuccess);
     };
-    setformData({
+    setFormData({
       name: '',
       email: '',
       password: '',
@@ -146,6 +152,12 @@ export default function ConsultantView() {
       doB: '',
       description: '',
       consultantLevelId: '',
+      certifications: [
+        {
+          description: "",
+          imageUrl: ""
+        }
+      ]
     });
 
     setOpen(false);
@@ -175,9 +187,10 @@ export default function ConsultantView() {
     setOpen(false);
   };
 
+
   const handleLevelChange = (event, newValue) => {
-    setValue(newValue);
-    setformData({ ...formData, consultantLevelId: newValue?.id || '' });
+    // setValue(newValue);
+    setFormData({ ...formData, consultantLevelId: newValue?.id || '' });
   };
 
 
@@ -201,6 +214,89 @@ export default function ConsultantView() {
 
   const [filterLevel, setFilterLevel] = useState('');
   const [filterLevelName, setFilterLevelName] = useState('Level');
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
+
+  const uploadProps = (index) => ({
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setFormData((prevData) => {
+          const updatedCertifications = [...prevData.certifications];
+          updatedCertifications[index].imageUrl = url; // Gắn URL vào đúng chứng chỉ
+          return { ...prevData, certifications: updatedCertifications };
+        });
+
+        return false;
+      } catch (error) {
+        console.error("Upload failed:", error);
+        return false;
+      }
+    },
+    onRemove: async () => {
+      try {
+        await deleteImageFromFirebase(formData.certifications[index]?.imageUrl);
+        setFormData((prevData) => {
+          const updatedCertifications = [...prevData.certifications];
+          updatedCertifications[index].imageUrl = ""; // Xóa URL từ chứng chỉ cụ thể
+          return { ...prevData, certifications: updatedCertifications };
+        });
+      } catch (error) {
+        console.error("Failed to remove image:", error);
+      }
+    },
+  });
+
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+
+  const fileList = imageUrl
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
+
+  const updateCertification = (index, key, value) => {
+    const newCertifications = [...formData.certifications];
+    newCertifications[index][key] = value;
+    setFormData({ ...formData, certifications: newCertifications });
+  }
+
+  const removeCertification = (index) => {
+    const newCertifications = [...formData.certifications];
+    newCertifications.splice(index, 1);
+    setFormData({ ...formData, certifications: newCertifications });
+  }
+
+  const addCertification = () => {
+    const newCertifications = [...formData.certifications];
+    newCertifications.push({
+      description: "",
+      imageUrl: ""
+    });
+    setFormData({ ...formData, certifications: newCertifications });
+  }
+
 
 
 
@@ -307,14 +403,50 @@ export default function ConsultantView() {
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
                       name="gender"
-                      onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                      onChange={(e) => setFormData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                     >
                       <FormControlLabel value control={<Radio />} label="Nam" />
                       <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
                     {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
+                  {formData.certifications.map((certification, index) => (
+                    <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px' }}>
+                      <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
+                        <Grid size={{ md: 12 }}>
+                          <Typography variant="h6">Ảnh</Typography>
+                          <Upload {...uploadProps(index)} fileList={fileList[index]} listType='picture'>
+                            {!formData.certifications[index]?.imageUrl && (
+                              <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                                Upload
+                              </ButtonAnt>
+                            )}
+                          </Upload>
+                        </Grid>
+                        <Grid size={{ md: 12 }}>
+                          <Typography variant="h6">Nội dung</Typography>
+                          <textarea onChange={(e) => updateCertification(index, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                          />
+                        </Grid>
 
+
+                      </Grid>
+                      <Grid size={{ md: 12 }} sx={{ my: 1, justifyContent: 'center', display: 'flex' }}>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => removeCertification(index)}
+                        >
+                          Xóa
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Grid>
+                <Grid size={{ md: 12 }} sx={{ mt: 2, justifyContent: 'center', display: 'flex' }}>
+                  <Button variant="contained" onClick={addCertification}>
+                    Thêm chứng chỉ
+                  </Button>
                 </Grid>
 
               </DialogContentText>
@@ -372,6 +504,7 @@ export default function ConsultantView() {
                     consultantLevelId={row?.consultantLevel?.id || ''}
                     gender={row?.gender || ''}
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
+                    certifications={row?.certifications}
                   />
                 ))}
               </TableBody>
