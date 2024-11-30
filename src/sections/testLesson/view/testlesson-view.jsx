@@ -41,7 +41,8 @@ import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { validateFormData, isRequired } from '../../formValidation';
+
 
 
 
@@ -92,76 +93,21 @@ export default function TestLessonView() {
     Description: '',
     TestTypeId: '',
   });
-  console.log('formData', formData);
-
-  // handlechange
-  const handleChange = (e) => {
-    setformData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
 
   // Hàm validate form
+
+  const rules = {
+    Name: [isRequired('Tên')],
+    Description: [isRequired('Mô tả')],
+    TestTypeId: [isRequired('Thể loại kiểm tra')],
+  };
+
   const validateForm = () => {
-    let newErrors = {};
-
-    // Kiểm tra các trường yêu cầu
-    if (!formData.name) newErrors.name = 'Tên là bắt buộc';
-    if (!formData.email) newErrors.email = 'Email là bắt buộc';
-    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
-    if (!formData.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
-
-    // Kiểm tra định dạng email (đơn giản)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (formData.gender === undefined) {
-      newErrors.gender = 'Vui lòng chọn giới tính';
-    }
-
+    const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
-
-    // Trả về true nếu không có lỗi
     return Object.keys(newErrors).length === 0;
   };
 
-
-  // const handleAddUser = () => {
-  //   if (!validateForm()) {
-  //     // Nếu form không hợp lệ, dừng lại và không gửi request
-  //     return;
-  //   }
-
-  //   try {
-  //     dispatch(actAddUserAsync(formData));
-  //     if (usersSuccess) {
-  //       dispatch(actResetSuccess());
-  //       setformData({
-  //         name: '',
-  //         email: '',
-  //         password: '',
-  //         phone: '',
-  //         dateOfBirth: '',
-  //         schoolYears: '',
-  //         highSchoolId: userInfo ? userInfo.userId : '',
-  //       });
-  //     }
-  //   } catch (e) {
-  //     message.error('Add user failed');
-  //   }
-
-
-  //   setOpen(true);
-  // };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -198,87 +144,12 @@ export default function TestLessonView() {
     },
   };
 
-
-  // const handleUpload = () => {
-  //   if (!selectedFile) {
-  //     message.error('Please select a file first!');
-  //     return;
-  //   }
-
-  //   const reader = new FileReader();
-
-  //   reader.onload = (e) => {
-  //     const data = new Uint8Array(e.target.result);
-  //     const workbook = XLSX.read(data, { type: 'array' });
-
-  //     // Lấy sheet đầu tiên
-  //     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-  //     // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
-  //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-  //     // Tách header và rows
-  //     const [headers, ...rows] = jsonData;
-
-  //     // Lọc bỏ các hàng trống
-  //     const filteredRows = rows.filter(row =>
-  //       row.some(cell => cell !== undefined && cell !== null && cell !== '')
-  //     );
-
-  //     // Lọc ra các cột Content, Answer1, Answer2 và chuyển Key1, Key2 thành Value1, Value2
-  //     const formattedData = filteredRows.map(row => {
-  //       const obj = {};
-  //       headers.forEach((header, index) => {
-  //         if (header === 'Content') {
-  //           obj.Content = row[index];
-  //         } else if (header === 'Answer1') {
-  //           obj.Answer1 = row[index];
-  //         } else if (header === 'Answer2') {
-  //           obj.Answer2 = row[index];
-  //         } else if (header === 'Key1') {
-  //           obj.Value1 = row[index]; // Chuyển Key1 thành Value1
-  //         } else if (header === 'Key2') {
-  //           obj.Value2 = row[index]; // Chuyển Key2 thành Value2
-  //         }
-  //       });
-  //       return obj;
-  //     });
-
-  //     // Lọc bỏ các đối tượng trống
-  //     const nonEmptyData = formattedData.filter(item =>
-  //       Object.keys(item).some(key => item[key] !== undefined && item[key] !== null && item[key] !== '')
-  //     );
-
-  //     // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
-  //     const payload = nonEmptyData;
-
-  //     const payloadString = JSON.stringify(payload);
-  //     const formUpload = new FormData();
-  //     formUpload.append('JsonData', payloadString);
-  //     formUpload.append('Name', formData.Name);
-  //     formUpload.append('TestTypeId', formData.TestTypeId);
-  //     formUpload.append('Description', formData.Description);
-
-  //     dispatch(actUploadFileTestAsync(formUpload));
-  //     if (success) {
-  //       dispatch(actResetSuccess());
-  //       setformData({
-  //         Name: '',
-  //         Description: '',
-  //         TestTypeId: '',
-  //       });
-  //     }
-  //     setOpen(false);
-  //   };
-
-  //   reader.readAsArrayBuffer(selectedFile);
-  // };
-
   const handleUpload = () => {
     if (!selectedFile) {
       message.error('Please select a file first!');
       return;
     }
+    if (!validateForm()) return;
 
     const reader = new FileReader();
 
@@ -438,7 +309,7 @@ export default function TestLessonView() {
               Tạo bài kiểm tra từ file
             </DialogTitle>
             <DialogContent>
-              <Grid container spacing={2}>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
                 <Grid size={{ md: 6 }}>
                   <Autocomplete
                     id="controllable-states-demo"
@@ -450,6 +321,7 @@ export default function TestLessonView() {
                     getOptionLabel={(option) => option?.name || ''}
                     renderInput={(params) => <TextField {...params} label="Chọn loại kiểm tra" />}
                   />
+                  {errors.TestTypeId && <Typography variant='caption' color="error">{errors.TestTypeId}</Typography>}
                 </Grid>
                 <Grid size={{ md: 6 }}>
                   <TextField
@@ -457,6 +329,8 @@ export default function TestLessonView() {
                     label="Tên bài kiểm tra"
                     variant="outlined"
                     onChange={(e) => handleChangeField('Name', e.target.value)}
+                    error={errors.Name}
+                    helperText={errors.Name}
                   />
                 </Grid>
                 <Grid size={{ md: 12 }}>
@@ -468,6 +342,7 @@ export default function TestLessonView() {
                     placeholder='Hãy viết mô tả...'
                     onChange={(e) => handleChangeField('Description', e.target.value)}
                   />
+                  {errors.Description && <Typography variant='caption' color="error">{errors.Description}</Typography>}
                 </Grid>
                 <Grid size={{ md: 12 }}>
                   <DialogContentText sx={{ display: 'flex', justifyContent: 'center' }} id="alert-dialog-description">

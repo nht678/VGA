@@ -33,6 +33,7 @@ import { actGetWorkSkillsAsync, actAddWorkSkillAsync, actResetSuccess } from 'sr
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -44,7 +45,7 @@ export default function WorkSkillView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
@@ -55,41 +56,27 @@ export default function WorkSkillView() {
     name: '',
   });
 
-  console.log('formData', formData);
+  const rules = {
+    name: [isRequired('Tên')],
+  };
 
   const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-
-
-
-
 
   const handleAddWorkSkill = async () => {
-    if (validateForm()) {
-      dispatch(actAddWorkSkillAsync(formData));
-      dispatch(actResetSuccess());
-      setFormData({
-        name: '',
-      });
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actAddWorkSkillAsync(formData));
+    dispatch(actResetSuccess());
+    setFormData({
+      name: '',
+    });
+    handleClose();
   };
-
-
-
-
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -98,7 +85,6 @@ export default function WorkSkillView() {
       [e.target.name]: e.target.value,
     });
   };
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -139,12 +125,8 @@ export default function WorkSkillView() {
 
   }, [success]);
 
-
-
-
   return (
     <>
-
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Kĩ năng công việc</Typography>
         <Box>

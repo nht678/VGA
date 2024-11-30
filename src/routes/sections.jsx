@@ -51,6 +51,7 @@ export const UserAccountView = lazy(() => import('src/sections/adminAccount/user
 export const UniversityAccountView = lazy(() => import('src/sections/adminAccount/university/view/universityAccount-view'));
 export const TestLesson = lazy(() => import('src/pages/testlesson'));
 export const WithdrawalRequest = lazy(() => import('src/pages/withdrawalRequest'));
+export const Question = lazy(() => import('src/pages/question'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -110,6 +111,7 @@ export default function Router() {
         { path: 'universityAccount', element: role === '1' ? <UniversityAccountView /> : <Navigate to="/404" replace /> },
         { path: 'testlesson', element: role === '1' ? <TestLesson /> : <Navigate to="/404" replace /> },
         { path: 'withdrawalRequest', element: role === '1' ? <WithdrawalRequest /> : <Navigate to="/404" replace /> },
+        { path: 'questions/:id', element: role === '1' ? <Question /> : <Navigate to="/404" replace /> },
 
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 

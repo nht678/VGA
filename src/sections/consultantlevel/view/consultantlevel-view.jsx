@@ -19,7 +19,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
 
 
 
@@ -33,6 +32,7 @@ import { actLevelGetAsync, actLevelAddAsync, resetLevelSuccess } from 'src/store
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired, isValidPrice } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -44,7 +44,7 @@ export default function ConsultantLevelView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
   console.log('option', options)
@@ -59,27 +59,22 @@ export default function ConsultantLevelView() {
     priceOnSlot: '',
   });
 
+  const rules = {
+    name: [isRequired('Tên')],
+    priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
+    description: [isRequired('Mô tả')],
+
+  };
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const dispatch = useDispatch();
 
   const { consultantLevels, successLevel, total = 0 } = useSelector((state) => state.levelReducer);
-  console.log('consultantLevels', consultantLevels)
-
-
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
 
   const handleAddConsultant = () => {
 
@@ -144,10 +139,6 @@ export default function ConsultantLevelView() {
     dispatch(actLevelGetAsync({ page: page + 1, pageSize: rowsPerPage }));
 
   }, [successLevel]);
-
-
-
-
 
   return (
     <>

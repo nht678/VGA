@@ -26,6 +26,7 @@ import DeleteDialog from 'src/pages/delete';
 import { actUpdateWorkSkillAsync, actDeleteWorkSkillAsync, actResetSuccess } from 'src/store/workSkill/action';
 import InfoIcon from '@mui/icons-material/Info';
 import { Image } from 'antd'
+import { validateFormData, isRequired } from '../formValidation';
 
 
 // Hàm lấy nhãn trạng thái
@@ -70,6 +71,20 @@ export default function UserTableRow({
 
   const { workSkills, total = 0, success } = useSelector((state) => state.workSkillReducer);
 
+  const [formData, setFormData] = useState({
+    name: name,
+  });
+
+  const rules = {
+    name: [isRequired('Tên')],
+  };
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleDelete = () => {
     dispatch(actDeleteWorkSkillAsync(id));
     if (success) {
@@ -77,17 +92,6 @@ export default function UserTableRow({
     }
     handleCloseDialog();
   }
-
-
-  const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
-
 
 
   const handleOpenMenu = (event) => {
@@ -106,9 +110,7 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const [formData, setFormData] = useState({
-    name: name,
-  });
+
 
   const handlechange = (event) => {
     setFormData({
@@ -119,13 +121,14 @@ export default function UserTableRow({
   }
 
   const handleUpdateWorkSkill = () => {
-    if (validateForm()) {
-      dispatch(actUpdateWorkSkillAsync({ formData, id }));
-      if (success) {
-        dispatch(actResetSuccess());
-      }
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actUpdateWorkSkillAsync({ formData, id }));
+    if (success) {
+      dispatch(actResetSuccess());
+    }
+    handleClose();
   };
 
   const handleClose = () => {

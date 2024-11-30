@@ -430,10 +430,6 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={() => handleClickOpenDialog('edit')}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Cập nhật
-        </MenuItem>
         <MenuItem onClick={handleBan} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           {status === 1 ? 'Chặn' : 'Mở chặn'}

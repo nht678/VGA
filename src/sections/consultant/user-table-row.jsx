@@ -22,20 +22,18 @@ import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import Label from 'src/components/label';
+import moment from 'moment';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Calendar, theme, Image, Upload, Button as ButtonAnt } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
+import Chip from '@mui/material/Chip';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateConsultant, deleteConsultant, removeCertificationAsyn } from 'src/store/consultant/action';
+import { updateConsultant, deleteConsultant, removeCertificationAsyn, resetConsultantSuccess, addCertificationAsyn } from 'src/store/consultant/action';
 import DeleteDialog from '../../pages/delete';
+import { validateFormData, isRequired, isValidPassword, isPhone, isEmail } from '../formValidation';
 
 const getColorByLevel = (level) => {
   switch (level) {
@@ -51,6 +49,30 @@ const getColorByLevel = (level) => {
       return 'black'; // Màu mặc định nếu không có level hợp lệ
   }
 };
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 1:
+      return 'Active';
+    case 2:
+      return 'Inactive';
+    case 3:
+      return 'Blocked';
+    default:
+      return 'Unknown';
+  }
+};
+const getStatusColor = (status) => {
+  switch (status) {
+    case 1:
+      return 'success'; // Xanh lá
+    case 2:
+      return 'default'; // Xám
+    case 3:
+      return 'error';   // Đỏ
+    default:
+      return 'default';
+  }
+};
 
 export default function UserTableRow({
   name,
@@ -64,6 +86,7 @@ export default function UserTableRow({
   gender,
   rowKey,
   certifications,
+  status,
 }) {
 
   console.log('certifications', certifications);
@@ -91,12 +114,14 @@ export default function UserTableRow({
     phone: phone,
     status: true,
     doB: dateOfBirth,
+    gender: gender,
     description: description,
-    consultantLevelId: '',
+    consultantLevelId: consultantLevelId,
     universityId: userId,
     certifications: cleanedCertifications
   });
   const { consultantLevels } = useSelector((state) => state.levelReducer);
+  const { successConsultant } = useSelector((state) => state.consultantReducer);
   const [inputValue, setInputValue] = useState(''); // Giá trị input
   // const [value, setValue] = useState(null); // Giá trị đã chọn
   const handleLevelChange = (event, newValue) => {
@@ -104,6 +129,23 @@ export default function UserTableRow({
     setFormData({ ...formData, consultantLevelId: newValue?.id || '' });
   };
 
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    doB: [isRequired('Ngày sinh')],
+    description: [isRequired('Mô tả')],
+    consultantLevelId: [isRequired('Level')],
+    gender: [isRequired('Giới tính')]
+  };
+
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // handle change
   const handleChange = (e) => {
@@ -112,58 +154,22 @@ export default function UserTableRow({
       [e.target.name]: e.target.value,
     });
   };
-  // if not onchange then onchange will take value default
-  // use useEffect not onchange then onchange will take value default
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên là bắt buộc';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Email là bắt buộc';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu là bắt buộc';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại là bắt buộc';
-    }
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.doB) {
-      newErrors.doB = 'Ngày sinh là bắt buộc';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả là bắt buộc';
-    }
-    if (!formData.consultantLevelId) {
-      newErrors.consultantLevelId = 'Level là bắt buộc';
-    }
-    if (formData.gender === undefined) {
-      newErrors.gender = 'Vui lòng chọn giới tính';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
     if (!validateForm()) return;
-
+    if (successConsultant) {
+      dispatch(resetConsultantSuccess());
+    }
     dispatch(updateConsultant(id, formData));
     handleCloseDialog();
+    setOpen('');
   };
   const handleDelete = () => {
-    dispatch(deleteConsultant(id));
+    if (successConsultant) {
+      dispatch(resetConsultantSuccess());
+      dispatch(deleteConsultant(id));
+    }
     handleCloseDialog();
   }
   const onPanelChange = (value1, mode) => {
@@ -185,18 +191,27 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const [dialog1, setDialog1] = useState('');
+
   const handleClickOpenDialog = (type) => {
     setDialog(type);
-    setOpen(null);
+  };
+  const handleClickOpenDialog1 = (type) => {
+    setDialog1(type);
+  };
+
+  const handleClose1 = () => {
+    setDialog1('');
   };
 
   const handleCloseDialog = () => {
-    setDialog(null);
+    setDialog('');
   };
 
 
   const handleClose = () => {
-    setDialog(null);
+    setDialog('');
+    setOpen('');
   };
 
 
@@ -262,9 +277,6 @@ export default function UserTableRow({
       : []
   );
 
-  // const [formData1, setFormData1] = useState({
-  //   certifications: [
-
   const fileList1 = imageUrl
     ? [
       {
@@ -276,38 +288,46 @@ export default function UserTableRow({
     ]
     : []; // Nếu chưa có ảnh thì danh sách trống
 
-  const uploadProps1 = (index) => ({
+  const uploadProps1 = {
     name: "file",
     beforeUpload: async (file) => {
       try {
+        setSelectedFile(file);
         const storageRef = ref(storage, `images/${file.name}`);
         await uploadBytes(storageRef, file);
         const url = await getDownloadURL(storageRef);
 
-        setFormData((prevData) => {
-          const updatedCertifications = [...prevData.certifications];
-          updatedCertifications[index].imageUrl = url; // Gắn URL vào đúng chứng chỉ
-          return { ...prevData, certifications: updatedCertifications };
-        });
+        setImageUrl(url); // Lưu URL vào state
+        setFormData1((prevData) => ({
+          ...prevData,
+          imageUrl: url, // Lưu URL vào formData.image
+        }));
 
-        return false;
-      } catch (error) {
-        console.error("Upload failed:", error);
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
         return false;
       }
     },
-    onRemove: async () => {
+    onRemove: async (file) => {
       try {
-        await deleteImageFromFirebase(formData.certifications[index]?.imageUrl);
-        setFormData((prevData) => {
-          const updatedCertifications = [...prevData.certifications];
-          updatedCertifications[index].imageUrl = ""; // Xóa URL từ chứng chỉ cụ thể
-          return { ...prevData, certifications: updatedCertifications };
-        });
-      } catch (error) {
-        console.error("Failed to remove image:", error);
+        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setImageUrl(""); // Xóa URL trong state
+        setFormData1((prevData) => ({
+          ...prevData,
+          imageUrl: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
       }
     },
+  };
+
+  const [formData1, setFormData1] = useState({
+    consultantId: id,
+    description: "",
+    imageUrl: "",
   });
 
 
@@ -326,16 +346,19 @@ export default function UserTableRow({
   }
 
   const addCertification = () => {
-    const newCertifications = [...formData.certifications];
-    newCertifications.push({
-      description: "",
-      imageUrl: ""
-    });
-    setFormData({ ...formData, certifications: newCertifications });
-
+    dispatch(addCertificationAsyn(formData1));
+    if (successConsultant) {
+      dispatch(resetConsultantSuccess());
+      setFormData1({
+        consultantId: id,
+        description: "",
+        imageUrl: "",
+      });
+      setImageUrl("");
+      setSelectedFile(null);
+      handleClose1();
+    }
   }
-
-  console.log('formData', formData);
 
 
   return (
@@ -371,6 +394,14 @@ export default function UserTableRow({
         <TableCell>
           {dateOfBirth}
         </TableCell>
+        <TableCell align="center">
+          <Chip
+            label={getStatusLabel(status)}
+            color={getStatusColor(status)}
+            variant="outlined"
+          />
+        </TableCell>
+
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -451,10 +482,7 @@ export default function UserTableRow({
                 <Typography variant="h6">Cấp độ</Typography>
                 <Autocomplete
                   onChange={handleLevelChange}
-                  inputValue={inputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue);
-                  }}
+                  value={consultantLevels.find((level) => level.id === formData?.consultantLevelId) || null}
                   id="controllable-states-demo"
                   options={consultantLevels || []} // Đảm bảo options luôn là một mảng
                   getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
@@ -466,7 +494,12 @@ export default function UserTableRow({
 
               <Grid item xs={12}>
                 <Typography variant="h6">Ngày sinh</Typography>
-                <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+                <Calendar
+                  fullscreen={false}
+                  onPanelChange={onPanelChange}
+                  onChange={onPanelChange}
+                  disabledDate={(current) => current && current >= moment().endOf('day')}
+                />
                 {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>
@@ -474,6 +507,7 @@ export default function UserTableRow({
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="gender"
+                  defaultValue={gender}
                   onChange={(e) => setFormData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                 >
                   <FormControlLabel value control={<Radio />} label="Nam" />
@@ -486,7 +520,7 @@ export default function UserTableRow({
                   <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
                     <Grid size={{ md: 12 }}>
                       <Typography variant="h6">Ảnh</Typography>
-                      <Upload {...uploadProps(index)} fileList={fileList[index]} listType="picture">
+                      <Upload {...uploadProps(index)} fileList={fileList[index]} accept='image/*' listType="picture">
                         {!formData.certifications[index]?.imageUrl && (
                           <ButtonAnt type="primary" icon={<UploadOutlined />}>
                             Upload
@@ -516,7 +550,7 @@ export default function UserTableRow({
               ))}
             </Grid>
             <Grid size={{ md: 12 }} sx={{ mt: 2, justifyContent: 'center', display: 'flex' }}>
-              <Button variant="contained" onClick={() => handleClickOpenDialog('addCertification')}>
+              <Button variant="contained" onClick={() => handleClickOpenDialog1('addCertification')}>
                 Thêm chứng chỉ
               </Button>
             </Grid>
@@ -531,8 +565,8 @@ export default function UserTableRow({
       </Dialog>
 
       <Dialog
-        open={dialog === 'addCertification'}
-        onClose={handleClose}
+        open={dialog1 === 'addCertification'}
+        onClose={handleClose1}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -544,8 +578,12 @@ export default function UserTableRow({
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Ảnh</Typography>
-                <Upload {...uploadProps(formData.certifications.length)} fileList={fileList[formData.certifications.length]} listType="picture">
-                  {!formData.certifications[formData.certifications.length]?.imageUrl && (
+                <Upload
+                  listType="picture"
+                  {...uploadProps1}
+                  fileList={fileList1}
+                >
+                  {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                     <ButtonAnt type="primary" icon={<UploadOutlined />}>
                       Upload
                     </ButtonAnt>
@@ -553,8 +591,8 @@ export default function UserTableRow({
                 </Upload>
               </Grid>
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6">Nội dung</Typography>
-                <textarea onChange={(e) => updateCertification(formData.certifications.length, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                <Typography variant="h6">Mô tả</Typography>
+                <textarea onChange={(e) => setFormData1((prev) => ({ ...prev, description: e.target.value }))} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
               </Grid>
             </Grid>
@@ -688,6 +726,16 @@ export default function UserTableRow({
                   {`Level ${consultantLevelId}`}
                 </Typography>
               </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tình trạng:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
+                </Typography>
+              </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
@@ -697,7 +745,7 @@ export default function UserTableRow({
 
       </Dialog >
 
-      {/* <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} /> */}
+      <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover
         open={!!open}
         anchorEl={open}
@@ -737,4 +785,5 @@ UserTableRow.propTypes = {
   consultantLevelId: PropTypes.number,
   rowKey: PropTypes.number,
   certifications: PropTypes.array,
+  status: PropTypes.bool,
 };

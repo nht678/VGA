@@ -26,6 +26,7 @@ import DeleteDialog from 'src/pages/delete';
 import { actUpdateAdmissionMethodAsync, actDeleteAdmissionMethodAsync, resetAdmissionMethod } from 'src/store/admissionMethod/action';
 import InfoIcon from '@mui/icons-material/Info';
 import { Image } from 'antd';
+import { validateFormData, isRequired } from '../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -65,12 +66,11 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
   const { admissionMethods, total = 0, success } = useSelector((state) => state.admissionMethodReducer);
-  console.log('admissionMethods', admissionMethods)
 
   const handleDelete = () => {
     dispatch(actDeleteAdmissionMethodAsync(id));
@@ -81,19 +81,16 @@ export default function UserTableRow({
   };
 
 
+  const rules = {
+    name: [isRequired('Tên')],
+    description: [isRequired('Mô tả')],
+  };
+
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
-    }
-    setError(newErrors);
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
-
-
+  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -125,13 +122,14 @@ export default function UserTableRow({
   }
 
   const handleUpdateAdmissionMedthod = () => {
-    if (validateForm()) {
-      dispatch(actUpdateAdmissionMethodAsync({ formData, id }));
-      if (success) {
-        dispatch(resetAdmissionMethod());
-      }
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actUpdateAdmissionMethodAsync({ formData, id }));
+    if (success) {
+      dispatch(resetAdmissionMethod());
+    }
+    handleClose();
 
   }
   const handleClose = () => {

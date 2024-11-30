@@ -28,6 +28,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import Autocomplete from '@mui/material/Autocomplete';
+import moment from 'moment';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { getConsultants, resetConsultantSuccess, addConsultant } from 'src/store/consultant/action';
@@ -35,14 +36,8 @@ import { actLevelGetAsync } from 'src/store/level/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
-import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
-
-
-
-
-
+import { validateFormData, isRequired, isValidPassword, isPhone, isEmail } from '../../formValidation';
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +57,7 @@ export default function ConsultantView() {
     phone: '',
     doB: '',
     description: '',
+    gender: '',
     consultantLevelId: '',
     universityId: userId,
     certifications: [
@@ -71,6 +67,24 @@ export default function ConsultantView() {
       }
     ]
   });
+
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    doB: [isRequired('Ngày sinh')],
+    description: [isRequired('Mô tả')],
+    consultantLevelId: [isRequired('Level')],
+    gender: [isRequired('Giới tính')]
+  };
+
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const [filterName, setFilterName] = useState('');
 
@@ -83,6 +97,7 @@ export default function ConsultantView() {
   };
 
   const [errors, setErrors] = useState({});
+  console.log('errors', errors);
 
   // handlechange
   const handleChange = (e) => {
@@ -92,56 +107,15 @@ export default function ConsultantView() {
     });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên là bắt buộc';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Email là bắt buộc';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu là bắt buộc';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại là bắt buộc';
-    }
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.doB) {
-      newErrors.doB = 'Ngày sinh là bắt buộc';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả là bắt buộc';
-    }
-    if (!formData.consultantLevelId) {
-      newErrors.consultantLevelId = 'Level là bắt buộc';
-    }
-    if (formData.gender === undefined) {
-      newErrors.gender = 'Vui lòng chọn giới tính';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   useEffect(() => {
     dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
     dispatch(actLevelGetAsync({}));
-    // dispatch(actLevelGetAsync)
-  }, [page, rowsPerPage]);
+  }, [successConsultant]);
 
   const handleAddConsultant = () => {
     if (!validateForm()) return;
     dispatch(addConsultant(formData));
     if (successConsultant) {
-      // message.success('Add Consultant Success');
       dispatch(resetConsultantSuccess);
     };
     setFormData({
@@ -174,9 +148,6 @@ export default function ConsultantView() {
     dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
-
-
-  // write code here
   const [open, setOpen] = useState('');
 
   const handleClickOpen = (Typedialog) => {
@@ -391,11 +362,13 @@ export default function ConsultantView() {
                     />
                     {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
-
-
                   <Grid item xs={12}>
                     <Typography variant="h6">Ngày sinh</Typography>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+                    <Calendar
+                      fullscreen={false}
+                      onPanelChange={onPanelChange}
+                      onChange={onPanelChange}
+                      disabledDate={(current) => current && current >= moment().endOf('day')} />
                     {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -408,14 +381,14 @@ export default function ConsultantView() {
                       <FormControlLabel value control={<Radio />} label="Nam" />
                       <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
-                    {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
+                    {errors.gender && <Typography variant='caption' color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
                   {formData.certifications.map((certification, index) => (
                     <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px' }}>
                       <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
                         <Grid size={{ md: 12 }}>
                           <Typography variant="h6">Ảnh</Typography>
-                          <Upload {...uploadProps(index)} fileList={fileList[index]} listType='picture'>
+                          <Upload {...uploadProps(index)} fileList={fileList[index]} listType='picture' accept='image/*'>
                             {!formData.certifications[index]?.imageUrl && (
                               <ButtonAnt type="primary" icon={<UploadOutlined />}>
                                 Upload
@@ -428,8 +401,6 @@ export default function ConsultantView() {
                           <textarea onChange={(e) => updateCertification(index, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                           />
                         </Grid>
-
-
                       </Grid>
                       <Grid size={{ md: 12 }} sx={{ my: 1, justifyContent: 'center', display: 'flex' }}>
                         <Button
@@ -487,6 +458,7 @@ export default function ConsultantView() {
                   { id: 'gender', label: 'Giới tính' },
                   { id: 'consultantLevelId', label: 'Level', align: 'center' },
                   { id: 'dateOfBirth', label: 'Ngày sinh' },
+                  { id: 'status', label: 'Trạng thái', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -505,6 +477,7 @@ export default function ConsultantView() {
                     gender={row?.gender || ''}
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
                     certifications={row?.certifications}
+                    status={row?.accountStatus || ''}
                   />
                 ))}
               </TableBody>

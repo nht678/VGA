@@ -34,11 +34,11 @@ import Scrollbar from 'src/components/scrollbar';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { actUniversityAddAsync, actUniversityGetAsync, resetUniversitySuccess } from 'src/store/university/action';
-import { actGetRegionAsync } from 'src/store/region/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -86,6 +86,24 @@ export default function UniversityAccountView() {
     type: '',
   });
 
+  const rules = {
+    code: [isRequired('Mã trường')],
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
+    description: [isRequired('Mô tả')],
+    establishedYear: [isRequired('Năm thành lập')],
+    type: [isRequired('Trường')],
+  };
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
 
   const handleAddUniversity = () => {
     if (!validateForm()) return;
@@ -109,47 +127,6 @@ export default function UniversityAccountView() {
   const handleOpen = () => {
     setOpen(true);
   };
-
-  const validateForm = () => {
-    let newErrors = {};
-    if (!formData.code) {
-      newErrors.code = 'Mã trường không được để trống';
-    }
-    if (!formData.establishedYear) {
-      newErrors.establishedYear = 'Năm thành lập không được để trống';
-    }
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Email không được để trống';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại không được để trống';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu không được để trống';
-    }
-    if (!formData.type) {
-      newErrors.type = 'Trường không được để trống';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
 
 
   const handleYearChange = (event, newValue) => {

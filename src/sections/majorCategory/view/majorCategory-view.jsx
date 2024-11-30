@@ -37,6 +37,7 @@ import { actGetMajorCategoriesAsync, actAddMajorCategoryAsync, resetMajorCategor
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -48,55 +49,46 @@ export default function MajorCategoryView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     name: '',
+    description: '',
+    image: '',
   });
 
-
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
-  console.log('formData', formData);
-
-
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
+  const rules = {
+    name: [isRequired('Tên')],
+    description: [isRequired('Mô tả')],
+    image: [isRequired('Ảnh')],
   };
 
-
-  // write code here
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const dispatch = useDispatch();
 
   const { majorCategories, total = 0, success } = useSelector((state) => state.majorCategoryReducer);
-  console.log('majorCategories', majorCategories)
-  // console.log('levels', levels);
 
 
 
   const handleAddMajorCategory = () => {
-    if (validateForm()) {
-      dispatch(actAddMajorCategoryAsync(formData));
-      if (success) {
-        dispatch(resetMajorCategorySuccess());
-        setFormData({
-          name: '',
-          description: '',
-          image: '',
-        });
-        setImageUrl('');
-        handleClose();
-      }
+    if (!validateForm()) {
+      return;
+    }
+    dispatch(actAddMajorCategoryAsync(formData));
+    if (success) {
+      dispatch(resetMajorCategorySuccess());
+      setFormData({
+        name: '',
+        description: '',
+        image: '',
+      });
+      setImageUrl('');
+      handleClose();
     }
   };
 
@@ -254,6 +246,7 @@ export default function MajorCategoryView() {
                       placeholder='Hãy viết mô tả...'
                       onChange={handlechange}
                     />
+                    {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Ảnh</Typography>
@@ -261,6 +254,7 @@ export default function MajorCategoryView() {
                       listType="picture"
                       {...uploadProps}
                       fileList={fileList}
+                      accept='image/*'
                     >
                       {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                         <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -268,6 +262,7 @@ export default function MajorCategoryView() {
                         </ButtonAnt>
                       )}
                     </Upload>
+                    {error.image && <Typography variant='caption' color="error" >{error.image}</Typography>}
                   </Grid>
                 </Grid>
 

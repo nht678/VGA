@@ -8,7 +8,7 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function AppWebsiteVisits({ title, subheader, chart, ...other }) {
+export default function AppWebsiteTransactions({ title, subheader, chart, ...other }) {
   const { labels, colors, series, options } = chart;
 
   const chartOptions = useChart({
@@ -31,7 +31,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
       y: {
         formatter: (value) => {
           if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)} người đã làm`;
+            return `${value.toFixed(0)} đã chuyển`;
           }
           return value;
         },
@@ -51,14 +51,14 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
           series={series}
           options={chartOptions}
           width="100%"
-          height={364}
+          height={300}
         />
       </Box>
     </Card>
   );
 }
 
-AppWebsiteVisits.propTypes = {
+AppWebsiteTransactions.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,

@@ -36,6 +36,7 @@ import { actGetOccupationGroupAsync, actAddOccupationGroupAsync, resetOccupation
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -43,24 +44,11 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function OccupationalGroupView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
-
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
+  const [error, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     name: '',
@@ -72,35 +60,35 @@ export default function OccupationalGroupView() {
   const dispatch = useDispatch();
 
   const { occupationGroups, total = 0, success } = useSelector((state) => state.occupationGroupReducer);
-  console.log('occupationGroups', occupationGroups)
 
+
+  const rules = {
+    name: [isRequired('Tên')],
+    description: [isRequired('Mô tả')],
+    image: [isRequired('Ảnh')],
+  };
 
   const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
 
   const handleAddOccupationGroup = () => {
-    if (validateForm()) {
-      dispatch(actAddOccupationGroupAsync(formData));
-      if (success) {
-        dispatch(resetOccupationGroupSuccess());
-        setFormData({
-          name: '',
-          description: '',
-          image: '',
-        });
-        setImageUrl('');
-        handleClose();
-      }
+    if (!validateForm()) {
+      return;
+    }
+    dispatch(actAddOccupationGroupAsync(formData));
+    if (success) {
+      dispatch(resetOccupationGroupSuccess());
+      setFormData({
+        name: '',
+        description: '',
+        image: '',
+      });
+      setImageUrl('');
+      handleClose();
     }
   };
 
@@ -264,6 +252,7 @@ export default function OccupationalGroupView() {
                       listType="picture"
                       {...uploadProps}
                       fileList={fileList}
+                      accept='image/*'
                     >
                       {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                         <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -271,6 +260,7 @@ export default function OccupationalGroupView() {
                         </ButtonAnt>
                       )}
                     </Upload>
+                    {error.image && <Typography variant='caption' color="error" >{error.image}</Typography>}
                   </Grid>
 
 

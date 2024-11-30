@@ -24,6 +24,7 @@ import notificationService from '../services/notifycation';
 
 
 
+
 const user = {
     name: 'Tom Cook',
     email: 'tom@example.com',
@@ -53,11 +54,7 @@ const navigation = [
 
 // const navigation = getNavigation();
 
-const userNavigation = [
-    { name: 'Hồ sơ của bạn', href: '/profile' },
-    { name: 'Đăng nhập', href: '/signin' },
-    { name: 'Đăng xuất', onClick: 'logout' },
-]
+
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -74,9 +71,20 @@ export default function Header() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
-    console.log('isAuthenticated1', isAuthenticated);
     const [isOpen, setIsOpen] = useState(false);
     console.log('isOpen', isOpen);
+
+    let role = localStorage.getItem('role');
+
+    const userNavigation = isAuthenticated
+        ? [
+            { name: 'Hồ sơ của bạn', href: '/profile' },
+            { name: 'Đăng xuất', onClick: 'logout' },
+        ]
+        : [
+            { name: 'Đăng nhập', href: '/signin' },
+        ];
+
 
     const toggleList = () => {
         setIsOpen((prev) => !prev);
@@ -112,36 +120,36 @@ export default function Header() {
 
     const accessToken = token;  // Token JWT của bạn
 
-    useEffect(() => {
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub`, {
-                accessTokenFactory: () => accessToken
-            })
-            .withAutomaticReconnect()
-            .build();
+    // useEffect(() => {
+    //     const connection = new signalR.HubConnectionBuilder()
+    //         .withUrl(`https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub`, {
+    //             accessTokenFactory: () => accessToken
+    //         })
+    //         .withAutomaticReconnect()
+    //         .build();
 
-        // Kết nối SignalR
-        connection.start()
-            .then(() => {
-                setStatus('Connected to SignalR');
-                console.log('Connected to SignalR hub.');
+    //     // Kết nối SignalR
+    //     connection.start()
+    //         .then(() => {
+    //             setStatus('Connected to SignalR');
+    //             console.log('Connected to SignalR hub.');
 
-                // Nhận thông báo từ server
-                connection.on('ReceiveNotification', (notitfycation) => {
-                    console.log('Received notification:', notitfycation);
-                    setNotification(prevMessages => [...prevMessages, notitfycation]);
-                });
-            })
-            .catch(err => {
-                setStatus(`Connection failed: ${err}`);
-                console.error(err);
-            });
+    //             // Nhận thông báo từ server
+    //             connection.on('ReceiveNotification', (notitfycation) => {
+    //                 console.log('Received notification:', notitfycation);
+    //                 setNotification(prevMessages => [...prevMessages, notitfycation]);
+    //             });
+    //         })
+    //         .catch(err => {
+    //             setStatus(`Connection failed: ${err}`);
+    //             console.error(err);
+    //         });
 
-        // Clean up khi component unmount
-        return () => {
-            connection.stop();
-        };
-    }, [accessToken]);
+    //     // Clean up khi component unmount
+    //     return () => {
+    //         connection.stop();
+    //     };
+    // }, [accessToken, isAuthenticated]);
 
     // Đóng thông báo khi click bên ngoài
     useEffect(() => {
@@ -167,7 +175,7 @@ export default function Header() {
                         <div className="flex h-16 items-center justify-between">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    <Link to="/">
+                                    <Link to="/managers">
                                         <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 2, color: 'rgba(99,102,241,1)' }} >
                                             VGA
                                         </Typography>

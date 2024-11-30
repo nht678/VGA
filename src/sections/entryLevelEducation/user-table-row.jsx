@@ -26,6 +26,7 @@ import DeleteDialog from 'src/pages/delete';
 import { actUpdateEntryLevelEducationAsync, actDeleteEntryLevelEducationAsync, resetEntryLevelEducationSuccess } from 'src/store/entryLevelEducation/action';
 import InfoIcon from '@mui/icons-material/Info';
 import { Image } from 'antd';
+import { validateFormData, isRequired } from '../formValidation';
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
   switch (status) {
@@ -74,15 +75,15 @@ export default function UserTableRow({
     }
   }
 
+  const rules = {
+    name: [isRequired('Tên')],
+  };
+
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
+    const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
-
+  };
 
 
   const handleOpenMenu = (event) => {

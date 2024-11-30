@@ -41,6 +41,20 @@ const consultantReducer = (state = initialState, action) => {
                 successConsultant: false,
                 error: null,
             };
+        case 'ADD_CERTIFICATION':
+            return {
+                ...state,
+                consultants: state.consultants.map((consultant) => {
+                    if (consultant.id === action.payload.consultantId) {
+                        return {
+                            ...consultant,
+                            certifications: [...consultant.certifications, action.payload.certification],
+                        };
+                    }
+                    return consultant;
+                }),
+                successConsultant: true
+            };
         // case 'REMOVE_CERTIFICATION':
         //     return {
         //         ...state,

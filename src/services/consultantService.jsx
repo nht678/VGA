@@ -61,6 +61,11 @@ const consultantService = {
         );
         return response;
     },
+    addCertification: async (data) => {
+        const response = await BASE_API.post(`/certifications`, data,
+        );
+        return response;
+    },
 };
 export default consultantService;
 

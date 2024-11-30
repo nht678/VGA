@@ -38,6 +38,7 @@ import { actGetMajorCategoriesAsync } from 'src/store/majorCategory/action';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -49,7 +50,7 @@ export default function MajorView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
   console.log('option', options)
@@ -68,27 +69,20 @@ export default function MajorView() {
 
   console.log('formData', formData);
 
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.code) {
-      newError.code = 'Mã ngành không được để trống';
-    }
-    if (!formData.name) {
-      newError.name = 'Tên ngành không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả ngành không được để trống';
-    }
-    if (!formData.majorCategoryId) {
-      newError.majorCategoryId = 'Thể loại ngành không được để trống';
-    }
 
-    setError(newError);
-    return Object.keys(newError).length === 0;
+  const rules = {
+    code: [isRequired('Mã ngành')],
+    name: [isRequired('Tên ngành')],
+    majorCategoryId: [isRequired('Thể loại ngành')],
+    description: [isRequired('Mô tả')],
+    image: [isRequired('Ảnh')],
   };
 
-
-  // write code here
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const dispatch = useDispatch();
 
@@ -119,20 +113,21 @@ export default function MajorView() {
 
 
   const handleAddMajor = async () => {
-    if (validateForm()) {
-      dispatch(actAddMajorAsync(formData));
-      setFormData({
-        code: '',
-        name: '',
-        description: '',
-        majorCategoryId: '',
-        image: ''
-      });
-      setImageUrl("");
-      setMajorCategoriesValue(null);
-      dispatch(resetMajor());
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actAddMajorAsync(formData));
+    setFormData({
+      code: '',
+      name: '',
+      description: '',
+      majorCategoryId: '',
+      image: ''
+    });
+    setImageUrl("");
+    setMajorCategoriesValue(null);
+    dispatch(resetMajor());
+    handleClose();
   };
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -308,6 +303,7 @@ export default function MajorView() {
                       listType="picture"
                       {...uploadProps}
                       fileList={fileList}
+                      accept="image/*" // Chỉ cho phép chọn các file ảnh
                     >
                       {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                         <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -315,6 +311,7 @@ export default function MajorView() {
                         </ButtonAnt>
                       )}
                     </Upload>
+                    {error.image && <Typography variant='caption' color="error" >{error.image}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>

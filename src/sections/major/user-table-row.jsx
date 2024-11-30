@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateMajorAsync, resetMajor, actDeleteMajorAsync } from 'src/store/major/action';
 import InfoIcon from '@mui/icons-material/Info';
+import { validateFormData, isRequired } from '../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -69,7 +70,7 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
   const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input
 
 
@@ -83,7 +84,6 @@ export default function UserTableRow({
   const [majorCategoriesValue, setMajorCategoriesValue] = useState(
     majorCategories.find((item) => item.id === majorCategoryId) || null
   );
-  console.log('majorCategoriesValue', majorCategoriesValue);
 
   const handleMajorCategoriesChange = (event, newValue) => {
     setMajorCategoriesValue(newValue);
@@ -101,23 +101,19 @@ export default function UserTableRow({
     handleCloseDialog();
   }
 
+  const rules = {
+    code: [isRequired('Mã ngành')],
+    name: [isRequired('Tên ngành')],
+    majorCategoryId: [isRequired('Thể loại ngành')],
+    description: [isRequired('Mô tả')],
+    image: [isRequired('Ảnh')],
+  };
+
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.code) {
-      newErrors.code = 'Mã ngành không được để trống';
-    }
-    if (!formData.name) {
-      newErrors.name = 'Tên ngành không được để trống';
-    }
-    if (!formData.majorCategoryId) {
-      newErrors.majorCategoryId = 'Thể loại ngành không được để trống';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
-    }
-    setError(newErrors);
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -228,13 +224,14 @@ export default function UserTableRow({
   ;
 
   const handleUpdateMajor = () => {
-    if (validateForm()) {
-      dispatch(actUpdateMajorAsync({ formData, id }));
-      if (success) {
-        dispatch(resetMajor());
-      }
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actUpdateMajorAsync({ formData, id }));
+    if (success) {
+      dispatch(resetMajor());
+    }
+    handleClose();
   }
 
   const handleClose = () => {
@@ -334,6 +331,7 @@ export default function UserTableRow({
                 <Typography variant="h6">Ảnh</Typography>
                 <Upload
                   {...uploadProps}
+                  accept="image/*" // Chỉ cho phép chọn các file ảnh
                 >
                   {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                     <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -341,6 +339,7 @@ export default function UserTableRow({
                     </ButtonAnt>
                   )}
                 </Upload>
+                {error.image && <Typography variant='caption' color="error" >{error.image}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Mô tả</Typography>

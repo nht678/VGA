@@ -28,6 +28,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 import { actUpdateOccupationGroupAsync, actDeleteOccupationGroupAsync, resetOccupationGroupSuccess } from 'src/store/occupationGroup/action';
 import InfoIcon from '@mui/icons-material/Info';
+import { validateFormData, isRequired } from '../formValidation';
+
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -69,6 +71,25 @@ export default function UserTableRow({
   const dispatch = useDispatch();
 
   const { occupationGroups, total = 0, success } = useSelector((state) => state.occupationGroupReducer);
+
+  const [formData, setFormData] = useState({
+    name: name,
+    description: description,
+    image: avatarUrl
+  });
+
+  const rules = {
+    name: [isRequired('Tên')],
+    description: [isRequired('Mô tả')],
+    image: [isRequired('Ảnh')],
+  };
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
 
   const handleDelete = () => {
     dispatch(actDeleteOccupationGroupAsync(id));
@@ -155,23 +176,6 @@ export default function UserTableRow({
   };
   ;
 
-
-
-
-  const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
-
-
-
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -188,11 +192,7 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const [formData, setFormData] = useState({
-    name: name,
-    description: description,
-    image: avatarUrl
-  });
+
 
   const handlechange = (event) => {
     setFormData({
@@ -203,13 +203,14 @@ export default function UserTableRow({
   }
 
   const handleUpdateOccupationGroup = () => {
-    if (validateForm()) {
-      dispatch(actUpdateOccupationGroupAsync({ formData, id }));
-      if (success) {
-        dispatch(resetOccupationGroupSuccess());
-      }
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actUpdateOccupationGroupAsync({ formData, id }));
+    if (success) {
+      dispatch(resetOccupationGroupSuccess());
+    }
+    handleClose();
   };
 
 
@@ -286,6 +287,7 @@ export default function UserTableRow({
                 <Typography variant="h6">Ảnh</Typography>
                 <Upload
                   {...uploadProps}
+                  accept='image/*'
                 >
                   {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                     <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -293,6 +295,7 @@ export default function UserTableRow({
                     </ButtonAnt>
                   )}
                 </Upload>
+                {errors.image && <Typography variant='caption' color="error">{errors.image}</Typography>}
               </Grid>
             </Grid>
           </DialogContentText>

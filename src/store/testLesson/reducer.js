@@ -1,5 +1,5 @@
 import { success } from 'src/theme/palette';
-import { GET_TEST_LESSONS, CREATE_TEST_LESSON, UPDATE_TEST_LESSON, DELETE_TEST_LESSON, GET_TYPES_TEST_LESSON, UPLOAD_FILE_TEST, GET_QUESTION_BY_TEST_ID } from './action';
+import { GET_TEST_LESSONS, CREATE_TEST_LESSON, UPDATE_TEST_LESSON, DELETE_TEST_LESSON, GET_TYPES_TEST_LESSON, UPLOAD_FILE_TEST, GET_QUESTION_BY_TEST_ID, CREATE_QUESTION, DELETE_QUESTION, UPDATE_QUESTION } from './action';
 
 const initialState = {
     testLessons: [],
@@ -7,6 +7,8 @@ const initialState = {
     total: 0,
     typestest: [],
     questions: [],
+    totalQuestion: 0,
+    successQuestion: false,
 };
 
 const testLessonReducer = (state = initialState, action) => {
@@ -14,7 +16,8 @@ const testLessonReducer = (state = initialState, action) => {
         case GET_TEST_LESSONS:
             return {
                 ...state,
-                testLessons: action.payload,
+                testLessons: action.payload?.questions,
+                total: action.payload?.total,
             };
         case CREATE_TEST_LESSON:
             return {
@@ -25,6 +28,12 @@ const testLessonReducer = (state = initialState, action) => {
             return {
                 ...state,
                 success: true,
+                testLessons: state.testLessons.map((item) => {
+                    if (item.id === action.payload.id) {
+                        return action.payload;
+                    }
+                    return item;
+                }),
             };
         case DELETE_TEST_LESSON:
             return {
@@ -49,7 +58,38 @@ const testLessonReducer = (state = initialState, action) => {
         case GET_QUESTION_BY_TEST_ID:
             return {
                 ...state,
-                questions: action.payload,
+                questions: action.payload?.questions,
+                totalQuestion: action.payload.total,
+                successQuestion: true,
+            };
+        case CREATE_QUESTION:
+            return {
+                ...state,
+                successQuestion: true,
+                questions: [...state.questions, action.payload],
+            };
+        case DELETE_QUESTION:
+            return {
+                ...state,
+                questions: state.questions.filter((item) => item.id !== action.payload),
+                successQuestion: true,
+            };
+        case UPDATE_QUESTION:
+            return {
+                ...state,
+                questions: state.questions.map((item) => {
+                    if (item.id === action.payload.id) {
+                        return action.payload;
+                    }
+                    return item;
+                }),
+                successQuestion: true,
+            };
+
+        case 'RESET_SUCCESS_QUESTION':
+            return {
+                ...state,
+                successQuestion: false,
             };
         default:
             return state;

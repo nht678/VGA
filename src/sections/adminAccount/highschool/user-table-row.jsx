@@ -28,6 +28,7 @@ import { actHighSchoolDeleteAsync, actHighSchoolUpdateAsync, resetHighSchoolSucc
 import { actUserBan } from 'src/store/users/action';
 import DeleteDialog from 'src/pages/delete';
 import { Image } from 'antd';
+import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -67,7 +68,8 @@ export default function UserTableRow({
   status,
   goldBalance,
   rowKey,
-  accountId
+  accountId,
+  regionId,
 }) {
 
   console.log('goldBalance', goldBalance);
@@ -97,40 +99,20 @@ export default function UserTableRow({
     handleCloseDialog();
     handleCloseMenu();
   };
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
+    address: [isRequired('Địa chỉ')],
+    regionId: [isRequired('Tỉnh thành')],
+  };
 
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Vui lòng nhập tên trường cấp 3';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Vui lòng nhập email';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Vui lòng nhập số điện thoại';
-    }
-    if (!formData.address) {
-      newErrors.address = 'Vui lòng nhập địa chỉ';
-    }
-    if (!formData.regionId) {
-      newErrors.regionId = 'Vui lòng chọn tỉnh thành';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Vui lòng nhập mật khẩu';
-    }
+    const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
 
 
   const handleOpenMenu = (event) => {
@@ -155,7 +137,7 @@ export default function UserTableRow({
     phone: phone,
     password: '',
     address: address,
-    regionId: '',
+    regionId: regionId,
   });
 
   const handlechange = (event) => {
@@ -168,7 +150,9 @@ export default function UserTableRow({
   }
 
   const handleUpdateHighSchool = () => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
     dispatch(actHighSchoolUpdateAsync({ formData, id }));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
@@ -303,7 +287,7 @@ export default function UserTableRow({
                 <Autocomplete
                   onChange={handleRegionChange}
                   id="controllable-states-demo"
-                  defaultValue={regions.find((region) => region.id === id)}
+                  defaultValue={regions.find((region) => region.id === formData.regionId) || null}
                   options={regions || []} // Đảm bảo options luôn là một mảng
                   getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
                   renderInput={(params) => <TextField {...params} label="Chọn tỉnh thành" />}
@@ -477,4 +461,5 @@ UserTableRow.propTypes = {
   goldBalance: PropTypes.number,
   rowKey: PropTypes.number,
   accountId: PropTypes.string,
+  regionId: PropTypes.string,
 };

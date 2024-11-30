@@ -7,6 +7,7 @@ export const UPDATE_CONSULTANT = "UPDATE_CONSULTANT";
 export const DELETE_CONSULTANT = "DELETE_CONSULTANT";
 export const RESET_CONSULTANT_SUCCESS = "RESET_CONSULTANT_SUCCESS";
 export const REMOVE_CERTIFICATION = "REMOVE_CERTIFICATION";
+export const ADD_CERTIFICATION = "ADD_CERTIFICATION";
 
 export const getConsultants = ({ page, pageSize, search, level }) => async (dispatch) => {
     try {
@@ -93,6 +94,24 @@ export const removeCertificationAsyn = (certificationId) => async (dispatch) => 
     } catch (error) {
         console.log(error);
         message.error('Xóa thất bại');
+    }
+}
+
+export const addCertificationAsyn = (data) => async (dispatch) => {
+    try {
+        const response = await consultantService.addCertification(data);
+        if (response.status === 200 || response.status === 201) {
+            message.success('Thêm mới thành công');
+            dispatch({
+                type: ADD_CERTIFICATION,
+                payload: response.data,
+            });
+        } else {
+            message.error('Thêm mới thất bại');
+        }
+    } catch (error) {
+        console.log(error);
+        message.error('Thêm mới thất bại');
     }
 }
 

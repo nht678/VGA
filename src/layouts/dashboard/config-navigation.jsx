@@ -239,7 +239,7 @@ const NavConfigComponent = () => {
       <TreeItem
         itemId={node.path || `item-${index}`}
         key={node.title}
-        nodeId={node.title}
+        // nodeId={node.title}
         label={node.title}
         onClick={() => node.path && navigate(node.path)}
         style={{

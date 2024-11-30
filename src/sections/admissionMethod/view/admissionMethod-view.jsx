@@ -34,6 +34,7 @@ import { actGetAdmissionMethodsAsync, actAddAdmissionMethodAsync, resetAdmission
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -41,17 +42,11 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function AdmissionMethodView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
   console.log('option', options)
@@ -72,33 +67,29 @@ export default function AdmissionMethodView() {
     status: true,
   });
 
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Vui lòng nhập tên';
-    }
-    if (!formData.description) {
-      newError.description = 'Vui lòng nhập mô tả';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
+  const rules = {
+    name: [isRequired('Tên')],
+    description: [isRequired('Mô tả')],
   };
 
-
-  // write code here
-
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleAddAdmissionMethod = async () => {
-    if (validateForm()) {
-      dispatch(actAddAdmissionMethodAsync(formData));
-      dispatch(resetAdmissionMethod());
-      setFormData({
-        name: '',
-        description: '',
-        status: true,
-      });
-      handleClose();
+    if (!validateForm()) {
+      return;
     }
+    dispatch(actAddAdmissionMethodAsync(formData));
+    dispatch(resetAdmissionMethod());
+    setFormData({
+      name: '',
+      description: '',
+      status: true,
+    });
+    handleClose();
   };
 
   // Function để cập nhật formData với giá trị đã chọn
@@ -189,10 +180,7 @@ export default function AdmissionMethodView() {
                     />
                     {error.description && <Typography variant='caption' color="error" >{error.description}</Typography>}
                   </Grid>
-
-
                 </Grid>
-
               </DialogContentText>
             </DialogContent>
             <DialogActions>

@@ -39,6 +39,7 @@ import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -59,21 +60,12 @@ export default function HighSchoolAccountView() {
     address: '',
     regionId: '',
   });
-
-
-
   // write code here
 
   const dispatch = useDispatch();
 
   const { highschools, total, successHighSchool } = useSelector((state) => state.highschoolReducer);
-  console.log('successHighSchool', successHighSchool);
-  console.log('highschools', highschools);
   const { regions } = useSelector((state) => state.regionReducer);
-  console.log('regions', regions);
-  console.log('highschools', highschools);
-
-
 
   const handleAddHighSchool = () => {
     if (!validateForm()) {
@@ -110,36 +102,17 @@ export default function HighSchoolAccountView() {
     });
   };
 
-  const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Email không được để trống';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
+    address: [isRequired('Địa chỉ')],
+    regionId: [isRequired('Tỉnh thành')],
+  };
 
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại không được để trống';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu không được để trống';
-    }
-    if (!formData.address) {
-      newErrors.address = 'Địa chỉ không được để trống';
-    }
-    if (!formData.regionId) {
-      newErrors.regionId = 'Tỉnh thành không được để trống';
-    }
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -345,6 +318,7 @@ export default function HighSchoolAccountView() {
                     accountId={row?.account?.id || ''}
                     status={row?.account?.status}
                     avatarUrl={row?.avatarUrl}
+                    regionId={row?.regionId}
                   />
                 ))}
               </TableBody>

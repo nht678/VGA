@@ -35,17 +35,17 @@ export default function NewsView() {
                                 <article key={News.id} className="flex max-w-xl flex-col items-start justify-between">
                                     <div className="flex items-center gap-x-4 text-xs">
                                         <time dateTime={News?.createdAt} className="text-gray-500">
-                                            {News?.createdAt}
+                                            {new Date(News?.createdAt).toLocaleDateString()}
                                         </time>
                                     </div>
                                     <div className="group relative">
                                         <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
                                             <a href={News.title}>
                                                 <span className="absolute inset-0" />
-                                                {News.title}
+                                                {News?.title.length > 70 ? `${News?.title.slice(0, 70)} ...` : News?.title}
                                             </a>
                                         </h3>
-                                        <p className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600">{News.content}</p>
+                                        <p className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600">{News.content?.length > 150 ? `${News?.content.slice(0, 150)} ...` : News?.content}</p>
                                     </div>
                                     <div className="relative mt-8 flex items-center gap-x-4">
                                         <img

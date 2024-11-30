@@ -14,7 +14,7 @@ const testLessonService = {
     //     return response;
     // },
     updateTestLesson: async (id, data) => {
-        const response = await BASE_API.put(`/personal-tests/${id}`, data);
+        const response = await BASE_API.put(`/personal-test/${id}`, data);
         return response;
     },
     deleteTestLesson: async (id) => {
@@ -29,16 +29,28 @@ const testLessonService = {
         const response = await BASE_API.post(`/personal-tests`, data);
         return response;
     },
-    getQuestionByTestId: async (id) => {
-        const response = await BASE_API.get(`/questions-by-test/${id}/`);
+    getQuestionByTestId: async ({ page, pageSize, id }) => {
+        const params = {
+            'current-page': page,
+            'page-size': pageSize,
+        };
+        const response = await BASE_API.get(`/questions-by-test?personal-test-id=${id}`,
+            {
+                params
+            }
+        );
         return response;
     },
-    updateQuestion: async (id, data) => {
-        const response = await BASE_API.put(`/question/${id}`, data);
+    updateQuestion: async ({ formData, id }) => {
+        const response = await BASE_API.put(`/question/${id}`, formData);
         return response;
     },
     deleteQuestion: async (id) => {
         const response = await BASE_API.delete(`/question/${id}`);
+        return response;
+    },
+    createQuestion: async (data) => {
+        const response = await BASE_API.post(`/questions-for-personal-test`, data);
         return response;
     },
 

@@ -27,11 +27,10 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Image } from 'antd';
 
 import { useDispatch, useSelector } from 'react-redux';
-// import DeleteDialog from 'src/pages/delete';
 import { actUniversityUpdateAsync, actUniversityDeleteAsync, resetUniversitySuccess } from 'src/store/university/action';
 import { actUserBan } from 'src/store/users/action';
 import { propTypes } from 'react-bootstrap/esm/Image';
-import DeleteDialog from 'src/pages/delete';
+import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -91,53 +90,23 @@ export default function UserTableRow({
 
   const { successUniversity } = useSelector((state) => state.reducerUniversity);
 
-  const handleDelete = () => {
-    dispatch(actUniversityDeleteAsync(id));
-    if (successUniversity) {
-      dispatch(resetUniversitySuccess());
-    }
-    handleCloseDialog();
-  }
+  const rules = {
+    code: [isRequired('Mã trường')],
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
+    description: [isRequired('Mô tả')],
+    establishedYear: [isRequired('Năm thành lập')],
+    type: [isRequired('Trường')],
+  };
 
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.code) {
-      newErrors.code = 'Vui lòng nhập mã trường đại học';
-    }
-    if (!formData.establishedYear) {
-      newErrors.establishedYear = 'Vui lòng chọn năm thành lập';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Vui lòng nhập mật khẩu';
-    }
-    if (!formData.name) {
-      newErrors.name = 'Vui lòng nhập tên trường đại học';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Vui lòng nhập email';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Vui lòng nhập số điện thoại';
-    }
-    if (!formData.type) {
-      newErrors.type = 'Vui lòng chọn loại trường';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Vui lòng nhập mô tả';
-    }
+    const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
+
 
   const handleOpenMenu = (event) => {
     setOpenMenu(event.currentTarget);
@@ -222,6 +191,7 @@ export default function UserTableRow({
 
   const handleClose = () => {
     setOpen(false);
+    handleCloseDialog();
   };
 
   const [value, setValue] = useState(null);

@@ -41,6 +41,7 @@ import { actGetWorkSkillsAsync } from 'src/store/workSkill/action';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired, validateArray } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -48,24 +49,12 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function OccupationView() {
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
-  // const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  // console.log('option', options)
-  // const [value, setValue] = useState(null); // Giá trị đã chọn
-  // console.log('value', value);
-  // const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  // console.log('inputValue', inputValue);
 
 
   const [formData, setFormData] = useState({
@@ -86,22 +75,27 @@ export default function OccupationView() {
       },
     ],
   });
-  console.log('formData', formData);
+
+  const rules = {
+    entryLevelEducationId: [isRequired("Trình độ đầu vào")],
+    occupationalGroupId: [isRequired("Nhóm nghề nghiệp")],
+    name: [isRequired("Tên")],
+    description: [isRequired("Mô tả")],
+    howToWork: [isRequired("Cách làm việc")],
+    workEnvironment: [isRequired("Môi trường làm việc")],
+    education: [isRequired("Giáo dục")],
+    payScale: [isRequired("Thang lương")],
+    jobOutlook: [isRequired("Triển vọng nghề nghiệp")],
+    image: [isRequired("Ảnh")],
+  };
+
 
   const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
+
 
 
   // write code here
@@ -119,6 +113,7 @@ export default function OccupationView() {
 
 
   const handleAddOcupation = async () => {
+    if (!validateForm()) return;
     dispatch(actAddOccupationAsync(formData));
     if (successOccupation) {
       dispatch(resetOccupation());
@@ -140,6 +135,7 @@ export default function OccupationView() {
           },
         ],
       });
+      setImageUrl("");
     }
     handleClose();
   };
@@ -347,6 +343,7 @@ export default function OccupationView() {
                       getOptionLabel={(option) => option?.name || ''}
                       renderInput={(params) => <TextField {...params} label="Chọn trình độ đầu vào" />}
                     />
+                    {error.entryLevelEducationId && <Typography variant='caption' color="error" >{error.entryLevelEducationId}</Typography>}
                   </Grid>
 
                   <Grid size={{ md: 6 }}>
@@ -357,6 +354,7 @@ export default function OccupationView() {
                       getOptionLabel={(option) => option?.name || ''}
                       renderInput={(params) => <TextField {...params} label="Chọn nhóm nghề nghiệp" />}
                     />
+                    {error.occupationalGroupId && <Typography variant='caption' color="error" >{error.occupationalGroupId}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Ảnh</Typography>
@@ -364,6 +362,7 @@ export default function OccupationView() {
                       listType="picture"
                       {...uploadProps}
                       fileList={fileList}
+                      accept='image/*'
                     >
                       {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                         <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -371,6 +370,7 @@ export default function OccupationView() {
                         </ButtonAnt>
                       )}
                     </Upload>
+                    {error.image && <Typography variant='caption' color="error" >{error.image}</Typography>}
                   </Grid>
 
 
@@ -385,26 +385,31 @@ export default function OccupationView() {
                     <Typography variant="h6">Cách làm việc</Typography>
                     <textarea onChange={(e) => handleChangeField('howToWork', e.target.value)} placeholder="Hãy viết cách làm việc....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.howToWork && <Typography variant='caption' color="error" >{error.howToWork}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Môi trường làm việc</Typography>
                     <textarea onChange={(e) => handleChangeField('workEnvironment', e.target.value)} placeholder="Hãy viết môi trường làm việc....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.workEnvironment && <Typography variant='caption' color="error" >{error.workEnvironment}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Giáo dục</Typography>
                     <textarea onChange={(e) => handleChangeField('education', e.target.value)} placeholder="Hãy viết giáo dục....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.education && <Typography variant='caption' color="error" >{error.education}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Thang lương</Typography>
                     <textarea onChange={(e) => handleChangeField('payScale', e.target.value)} placeholder="Hãy viết giáo dục....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.payScale && <Typography variant='caption' color="error" >{error.payScale}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Triển vọng nghề nghiệp</Typography>
                     <textarea onChange={(e) => handleChangeField('jobOutlook', e.target.value)} placeholder="Hãy viết giáo dục....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.jobOutlook && <Typography variant='caption' color="error" >{error.jobOutlook}</Typography>}
                   </Grid>
                 </Grid>
 

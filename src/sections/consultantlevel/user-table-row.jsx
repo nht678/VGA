@@ -26,6 +26,7 @@ import DeleteDialog from 'src/pages/delete';
 import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
 import { Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
+import { validateFormData, isRequired, isValidPrice } from '../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -79,21 +80,18 @@ export default function UserTableRow({
     handleCloseDialog();
   }
 
+  const rules = {
+    name: [isRequired('Tên')],
+    priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
+    description: [isRequired('Mô tả')],
+
+  };
+
   const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả không được để trống';
-    }
+    const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
-
+  };
 
 
   const handleOpenMenu = (event) => {
@@ -150,7 +148,7 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" component='div' noWrap>
+            <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -213,7 +211,7 @@ export default function UserTableRow({
 
 
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6" component='div'>Mô tả</Typography>
+                <Typography variant="h6">Mô tả</Typography>
                 <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
                 {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}

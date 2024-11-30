@@ -49,30 +49,39 @@ export const actUniversityAddAsync = (data) => async (dispatch) => {
     try {
         const response = await universityService.addUniversity(data);
         if (response.status === 200 || response.status === 201) {
-            dispatch(actAddUniversity(response));
+            dispatch(actAddUniversity(response.data));
             message.success('Thêm mới thành công');
-        } else {
+        } else if (response.data.message) {
+            message.error(response.data.message);
+        }
+        else {
             message.error('Thêm mới thất bại');
         }
     } catch (error) {
-        console.error(error);
-        message.error('Thêm mới thất bại');
+        if (error.response.data) {
+            message.error(error.response.data);
+        } else {
+            message.error('Thêm mới thất bại');
+        }
     }
 }
 
 export const actUniversityUpdateAsync = (data) => async (dispatch) => {
+    debugger
     try {
         const response = await universityService.updateUniversity(data);
-        console.log('response:', response);
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actUniversityUpdate(response));
+            dispatch(actUniversityUpdate(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }
     } catch (error) {
-        console.error(error);
-        message.error('Cập nhật thất bại');
+        if (error.response.data) {
+            message.error(error.response.data);
+        } else {
+            message.error('Cập nhật thất bại');
+        }
     }
 }
 

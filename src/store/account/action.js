@@ -24,7 +24,7 @@ export function signinUser(data, navigate) {
             const response = await accountService.login(data);
             if (response.status === 200) {
                 message.success('Đăng nhập thành công');
-                navigate('/', { replace: true });
+                navigate('/managers', { replace: true });
                 dispatch(actLogin(response.data));
             } else {
                 message.error('Đăng nhập thất bại');

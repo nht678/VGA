@@ -34,6 +34,7 @@ import { actUpdateOccupationAsync, resetOccupation, actDeleteOccupationAsync } f
 import { actGetEntryLevelEducationsAsync } from 'src/store/entryLevelEducation/action';
 import { actGetOccupationGroupAsync } from 'src/store/occupationGroup/action';
 import { actGetWorkSkillsAsync } from 'src/store/workSkill/action';
+import { validateFormData, isRequired, validateArray } from '../formValidation';
 
 
 // Hàm lấy nhãn trạng thái
@@ -85,7 +86,7 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
@@ -115,7 +116,32 @@ export default function UserTableRow({
       ],
   });
 
+  const rules = {
+    entryLevelEducationId: [isRequired("Trình độ đầu vào")],
+    occupationalGroupId: [isRequired("Nhóm nghề nghiệp")],
+    name: [isRequired("Tên")],
+    description: [isRequired("Mô tả")],
+    howToWork: [isRequired("Cách làm việc")],
+    workEnvironment: [isRequired("Môi trường làm việc")],
+    education: [isRequired("Giáo dục")],
+    payScale: [isRequired("Thang lương")],
+    jobOutlook: [isRequired("Triển vọng nghề nghiệp")],
+    image: [isRequired("Ảnh")],
+  };
+
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+
   const handleUpdateOccupation = () => {
+    if (!validateForm()) {
+      return;
+    }
     dispatch(actUpdateOccupationAsync({ formData, id }));
     if (successOccupation) {
       dispatch(resetOccupation());
@@ -261,20 +287,6 @@ export default function UserTableRow({
     handleCloseDialog();
   }
 
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-    if (!formData.priceOnSlot) {
-      newError.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-    }
-    if (!formData.description) {
-      newError.description = 'Mô tả không được để trống';
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -293,19 +305,6 @@ export default function UserTableRow({
     setDialog('');
   };
 
-
-
-
-  // const handleUpdateLevel = () => {
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelUpdateAsync({ formData, id }));
-  //   if (successLevel) {
-  //     dispatch(resetLevelSuccess());
-  //   }
-  //   handleCloseDialog();
-  // }
-
-
   const handleClose = () => {
     setDialog(null);
   };
@@ -320,7 +319,7 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" component='div' noWrap>
+            <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -399,6 +398,7 @@ export default function UserTableRow({
                   getOptionLabel={(option) => option?.name || ''}
                   renderInput={(params) => <TextField {...params} label="Chọn trình độ đầu vào" />}
                 />
+                {error.entryLevelEducationId && <Typography variant='caption' color="error" >{error.entryLevelEducationId}</Typography>}
               </Grid>
 
               <Grid size={{ md: 6 }}>
@@ -410,11 +410,13 @@ export default function UserTableRow({
                   getOptionLabel={(option) => option?.name || ''}
                   renderInput={(params) => <TextField {...params} label="Chọn nhóm nghề nghiệp" />}
                 />
+                {error.occupationalGroupId && <Typography variant='caption' color="error" >{error.occupationalGroupId}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Ảnh</Typography>
                 <Upload
                   {...uploadProps}
+                  accept='image/*'
                 >
                   {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                     <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -422,6 +424,7 @@ export default function UserTableRow({
                     </ButtonAnt>
                   )}
                 </Upload>
+                {error.image && <Typography variant='caption' color="error" >{error.image}</Typography>}
               </Grid>
 
 
@@ -436,26 +439,31 @@ export default function UserTableRow({
                 <Typography variant="h6">Cách làm việc</Typography>
                 <textarea defaultValue={howToWork} onChange={(e) => handleChangeField('howToWork', e.target.value)} placeholder="Hãy viết cách làm việc....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
+                {error.howToWork && <Typography variant='caption' color="error" >{error.howToWork}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Môi trường làm việc</Typography>
                 <textarea defaultValue={workEnvironment} onChange={(e) => handleChangeField('workEnvironment', e.target.value)} placeholder="Hãy viết môi trường làm việc....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
+                {error.workEnvironment && <Typography variant='caption' color="error" >{error.workEnvironment}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Giáo dục</Typography>
                 <textarea defaultValue={education} onChange={(e) => handleChangeField('education', e.target.value)} placeholder="Hãy viết giáo dục....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
+                {error.education && <Typography variant='caption' color="error" >{error.education}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Thang lương</Typography>
                 <textarea defaultValue={payScale} onChange={(e) => handleChangeField('payScale', e.target.value)} placeholder="Hãy viết giáo dục....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
+                {error.payScale && <Typography variant='caption' color="error" >{error.payScale}</Typography>}
               </Grid>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Triển vọng nghề nghiệp</Typography>
                 <textarea defaultValue={jobOutlook} onChange={(e) => handleChangeField('jobOutlook', e.target.value)} placeholder="Hãy viết giáo dục....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
+                {error.jobOutlook && <Typography variant='caption' color="error" >{error.jobOutlook}</Typography>}
               </Grid>
             </Grid>
 

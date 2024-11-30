@@ -33,6 +33,7 @@ import { actGetEntryLevelEducationsAsync, actAddEntryLevelEducationAsync, resetE
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -44,7 +45,7 @@ export default function EntryLevelEducationView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   const [options, setOptions] = useState([]); // Danh sách tỉnh thành
   console.log('option', options)
@@ -60,25 +61,25 @@ export default function EntryLevelEducationView() {
   const dispatch = useDispatch();
 
   const { entryLevelEducations, total = 0, success } = useSelector((state) => state.entryLevelEducationReducer);
-  console.log('entryLevelEducations', entryLevelEducations)
+
+  const rules = {
+    name: [isRequired('Tên')],
+  };
 
   const validateForm = () => {
-    let newError = {};
-    if (!formData.name) {
-      newError.name = 'Tên không được để trống';
-    }
-
-    setError(newError);
-    return Object.keys(newError).length === 0;
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleAddEntrylevelEducation = () => {
-    if (validateForm()) {
-      dispatch(actAddEntryLevelEducationAsync(formData));
-      if (success) {
-        dispatch(resetEntryLevelEducationSuccess());
-        handleClose();
-      }
+    if (!validateForm()) {
+      return;
+    }
+    dispatch(actAddEntryLevelEducationAsync(formData));
+    if (success) {
+      dispatch(resetEntryLevelEducationSuccess());
+      handleClose();
     }
   };
 
@@ -164,7 +165,6 @@ export default function EntryLevelEducationView() {
                       helperText={error.name}
                     />
                   </Grid>
-
                 </Grid>
 
               </DialogContentText>

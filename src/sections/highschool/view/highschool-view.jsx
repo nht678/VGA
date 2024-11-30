@@ -39,6 +39,7 @@ import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import { validateFormData, isRequired, isEmail, isPhone, minLength } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -60,9 +61,21 @@ export default function HighSchoolView() {
     regionId: '',
   });
 
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    password: [isRequired('Mật khẩu'), minLength('Mật khẩu', 6)],
+    address: [isRequired('Địa chỉ')],
+    regionId: [isRequired('Tỉnh thành')],
+  };
 
-
-  // write code here
+  const validateForm = () => {
+    debugger
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const dispatch = useDispatch();
 
@@ -76,6 +89,7 @@ export default function HighSchoolView() {
 
 
   const handleAddHighSchool = () => {
+    debugger
     if (!validateForm()) {
       return;
     }
@@ -110,42 +124,44 @@ export default function HighSchoolView() {
     });
   };
 
-  const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên không được để trống';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Email không được để trống';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
+  // const validateForm = () => {
+  //   let newErrors = {};
+  //   if (!formData.name) {
+  //     newErrors.name = 'Tên không được để trống';
+  //   }
+  //   if (!formData.email) {
+  //     newErrors.email = 'Email không được để trống';
+  //   }
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (formData.email && !emailRegex.test(formData.email)) {
+  //     newErrors.email = 'Email không hợp lệ';
+  //   }
 
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại không được để trống';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu không được để trống';
-    }
-    if (!formData.address) {
-      newErrors.address = 'Địa chỉ không được để trống';
-    }
-    if (!formData.regionId) {
-      newErrors.regionId = 'Tỉnh thành không được để trống';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   // Kiểm tra định dạng số điện thoại (đơn giản)
+  //   const phoneRegex = /^[0-9]{10,11}$/;
+  //   if (formData.phone && !phoneRegex.test(formData.phone)) {
+  //     newErrors.phone = 'Số điện thoại không hợp lệ';
+  //   }
+  //   if (!formData.phone) {
+  //     newErrors.phone = 'Số điện thoại không được để trống';
+  //   }
+  //   if (!formData.password) {
+  //     newErrors.password = 'Mật khẩu không được để trống';
+  //   }
+  //   if (!formData.address) {
+  //     newErrors.address = 'Địa chỉ không được để trống';
+  //   }
+  //   if (!formData.regionId) {
+  //     newErrors.regionId = 'Tỉnh thành không được để trống';
+  //   }
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
 
   // Cập nhật regionId trực tiếp từ sự kiện onChange của Autocomplete
+
+
   const handleRegionChange = (event, newValue) => {
     setValue(newValue);
     setFormData((prevData) => ({
