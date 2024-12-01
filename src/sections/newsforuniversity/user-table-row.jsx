@@ -32,9 +32,6 @@ import { Button as ButtonAnt, message, Upload, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 
 
-// Hàm lấy nhãn trạng thái
-
-
 export default function UserTableRow({
   id,
   title,
@@ -60,23 +57,6 @@ export default function UserTableRow({
 
     handleCloseDialog();
   };
-  // const validateForm = () => {
-  //   let newErrors = {};
-  //   if (!formData.name) {
-  //     newErrors.name = 'Tên không được để trống';
-  //   }
-  //   if (!formData.priceOnSlot) {
-  //     newErrors.priceOnSlot = 'Giá trên mỗi slot không được để trống';
-  //   }
-  //   if (!formData.description) {
-  //     newErrors.description = 'Mô tả không được để trống';
-  //   }
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // }
-
-
-
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };

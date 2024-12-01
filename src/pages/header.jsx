@@ -29,7 +29,7 @@ const user = {
     name: 'Tom Cook',
     email: 'tom@example.com',
     imageUrl:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
 }
 const navigation = [
     { name: 'Trang chủ', href: '/', current: false },
@@ -119,37 +119,37 @@ export default function Header() {
     const [status, setStatus] = useState('');
 
     const accessToken = token;  // Token JWT của bạn
+    // https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub
+    useEffect(() => {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`https://vgacareerguidance.id.vn/notification_hub`, {
+                accessTokenFactory: () => accessToken
+            })
+            .withAutomaticReconnect()
+            .build();
 
-    // useEffect(() => {
-    //     const connection = new signalR.HubConnectionBuilder()
-    //         .withUrl(`https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub`, {
-    //             accessTokenFactory: () => accessToken
-    //         })
-    //         .withAutomaticReconnect()
-    //         .build();
+        // Kết nối SignalR
+        connection.start()
+            .then(() => {
+                setStatus('Connected to SignalR');
+                console.log('Connected to SignalR hub.');
 
-    //     // Kết nối SignalR
-    //     connection.start()
-    //         .then(() => {
-    //             setStatus('Connected to SignalR');
-    //             console.log('Connected to SignalR hub.');
+                // Nhận thông báo từ server
+                connection.on('ReceiveNotification', (notitfycation) => {
+                    console.log('Received notification:', notitfycation);
+                    setNotification(prevMessages => [...prevMessages, notitfycation]);
+                });
+            })
+            .catch(err => {
+                setStatus(`Connection failed: ${err}`);
+                console.error(err);
+            });
 
-    //             // Nhận thông báo từ server
-    //             connection.on('ReceiveNotification', (notitfycation) => {
-    //                 console.log('Received notification:', notitfycation);
-    //                 setNotification(prevMessages => [...prevMessages, notitfycation]);
-    //             });
-    //         })
-    //         .catch(err => {
-    //             setStatus(`Connection failed: ${err}`);
-    //             console.error(err);
-    //         });
-
-    //     // Clean up khi component unmount
-    //     return () => {
-    //         connection.stop();
-    //     };
-    // }, [accessToken, isAuthenticated]);
+        // Clean up khi component unmount
+        return () => {
+            connection.stop();
+        };
+    }, [accessToken, isAuthenticated]);
 
     // Đóng thông báo khi click bên ngoài
     useEffect(() => {
