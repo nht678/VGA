@@ -97,9 +97,9 @@ export const removeCertificationAsyn = (certificationId) => async (dispatch) => 
     }
 }
 
-export const addCertificationAsyn = (data) => async (dispatch) => {
+export const addCertificationAsyn = (data, id) => async (dispatch) => {
     try {
-        const response = await consultantService.addCertification(data);
+        const response = await consultantService.addCertification(data, id);
         if (response.status === 200 || response.status === 201) {
             message.success('Thêm mới thành công');
             dispatch({

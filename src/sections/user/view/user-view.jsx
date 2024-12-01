@@ -9,9 +9,6 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
-// import { users } from 'src/_mock/user';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -25,24 +22,19 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
 import { Calendar, theme, Button as AntButton, message, Upload } from 'antd';
-
+import moment from 'moment';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
 import { useSelector, useDispatch } from 'react-redux';
 import { actUserGetAsync, actAddUserAsync, resetUserSuccess } from 'src/store/users/action';
-
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
 import { uploadFileAsync } from 'src/store/uploadfile/action';
-import LoadingPage from 'src/pages/loading';
 
-import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
-import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { validateFormData, isRequired, isValidPassword, isPhone, isEmail } from '../../formValidation';
 
 
 
@@ -65,41 +57,48 @@ export default function UserView() {
 
   const dispatch = useDispatch();
   const { students = [], total, usersSuccess } = useSelector((state) => state.usersReducer);
-  // const listChoolYear = students.map((item) => item.schoolYears);
-  // console.log('listChoolYear', listChoolYear);
   const getCurrentYear = () => new Date().getFullYear();
-
   const [filterYear, setFilterYear] = useState(getCurrentYear);
-  console.log('students', students);
-
   const { uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-
-  const nameHighSchool = localStorage.getItem('name');
-  console.log('nameHighSchool', nameHighSchool);
-
-
   const [page, setPage] = useState(0);
-  const [order, setOrder] = useState('asc');
-  const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [year, setYear] = useState('');
-  console.log('year', year);
   const [value, setValue] = useState('');
   const [errors, setErrors] = useState({});
-  console.log('errors', errors);
 
 
   const [formData, setformData] = useState({
     highSchoolId: userInfo ? userInfo.userId : '', // Đảm bảo userInfo đã được xác định
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    dateOfBirth: new Date().toISOString().split('T')[0],
+    schoolYears: '',
+    gender: ''
   });
+  console.log('formData', formData);
 
   const onPanelChange = (value1, mode) => {
     setformData({ ...formData, dateOfBirth: value1.format('YYYY-MM-DD') });
+  };
 
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    password: [isValidPassword('Mật khẩu')],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    dateOfBirth: [isRequired('Ngày sinh')],
+    schoolYears: [isRequired('Năm học')],
+    gender: [isRequired('Giới tính')]
+  };
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   // handlechange
@@ -110,45 +109,11 @@ export default function UserView() {
     });
   };
 
-
-  // Hàm validate form
-  const validateForm = () => {
-    let newErrors = {};
-
-    // Kiểm tra các trường yêu cầu
-    if (!formData.name) newErrors.name = 'Tên là bắt buộc';
-    if (!formData.email) newErrors.email = 'Email là bắt buộc';
-    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
-    if (!formData.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
-
-    // Kiểm tra định dạng email (đơn giản)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (formData.gender === undefined) {
-      newErrors.gender = 'Vui lòng chọn giới tính';
-    }
-
-    setErrors(newErrors);
-
-    // Trả về true nếu không có lỗi
-    return Object.keys(newErrors).length === 0;
-  };
-
-
   const handleAddUser = () => {
     if (!validateForm()) {
       // Nếu form không hợp lệ, dừng lại và không gửi request
       return;
     }
-
     try {
       dispatch(actAddUserAsync(formData));
       if (usersSuccess) {
@@ -167,8 +132,6 @@ export default function UserView() {
     } catch (e) {
       message.error('Add user failed');
     }
-
-
     setOpen(true);
   };
 
@@ -310,9 +273,7 @@ export default function UserView() {
     handleClose(); // Đóng menu sau khi chọn
   };
 
-  // const [inputValue, setInputValue] = useState('');
   const handleYearChange = (event, newValue) => {
-    setValue(newValue);
     setformData({ ...formData, schoolYears: newValue?.value });
   };
 
@@ -362,6 +323,7 @@ export default function UserView() {
                       fullWidth
                       name="name"
                       label="Tên"
+                      defaultValue={formData?.name}
                       onChange={handleChange}
                       error={!!errors.name} // Nếu có lỗi thì hiển thị lỗi
                       helperText={errors.name} // Hiển thị thông báo lỗi
@@ -372,6 +334,7 @@ export default function UserView() {
                       fullWidth
                       id="Email"
                       name="email"
+                      defaultValue={formData?.email}
                       label="Email"
                       onChange={handleChange}
                       error={!!errors.email}
@@ -383,8 +346,9 @@ export default function UserView() {
                       fullWidth
                       label="Mật khẩu"
                       name="password"
+                      defaultValue={formData?.password}
                       onChange={handleChange}
-                      error={!!errors.password}
+                      error={errors.password}
                       helperText={errors.password}
                     />
                   </Grid>
@@ -393,6 +357,7 @@ export default function UserView() {
                       fullWidth
                       label="Số điện thoại"
                       name="phone"
+                      defaultValue={formData?.phone}
                       onChange={handleChange}
                       error={!!errors.phone}
                       helperText={errors.phone}
@@ -404,26 +369,30 @@ export default function UserView() {
                       id="controllable-states-demo"
                       options={options} // Truyền đúng mảng options
                       getOptionLabel={(option) => option?.name || ''}
-                      // options={[getCurrentYear().toString()]}
-                      // getOptionLabel={(option) => option}
                       renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                     />
+                    {errors.schoolYears && <Typography variant='caption' color="error">{errors.schoolYears}</Typography>}
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="h6">Ngày Sinh</Typography>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+                    <Calendar
+                      fullscreen={false}
+                      onPanelChange={onPanelChange}
+                      onChange={onPanelChange}
+                      disabledDate={(current) => current && current >= moment().endOf('day')} />
+                    {errors.dateOfBirth && <Typography variant='caption' color="error">{errors.dateOfBirth}</Typography>}
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <RadioGroup
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
                       name="gender"
-                      onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                      onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}
                     >
                       <FormControlLabel value control={<Radio />} label="Nam" />
                       <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                     </RadioGroup>
-                    {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
+                    {errors.gender && <Typography variant='caption' color='error'>{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
                 </Grid>
 
@@ -461,10 +430,9 @@ export default function UserView() {
                     id="controllable-states-demo"
                     options={options}
                     getOptionLabel={(option) => option?.name || ''}
-                    // options={[getCurrentYear().toString()]} // Mảng chỉ chứa năm hiện tại
-                    // getOptionLabel={(option) => option} // Hiển thị năm hiện tại
                     renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                   />
+                  {errors.schoolYears && <Typography variant='caption' color="error">{errors.schoolYears}</Typography>}
                 </Grid>
 
               </Grid>
@@ -516,6 +484,7 @@ export default function UserView() {
                     phone={row.account?.phone || ''} // Kiểm tra row.account?.phone
                     avatarUrl={row.avatarUrl || ''} // Kiểm tra row.avatarUrl
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''} // Kiểm tra row.dateOfBirth
+                    schoolYears={row?.schoolYears}
                   />
                 ))}
               </TableBody>

@@ -116,8 +116,8 @@ export default function AppView() {
   //   };
   // }, []);
   const [data, setData] = useState([]);
-  const totalMBTITests = data.numberOfMBTITestsInMonth.reduce((sum, value) => sum + value, 0);
-  const totalHollandTests = data.numberOfHollandTestsInMonth.reduce((sum, value) => sum + value, 0);
+  const totalMBTITests = data.numberOfMBTITestsInMonth?.reduce((sum, value) => sum + value, 0);
+  const totalHollandTests = data.numberOfHollandTestsInMonth?.reduce((sum, value) => sum + value, 0);
 
   console.log(totalMBTITests, totalHollandTests);
 
@@ -155,7 +155,7 @@ export default function AppView() {
 
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
-            title="Tổng sinh viên"
+            title="Tổng Học sinh"
             total={data?.totalStudents}
             color="info"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" style={{ width: 50, height: 50 }} />}
@@ -181,7 +181,7 @@ export default function AppView() {
 
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
-            title="Tổng điểm học sinh nạp"
+            title="Tổng điểm học sinh nạp trong tháng"
             total={data?.totalPointRechargeStudent}
             color="error"
             icon={<CurrencyBitcoinIcon sx={{ width: 50, height: 50, color: '#f50057' }} />}
@@ -190,8 +190,8 @@ export default function AppView() {
 
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
-            title="Tổng điểm admin chuyển"
-            total={data?.numberAccount}
+            title="Tổng điểm admin chuyển trong tháng"
+            total={data?.totalPointAdminTransferring}
             color="error"
             icon={<CurrencyBitcoinIcon sx={{ width: 50, height: 50, color: '#f50057' }} />}
           />

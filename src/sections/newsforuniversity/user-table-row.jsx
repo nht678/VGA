@@ -36,7 +36,6 @@ import InfoIcon from '@mui/icons-material/Info';
 
 
 export default function UserTableRow({
-  imageSingle,
   id,
   title,
   content,
@@ -44,10 +43,6 @@ export default function UserTableRow({
   imageNews,
   rowKey
 }) {
-  console.log('id', id)
-  console.log('title', title)
-  console.log('content', content)
-
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -135,7 +130,6 @@ export default function UserTableRow({
     setFileList(fileList1);
   };
 
-  // // Hàm upload ảnh
   // const uploadImage = async (file) => {
   //   const storageRef = ref(storage, `images/${file.name}`);
   //   await uploadBytes(storageRef, file);
@@ -186,15 +180,6 @@ export default function UserTableRow({
     }));
   };
 
-  // Hàm gửi hình ảnh lên backend
-  // const sendImageToBackend = async (imageData, id1) => {
-  //   // Gọi API hoặc phương thức backend để gửi imageData
-  //   console.log("Đang gửi dữ liệu ảnh lên backend:", imageData, id1);
-  //   dispatch(actCreateNewsImageAsync({ imageData, id1 }));
-  //   // await api.uploadImage(imageData);
-  // };
-
-  // Cấu hình Upload của Ant Design
   const uploadProps = {
     name: 'file',
     multiple: true,
@@ -235,9 +220,6 @@ export default function UserTableRow({
     }
   };
 
-
-
-
   // Hàm xóa ảnh qua API
   const handleDeleteImage = async (imageId) => {
     // Gọi API xóa hình ảnh tại backend dựa trên imageId
@@ -257,30 +239,6 @@ export default function UserTableRow({
     dispatch(actUpdateNewsContentAsync({ formData: updatedContent, id }));
 
     handleCloseDialog();
-
-    // Chuỗi 2: Upload và cập nhật hình ảnh nếu có thay đổi
-    // const uploadedImages = await Promise.all(
-    //   selectedFiles.map(async (file) => {
-    //     const storageRef = ref(storage, `images/${file.name}`);
-    //     await uploadBytes(storageRef, file);
-    //     const url = await getDownloadURL(storageRef);
-    //     return {
-    //       imageUrl: url,
-    //       descriptionTitle: file.name,
-    //     };
-    //   })
-    // );
-
-    // // Gộp ảnh đã upload mới vào imageNews hiện tại để tạo updatedImages
-    // const updatedImages = [
-    //   ...imageNews, // Giữ lại những ảnh cũ
-    //   ...uploadedImages, // Thêm những ảnh mới upload
-    // ];
-
-    // console.log("Dữ liệu cập nhật ảnh:", updatedImages);
-
-    // Gửi dữ liệu lên backend (cả content và imageNews)
-    // Có thể gửi cả `updatedContent` và `updatedImages` lên API backend
   };
 
   return (
@@ -303,17 +261,6 @@ export default function UserTableRow({
           {content?.length > 150 ? `${content.slice(0, 150)}...` : content}
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{createAt}</TableCell>
-        {/* <TableCell sx={{ textAlign: 'center' }}>{imageNews}</TableCell> */}
-
-
-        {/* <TableCell align="center">
-          <Chip
-            label={getStatusLabel(status)}
-            color={getStatusColor(status)}
-            variant="outlined"
-          />
-        </TableCell> */}
-
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -359,6 +306,7 @@ export default function UserTableRow({
                   listType="picture"
                   fileList={fileList} // Sử dụng fileList từ state
                   {...uploadProps}
+                  accept='image/*'
                   onChange={(info) => handleFileChange(info.fileList)} // Đồng bộ fileList nếu cần
                 >
                   <ButtonAnt type="primary" icon={<UploadOutlined />}>
@@ -408,7 +356,7 @@ export default function UserTableRow({
               <Grid size={{ md: 4 }}>
                 <Image
                   width={200}
-                  src={imageSingle}
+                  src=''
                   style={{ zIndex: 2 }}
                   alt={title}
                 />

@@ -26,6 +26,7 @@ import DeleteDialog from 'src/pages/delete';
 import { actUpdateAdmissionInformationAsync, actDeleteAdmissionInformationAsync, actResetAdmissionInformation } from 'src/store/admissionInformation/action';
 import { Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
+import { validateFormData, isRequired, isPositiveNumber } from '../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -67,15 +68,12 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [errors, setErrors] = useState({});
+  const [error, setErrors] = useState({});
 
   const dispatch = useDispatch();
 
 
   const { admissionInformation, total = 0, success } = useSelector((state) => state.admissionInformationReducer);
-
-  let userId = localStorage.getItem('userId');
-
   // useSelector: Lấy state từ store thông qua key
   const majors = useSelector((state) => state.majorReducer.majors);
   const admissionMethods = useSelector((state) => state.admissionMethodReducer.admissionMethods);
@@ -102,65 +100,19 @@ export default function UserTableRow({
   }, [id, majorId, admissionMethodId, tuitionFee, year, quantityTarget]);
 
 
+  const rules = {
+    majorId: [isRequired('Ngành học')],
+    admissionMethodId: [isRequired('Phương thức tuyển sinh')],
+    tuitionFee: [isPositiveNumber('Học phí')],
+    quantityTarget: [isPositiveNumber('Số lượng mục tiêu')],
+    year: [isRequired('Năm')],
+  };
+
   const validateForm = () => {
-    let newError = {};
-    if (!formData.majorId) {
-      newError.majorId = 'Vui lòng chọn ngành';
-    }
-    if (!formData.admissionMethodId) {
-      newError.admissionMethodId = 'Vui lòng chọn phương thức tuyển sinh';
-    }
-    if (!formData.tuitionFee) {
-      newError.tuitionFee = 'Vui lòng nhập học phí';
-    }
-    if (!formData.year) {
-      newError.year = 'Vui lòng nhập năm';
-    }
-    if (!formData.quantityTarget) {
-      newError.quantityTarget = 'Vui lòng nhập số lượng mục tiêu';
-    }
-
-    setError(newError);
-    return Object.keys(newError).length === 0;
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-
-
-  const [majorInputValue, setMajorInputValue] = useState(''); // Input của trường ngành học
-  const [majorValue, setMajorValue] = useState(null); // Giá trị đã chọn cho ngành học
-
-  const [admissionMethodInputValue, setAdmissionMethodInputValue] = useState(''); // Input của trường phương thức tuyển sinh
-  const [admissionMethodValue, setAdmissionMethodValue] = useState(null); // Giá trị đã chọn cho phương thức tuyển sinh
-
-  const [yearInputValue, setYearInputValue] = useState(''); // Input của trường năm
-  const [yearValue, setYearValue] = useState(null); // Giá trị đã chọn cho năm
-
-  const [error, setError] = useState({});
-
-  const handleMajorChange = (event, newValue) => {
-    setMajorValue(newValue?.id);
-    setFormData({
-      ...formData,
-      majorId: newValue?.id
-    });
-  };
-
-  const handleAdmissionMethodChange = (event, newValue) => {
-    setAdmissionMethodValue(newValue?.id);
-    setFormData({
-      ...formData,
-      admissionMethodId: newValue?.id
-    });
-  };
-
-
-  const handleYearChange = (event, newValue) => {
-    setYearValue(newValue?.value);
-    setFormData({
-      ...formData,
-      year: newValue?.value
-    });
-  };
-
 
   const options = [
     { name: '2017', value: 2017 },
@@ -172,9 +124,6 @@ export default function UserTableRow({
     { name: '2023', value: 2023 },
     { name: '2024', value: 2024 },
   ];
-
-
-
 
 
   const handleOpenMenu = (event) => {
@@ -203,31 +152,9 @@ export default function UserTableRow({
   }]);
 
 
-  const handleAddRow = () => {
-    // Thêm hàng mới vào formData
-    setFormData([
-      ...formData,
-      {
-        majorId: '',
-        admissionMethodId: '',
-        tuitionFee: 0,
-        year: '',
-        quantityTarget: 0,
-      },
-    ]);
-  };
-
-  const handleRemoveRow = (index) => {
-    // Xóa hàng dựa trên index
-    setFormData(formData.filter((_, i) => i !== index));
-  };
-
   const handleChangeField = (index, field, value) => {
     // Cập nhật giá trị cho từng hàng
     const parsedValue = field === 'tuitionFee' || field === 'quantityTarget' ? parseInt(value, 10) || 0 : value;
-    // const updatedFormData = [...formData];
-    // updatedFormData[index][field] = value;
-    // setFormData(updatedFormData);
     const newFormData = [...formData];
     newFormData[index] = {
       ...newFormData[index],
@@ -238,30 +165,15 @@ export default function UserTableRow({
   };
 
   const handleUpdateAdmissionInfo = () => {
+    if (!validateForm()) {
+      return;
+    }
     dispatch(actUpdateAdmissionInformationAsync({ formData }));
     if (success) {
       dispatch(actResetAdmissionInformation());
     }
     handleClose();
   }
-
-
-  const handlechange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-
-    });
-  }
-  const handleUpdate = () => {
-    if (validateForm()) {
-      dispatch(actUpdateAdmissionInformationAsync({ formData, id }));
-      if (success) {
-        dispatch(actResetAdmissionInformation());
-      }
-      handleClose();
-    }
-  };
 
   const handleClose = () => {
     setDialog(null);
@@ -330,6 +242,7 @@ export default function UserTableRow({
                     getOptionLabel={(option) => option?.name || ''}
                     renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
                   />
+                  {error[index]?.majorId && <Typography variant='caption' color="error"> {error[index]?.majorId} </Typography>}
                 </Grid>
                 <Grid size={{ md: 3 }}>
                   <Autocomplete
@@ -342,6 +255,7 @@ export default function UserTableRow({
                     getOptionLabel={(option) => option?.name || ''}
                     renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
                   />
+                  {error[index]?.admissionMethodId && <Typography variant='caption' color="error"> {error[index]?.admissionMethodId} </Typography>}
                 </Grid>
                 <Grid size={{ md: 3 }}>
                   <Autocomplete
@@ -354,6 +268,7 @@ export default function UserTableRow({
                     getOptionLabel={(option) => option?.name || ''}
                     renderInput={(params) => <TextField {...params} label="Chọn năm" />}
                   />
+                  {error[index]?.year && <Typography variant='caption' color="error"> {error[index]?.year} </Typography>}
                 </Grid>
                 <Grid size={{ md: 3 }}>
                   <TextField
@@ -367,6 +282,7 @@ export default function UserTableRow({
                     }}
                     type="text" // Đặt là text để hiển thị dấu chấm
                   />
+                  {error[index]?.tuitionFee && <Typography variant='caption' color="error"> {error[index]?.tuitionFee} </Typography>}
                 </Grid>
                 <Grid size={{ md: 3 }}>
                   <TextField

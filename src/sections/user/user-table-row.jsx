@@ -24,9 +24,11 @@ import Button from '@mui/material/Button';
 import { Calendar, theme, Image, Row } from 'antd';
 import Autocomplete from '@mui/material/Autocomplete';
 import InfoIcon from '@mui/icons-material/Info';
+import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync } from 'src/store/users/action';
 import DeleteDialog from '../../pages/delete';
+import { validateFormData, isRequired, isValidPassword, isPhone, isEmail } from '../formValidation';
 
 
 const options = [
@@ -50,9 +52,9 @@ export default function UserTableRow({
   gold,
   id: userId,  // Đổi tên id props thành userId
   dateOfBirth,
-  rowKey
+  rowKey,
+  schoolYears
 }) {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [formData, setformData] = useState({
@@ -65,8 +67,6 @@ export default function UserTableRow({
     schoolYears: ''
   });
   const [errors, setErrors] = useState({});
-  const getCurrentYear = () => new Date().getFullYear();
-
   // handle change
   const handleChange = (e) => {
     setformData({
@@ -75,37 +75,21 @@ export default function UserTableRow({
     });
   };
 
-  // Hàm validate form
-  const validateForm = () => {
-    let newErrors = {};
-
-    // Kiểm tra các trường yêu cầu
-    if (!formData.name) newErrors.name = 'Tên là bắt buộc';
-    if (!formData.email) newErrors.email = 'Email là bắt buộc';
-    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
-    if (!formData.phone) newErrors.phone = 'Số điện thoại là bắt buộc';
-
-    // Kiểm tra định dạng email (đơn giản)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    // Kiểm tra giới tính đã được chọn chưa
-    if (formData.gender === undefined) {
-      newErrors.gender = 'Vui lòng chọn giới tính';
-    }
-    setErrors(newErrors);
-
-    // Trả về true nếu không có lỗi
-    return Object.keys(newErrors).length === 0;
+  const rules = {
+    name: [isRequired('Tên')],
+    email: [isRequired('Email'), isEmail],
+    password: [isValidPassword('Mật khẩu')],
+    phone: [isRequired('Số điện thoại'), isPhone],
+    dateOfBirth: [isRequired('Ngày sinh')],
+    schoolYears: [isRequired('Năm học')],
+    gender: [isRequired('Giới tính')]
   };
 
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const dispatch = useDispatch();
   const { usersSuccess } = useSelector((state) => state.usersReducer);
@@ -263,17 +247,22 @@ export default function UserTableRow({
                 <Autocomplete
                   onChange={handleYearChange}
                   id="controllable-states-demo"
+                  value={options.find((option) => option.value === schoolYears) || options[0]}
                   options={options} // Truyền đúng mảng options
                   getOptionLabel={(option) => option?.name || ''}
-                  // options={[getCurrentYear().toString()]}
-                  // getOptionLabel={(option) => option}
                   renderInput={(params) => <TextField {...params} label="Chọn năm học" />}
                 />
+                {errors.schoolYears && <Typography variant='caption' color="error">{errors.schoolYears}</Typography>}
               </Grid>
 
               <Grid item xs={12}>
                 <Typography variant="h6" component="div">Date Of Birth</Typography>
-                <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
+                <Calendar
+                  fullscreen={false}
+                  onPanelChange={onPanelChange}
+                  onChange={onPanelChange}
+                  disabledDate={(current) => current && current >= moment().endOf('day')} />
+                {errors.dateOfBirth && <Typography variant='caption' color="error">{errors.dateOfBirth}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>
                 <RadioGroup
@@ -423,12 +412,7 @@ export default function UserTableRow({
             </Grid>
           </DialogContentText>
         </DialogContent>
-
-
-
-
       </Dialog >
-
       <Popover
         open={!!open}
         anchorEl={open}
@@ -465,5 +449,6 @@ UserTableRow.propTypes = {
   dateOfBirth: PropTypes.string,
   email: PropTypes.string,
   phone: PropTypes.string,
-  rowKey: PropTypes.number
+  rowKey: PropTypes.number,
+  schoolYears: PropTypes.number
 };

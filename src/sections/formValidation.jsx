@@ -1,19 +1,55 @@
 // formValidation.js
 
+// export const validateFormData = (formData, rules) => {
+//   const errors = {};
+//   Object.keys(rules).forEach((field) => {
+//     const fieldRules = rules[field];
+//     console.log(`Rules for ${field}:`, fieldRules);
+//     fieldRules.forEach((rule) => {
+//       const error = rule(formData[field]);
+//       if (error) {
+//         errors[field] = error;
+//       }
+//     });
+//   });
+//   return errors;
+// };
+
 export const validateFormData = (formData, rules) => {
-  const errors = {};
-  Object.keys(rules).forEach((field) => {
-    const fieldRules = rules[field];
-    console.log(`Rules for ${field}:`, fieldRules);
-    fieldRules.forEach((rule) => {
-      const error = rule(formData[field]);
-      if (error) {
-        errors[field] = error;
+  const errors = Array.isArray(formData) ? [] : {};
+
+  if (Array.isArray(formData)) {
+    formData.forEach((item, index) => {
+      const itemErrors = {};
+      Object.keys(rules).forEach((field) => {
+        const fieldRules = rules[field];
+        fieldRules.forEach((rule) => {
+          const error = rule(item[field]);
+          if (error) {
+            itemErrors[field] = error;
+          }
+        });
+      });
+
+      if (Object.keys(itemErrors).length > 0) {
+        errors[index] = itemErrors; // Ghi lỗi theo index
       }
     });
-  });
+  } else {
+    Object.keys(rules).forEach((field) => {
+      const fieldRules = rules[field];
+      fieldRules.forEach((rule) => {
+        const error = rule(formData[field]);
+        if (error) {
+          errors[field] = error;
+        }
+      });
+    });
+  }
+
   return errors;
 };
+
 
 // Rule: Required
 export const isRequired = (fieldName) => (value) =>
@@ -81,5 +117,25 @@ export const validateArray = (fieldName, fieldRules) => (array) => {
     }
   }
 
+  return '';
+};
+export const isPositiveNumber = (fieldName) => (value) => {
+  if (value === '' || value === null || value === undefined) {
+    return `${fieldName} không được để trống`;
+  }
+  const numberValue = Number(value);
+  if (Number.isNaN(numberValue) || !/^\d+$/.test(value)) {
+    return `${fieldName} chỉ được nhập số nguyên dương`;
+  }
+  if (numberValue <= 0) {
+    return `${fieldName} phải lớn hơn 0`;
+  }
+  return '';
+};
+
+export const isArrayNotEmpty = (fieldName) => (value) => {
+  if (!value || !Array.isArray(value) || value.length === 0) {
+    return `${fieldName} không được để trống`;
+  }
   return '';
 };

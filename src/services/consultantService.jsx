@@ -61,8 +61,10 @@ const consultantService = {
         );
         return response;
     },
-    addCertification: async (data) => {
-        const response = await BASE_API.post(`/certifications`, data,
+    addCertification: async (data, consultantId) => {
+        const response = await BASE_API.post(
+            `/certifications?consultantId=${consultantId}`,
+            data
         );
         return response;
     },

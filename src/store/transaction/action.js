@@ -24,7 +24,6 @@ export const createDistribution = (data) => ({
 
 
 export const createDistributionAsync = (data) => async (dispatch) => {
-    debugger
     try {
         const response = await transactionService.createDistribution(data);
         if (response.status === 200 || response.status === 201) {

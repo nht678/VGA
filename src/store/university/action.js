@@ -67,7 +67,6 @@ export const actUniversityAddAsync = (data) => async (dispatch) => {
 }
 
 export const actUniversityUpdateAsync = (data) => async (dispatch) => {
-    debugger
     try {
         const response = await universityService.updateUniversity(data);
         if (response.status === 200 || response.status === 201) {

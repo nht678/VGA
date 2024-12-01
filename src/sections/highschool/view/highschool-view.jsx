@@ -71,7 +71,6 @@ export default function HighSchoolView() {
   };
 
   const validateForm = () => {
-    debugger
     const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -89,7 +88,6 @@ export default function HighSchoolView() {
 
 
   const handleAddHighSchool = () => {
-    debugger
     if (!validateForm()) {
       return;
     }

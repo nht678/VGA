@@ -37,6 +37,8 @@ import { actGetAdmissionMethodsAsync } from 'src/store/admissionMethod/action';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired, isPositiveNumber } from '../../formValidation';
+
 
 
 
@@ -49,7 +51,7 @@ export default function AdmissionInformationsView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
 
 
@@ -60,6 +62,22 @@ export default function AdmissionInformationsView() {
     year: '',
     quantityTarget: 0,
   }]);
+
+
+  const rules = {
+    majorId: [isRequired('Ngành học')],
+    admissionMethodId: [isRequired('Phương thức tuyển sinh')],
+    tuitionFee: [isPositiveNumber('Học phí')],
+    quantityTarget: [isPositiveNumber('Số lượng mục tiêu')],
+    year: [isRequired('Năm')],
+  };
+
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
 
   const handleAddRow = () => {
     // Thêm hàng mới vào formData
@@ -74,7 +92,6 @@ export default function AdmissionInformationsView() {
       },
     ]);
   };
-  console.log('formData', formData)
 
 
   // Lấy năm từ hàng đầu tiên (hoặc mặc định là rỗng nếu không có hàng nào)
@@ -88,9 +105,6 @@ export default function AdmissionInformationsView() {
   const handleChangeField = (index, field, value) => {
     // Cập nhật giá trị cho từng hàng
     const parsedValue = field === 'tuitionFee' || field === 'quantityTarget' ? parseInt(value, 10) || 0 : value;
-    // const updatedFormData = [...formData];
-    // updatedFormData[index][field] = value;
-    // setFormData(updatedFormData);
     const newFormData = [...formData];
     newFormData[index] = {
       ...newFormData[index],
@@ -103,41 +117,12 @@ export default function AdmissionInformationsView() {
   const dispatch = useDispatch();
 
   const { admissionInformation, total = 0, success } = useSelector((state) => state.admissionInformationReducer);
-  console.log('admissionInformation', admissionInformation)
 
   let userId = localStorage.getItem('userId');
 
   // useSelector: Lấy state từ store thông qua key
   const majors = useSelector((state) => state.majorReducer.majors);
-  console.log('majors', majors);
   const admissionMethods = useSelector((state) => state.admissionMethodReducer.admissionMethods);
-  console.log('admissionMethods', admissionMethods);
-
-
-  console.log('formData', formData);
-
-  const validateForm = () => {
-    let newError = {};
-    if (!formData.majorId) {
-      newError.majorId = 'Vui lòng chọn ngành';
-    }
-    if (!formData.admissionMethodId) {
-      newError.admissionMethodId = 'Vui lòng chọn phương thức tuyển sinh';
-    }
-    if (!formData.tuitionFee) {
-      newError.tuitionFee = 'Vui lòng nhập học phí';
-    }
-    if (!formData.year) {
-      newError.year = 'Vui lòng nhập năm';
-    }
-    if (!formData.quantityTarget) {
-      newError.quantityTarget = 'Vui lòng nhập số lượng mục tiêu';
-    }
-
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
-
 
   const [majorInputValue, setMajorInputValue] = useState(''); // Input của trường ngành học
   const [majorValue, setMajorValue] = useState(null); // Giá trị đã chọn cho ngành học
@@ -174,7 +159,7 @@ export default function AdmissionInformationsView() {
   };
 
   const handleAddAdmissionInfo = () => {
-    // if (!validateForm()) return;
+    if (!validateForm()) return;
     dispatch(actAddAdmissionInformationAsync({ formData, universityId: userId }));
     if (success) {
       dispatch(actResetAdmissionInformation());
@@ -238,11 +223,6 @@ export default function AdmissionInformationsView() {
   const dialogRef = useRef();
 
   const handleClose = () => {
-    // setFormData([{ majorId: '', admissionMethodId: '', tuitionFee: 0, year: '', quantityTarget: 0 }]);
-    // setOpen(false);
-    // if (dialogRef.current && dialogRef.current.contains(event.target)) {
-    //   return;
-    // }
     setOpen(false);  // Đóng Dialog nếu không phải click ngoài
   };
 
@@ -313,6 +293,7 @@ export default function AdmissionInformationsView() {
                       getOptionLabel={(option) => option?.name || ''}
                       renderInput={(params) => <TextField {...params} label="Chọn năm" />}
                     />
+                    {error.year && <Typography variant='caption' color="error"> {error.year} </Typography>}
                   </Grid>
                 </Grid>
 
@@ -329,6 +310,7 @@ export default function AdmissionInformationsView() {
                         getOptionLabel={(option) => option?.name || ''}
                         renderInput={(params) => <TextField {...params} label="Chọn ngành" />}
                       />
+                      {error[index]?.majorId && <Typography variant='caption' color="error"> {error[index]?.majorId} </Typography>}
                     </Grid>
                     <Grid size={{ md: 3 }}>
                       <Autocomplete
@@ -341,6 +323,7 @@ export default function AdmissionInformationsView() {
                         getOptionLabel={(option) => option?.name || ''}
                         renderInput={(params) => <TextField {...params} label="Chọn phương thức tuyển sinh" />}
                       />
+                      {error[index]?.admissionMethodId && <Typography variant='caption' color="error"> {error[index]?.admissionMethodId} </Typography>}
                     </Grid>
                     <Grid size={{ md: 2 }}>
                       <TextField
@@ -357,6 +340,8 @@ export default function AdmissionInformationsView() {
                           handleChangeField(index, 'tuitionFee', numericValue); // Lưu giá trị không định dạng
                         }}
                         type="text" // Đổi thành text để hiển thị định dạng
+                        error={error[index]?.tuitionFee}
+                        helperText={error[index]?.tuitionFee}
                       />
                     </Grid>
 
@@ -367,6 +352,8 @@ export default function AdmissionInformationsView() {
                         value={row.quantityTarget || ''}
                         onChange={(e) => handleChangeField(index, 'quantityTarget', e.target.value)}
                         type="number"  // Giới hạn nhập chỉ số
+                        error={error[index]?.quantityTarget}
+                        helperText={error[index]?.quantityTarget}
                       />
                     </Grid>
                     <Grid size={{ md: 1 }}>

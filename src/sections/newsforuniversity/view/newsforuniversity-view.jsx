@@ -37,6 +37,7 @@ import { actGetNewsAsync, actAddNewsAsync, resetNewsSuccess } from 'src/store/Ne
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
+import { validateFormData, isRequired, isArrayNotEmpty } from '../../formValidation';
 
 
 // ----------------------------------------------------------------------
@@ -48,7 +49,7 @@ export default function NewsForUniversityView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [error, setError] = useState({});
+  const [error, setErrors] = useState({});
 
   let userId = localStorage.getItem('userId');
 
@@ -60,27 +61,20 @@ export default function NewsForUniversityView() {
     }
   );
 
-  console.log('formData', formData);
+  const rules = {
+    title: [isRequired('Tiêu đề')],
+    content: [isRequired('Nội dung')],
+  };
 
-
-
-  // write code here
+  const validateForm = () => {
+    const newErrors = validateFormData(formData, rules);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const dispatch = useDispatch();
 
   const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
-  console.log('news', news)
-
-
-
-
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
-
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
     setFormData({
@@ -88,7 +82,6 @@ export default function NewsForUniversityView() {
       [e.target.name]: e.target.value,
     });
   };
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -101,8 +94,6 @@ export default function NewsForUniversityView() {
     dispatch(actGetNewsAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
   };
 
-
-  // write code here
   const [open, setOpen] = useState('');
 
   const handleClickOpen = (Typedialog) => {
@@ -137,8 +128,22 @@ export default function NewsForUniversityView() {
       return false;  // Ngăn chặn upload mặc định của antd
     },
     onRemove(file) {
-      setSelectedFiles(prevFiles => prevFiles.filter(f => f.uid !== file.uid)); // Remove file from list
+      setSelectedFiles((prevFiles) => prevFiles.filter((f) => f.uid !== file.uid));
+      if (file.url) {
+        deleteImageFireBase(file.url); // Chỉ xóa nếu URL tồn tại
+      }
     },
+  }
+
+  const deleteImageFireBase = async (filePath) => {
+    if (!filePath) return; // Kiểm tra nếu filePath không hợp lệ
+    try {
+      const imageRef = ref(storage, filePath);
+      await deleteObject(imageRef);
+      console.log("Deleted from Firebase:", filePath);
+    } catch (error1) {
+      console.error("Error deleting image from Firebase:", error1);
+    }
   };
 
   // Hàm upload tất cả ảnh đã chọn lên Firebase và lấy URL
@@ -148,23 +153,26 @@ export default function NewsForUniversityView() {
         const storageRef = ref(storage, `images/${file.name}`);
         await uploadBytes(storageRef, file);
         const url = await getDownloadURL(storageRef);
-        setImageUrls((prevUrls) => [...prevUrls, url]);
         return { imageUrl: url, descriptionTitle: file.name };
       })
     );
 
-    // Cập nhật `formData.imageNews` với các URL đã upload
+    // Cập nhật toàn bộ URLs trong một lần
+    setImageUrls((prevUrls) => [...prevUrls, ...uploadedUrls.map(item => item.imageUrl)]);
+
     setFormData((prevData) => ({
       ...prevData,
       imageNews: [...prevData.imageNews, ...uploadedUrls],
     }));
 
-    // Trả về các URL đã upload để sử dụng nếu cần
     return uploadedUrls;
   };
 
   // Hàm xử lý khi nhấn nút Tạo mới
   const handleAddNews = async () => {
+    if (!validateForm()) {
+      return;
+    }
     // Chờ hoàn thành upload và lấy dữ liệu các URL đã upload
     const uploadedUrls = await handleUpload();
     const newsData = {
@@ -184,10 +192,7 @@ export default function NewsForUniversityView() {
     setSelectedFiles([]);
     dispatch(resetNewsSuccess());
     handleClose();
-    // setImageUrls([]);
-    // Gửi `newsData` tới server hoặc thực hiện hành động tiếp theo
   };
-  // dispatch(actAddNewsAsync(newsData));
 
   useEffect(() => {
     dispatch(actGetNewsAsync({ page: page + 1, pageSize: rowsPerPage, universityid: userId }));
@@ -221,22 +226,26 @@ export default function NewsForUniversityView() {
                     <Typography variant="h6">Tiêu đề</Typography>
                     <textarea name='title' onChange={handlechange} placeholder="Hãy viết tiêu đề....." style={{ width: '100%', height: '50px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.title && <Typography variant="caption" sx={{ color: 'red' }}>{error.title}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Nội dung</Typography>
                     <textarea name='content' onChange={handlechange} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                     />
+                    {error.content && <Typography variant="caption" sx={{ color: 'red' }}>{error.content}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Ảnh</Typography>
                     <Upload
                       listType="picture"
                       {...uploadProps}
+                      accept='image/*'
                     >
                       <ButtonAnt type="primary" icon={<UploadOutlined />}>
                         Upload
                       </ButtonAnt>
                     </Upload>
+                    {error.imageNews && <Typography variant="caption" sx={{ color: 'red' }}>{error.imageNews}</Typography>}
                   </Grid>
 
                 </Grid>
@@ -284,7 +293,6 @@ export default function NewsForUniversityView() {
                       .toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                       : ''}
                     imageNews={row?.imageNews}
-                    imageSingle={row?.imageNews[0].imageUrl}
                   />
                 ))}
               </TableBody>

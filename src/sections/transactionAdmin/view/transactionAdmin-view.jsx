@@ -93,9 +93,7 @@ export default function TransactionAdminView() {
   console.log('error', error);
   const validateForm = () => {
     let newError = {};
-    debugger
     if (!gold) {
-      debugger
       newError.gold = 'Vui lòng nhập số điểm';
     } else if (!/^-?\d+(\.\d+)?$/.test(gold)) {
       newError.gold = 'Điểm phải là một số hợp lệ';

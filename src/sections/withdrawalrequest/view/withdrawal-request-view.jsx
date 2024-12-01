@@ -96,7 +96,6 @@ export default function WithdrawalRequestView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      debugger
       dispatch(getTransaction({ page: 1, pageSize: rowsPerPage, search: filterValue, transactionType: 4 }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm

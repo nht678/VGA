@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from 'src/firebaseConfig';
 import { UploadOutlined } from '@ant-design/icons';
@@ -325,7 +325,6 @@ export default function UserTableRow({
   };
 
   const [formData1, setFormData1] = useState({
-    consultantId: id,
     description: "",
     imageUrl: "",
   });
@@ -346,11 +345,10 @@ export default function UserTableRow({
   }
 
   const addCertification = () => {
-    dispatch(addCertificationAsyn(formData1));
+    dispatch(addCertificationAsyn(formData1, id));
     if (successConsultant) {
       dispatch(resetConsultantSuccess());
       setFormData1({
-        consultantId: id,
         description: "",
         imageUrl: "",
       });
@@ -359,6 +357,13 @@ export default function UserTableRow({
       handleClose1();
     }
   }
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      certifications: cleanedCertifications,
+    }));
+  }, [certifications]);
 
 
   return (
@@ -541,7 +546,7 @@ export default function UserTableRow({
                     <Button
                       variant="outlined"
                       color="error"
-                      onClick={() => removeCertification(certifications?.id, index)}
+                      onClick={() => removeCertification(certification?.id, index)}
                     >
                       Xóa
                     </Button>
@@ -582,6 +587,7 @@ export default function UserTableRow({
                   listType="picture"
                   {...uploadProps1}
                   fileList={fileList1}
+                  accept='image/*'
                 >
                   {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
                     <ButtonAnt type="primary" icon={<UploadOutlined />}>

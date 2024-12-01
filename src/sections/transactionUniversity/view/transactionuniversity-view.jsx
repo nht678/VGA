@@ -52,33 +52,21 @@ export default function TransactionUniversity() {
   const [gold, setGold] = useState(null);
 
   let accountId = localStorage.getItem('accountId');
-  console.log('accountId', accountId);
 
   const [formData, setFormData] = useState({
     account_id_tranferring: accountId,
     account_id_receiving: '',
   });
 
-  const [status, setStatus] = useState('false');
-  console.log('formData', formData);
-
-
-  // write code here
-
   const dispatch = useDispatch();
-
 
   const { transactions = [], total = 0, success } = useSelector((state) => state.transactionReducer);
   const { highschools = [] } = useSelector((state) => state.highschoolReducer);
-  console.log('highschools', highschools);
   const { wallet = [] } = useSelector((state) => state.walletReducer);
-  console.log('transactions', transactions);
 
   const validateForm = () => {
     let newError = {};
-    debugger
     if (!gold) {
-      debugger
       newError.gold = 'Vui lòng nhập số điểm';
     } else if (!/^-?\d+(\.\d+)?$/.test(gold)) {
       newError.gold = 'Điểm phải là một số hợp lệ';
@@ -98,7 +86,6 @@ export default function TransactionUniversity() {
 
   const handledistribute = async () => {
     // Đợi createDistributionAsync hoàn tất
-    debugger
     if (!validateForm()) return;
     if (success) {
       await dispatch(createDistributionofAdminUniAsync({ formData, gold }));
@@ -110,13 +97,7 @@ export default function TransactionUniversity() {
       setGold(null);
       handleClose();
     }
-
   }
-
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
 
   const [schoolInputValue, setschoolInputValue] = useState(''); // Input của trường năm
   const [schoolValue, setschoolValue] = useState(null); // Giá trị đã chọn cho năm

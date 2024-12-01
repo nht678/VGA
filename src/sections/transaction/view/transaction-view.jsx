@@ -51,28 +51,18 @@ export default function TransactionView() {
   const [error, setError] = useState({});
 
   const [goldBalance, setGoldBalance] = useState('');
-
-
   const dispatch = useDispatch();
 
   let accountId = localStorage.getItem('accountId');
-  console.log('accountId', accountId);
 
   const { transactions = [], total = 0, success } = useSelector((state) => state.transactionReducer);
   const { wallet = [] } = useSelector((state) => state.walletReducer);
-  console.log('transactions', transactions);
 
   const [formData, setFormData] = useState({
     accountId: accountId,
     gold: '',
     years: '',
   });
-
-  const [status, setStatus] = useState('false');
-  console.log('formData', formData);
-
-
-  // write code here
 
   const validateForm = () => {
     let newError = {};
@@ -91,8 +81,6 @@ export default function TransactionView() {
     if (!formData.years) {
       newError.years = 'Vui lòng chọn năm';
     }
-
-
     setError(newError);
     return Object.keys(newError).length === 0; // Trả về false nếu có lỗi
   };
@@ -111,16 +99,10 @@ export default function TransactionView() {
       dispatch(resetTransaction());
       handleClose();
     }
-
-
-    // Xử lý lỗi (hiển thị thông báo lỗi, v.v.)
   }
-
-
 
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
   console.log('inputValue', inputValue);
-
 
   const options = [
     { name: '2017', value: 2017 },
@@ -132,8 +114,6 @@ export default function TransactionView() {
     { name: '2023', value: 2023 },
     { name: '2024', value: 2024 },
   ];
-
-
 
   const [yearInputValue, setYearInputValue] = useState(''); // Input của trường năm
   const [yearValue, setYearValue] = useState(null); // Giá trị đã chọn cho năm
@@ -222,12 +202,6 @@ export default function TransactionView() {
               <Typography variant="body1" sx={{ mb: 1 }}>
                 Số điểm: <strong>{goldBalance}</strong>
               </Typography>
-              {/* <Typography variant="body1" sx={{ mb: 2 }}>
-                Điểm đã phân phối: <strong>500</strong>
-              </Typography> */}
-              {/* <Button variant="contained" color="primary" sx={{ mr: 1 }}>
-                Xem số điểm
-              </Button> */}
               <Button variant="outlined" color="secondary" onClick={() => handleClickOpen('Create')}>
                 Phân phối điểm
               </Button>
