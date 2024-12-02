@@ -1,7 +1,8 @@
 import axios from 'axios';
+// https://vgacareerguidance.id.vn/api/v1
 
 const BASE_API = axios.create({
-    baseURL: "https://vgacareerguidance.id.vn/api/v1",
+    baseURL: "https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/api/v1",
 });
 
 // Thêm Interceptor để tự động thêm token

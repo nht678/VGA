@@ -29,11 +29,14 @@ const testLessonService = {
         const response = await BASE_API.post(`/personal-tests`, data);
         return response;
     },
-    getQuestionByTestId: async ({ page, pageSize, id }) => {
+    getQuestionByTestId: async ({ page, pageSize, id, search }) => {
         const params = {
             'current-page': page,
             'page-size': pageSize,
         };
+        if (search) {
+            params.Content = search;
+        }
         const response = await BASE_API.get(`/questions-by-test?personal-test-id=${id}`,
             {
                 params

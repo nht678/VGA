@@ -49,17 +49,11 @@ export default function QuestionView() {
 
   const [error, setErrors] = useState({});
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-
-
   const dispatch = useDispatch();
   // use params
   const { id } = useParams();
-  console.log('id', id);
 
   const { testLessons = [], successQuestion, typestest = [], totalQuestion = 0, questions = [] } = useSelector((state) => state.testLessonReducer);
-  console.log('testLessons', testLessons);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

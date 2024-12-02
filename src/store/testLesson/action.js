@@ -172,9 +172,9 @@ export const actUploadFileTestAsync = (data) => async (dispatch) => {
     }
 }
 
-export const actGetquestionbyTestIdAsync = ({ page, pageSize, id }) => async (dispatch) => {
+export const actGetquestionbyTestIdAsync = ({ page, pageSize, id, search }) => async (dispatch) => {
     try {
-        const response = await testLessonService.getQuestionByTestId({ page, pageSize, id });
+        const response = await testLessonService.getQuestionByTestId({ page, pageSize, id, search });
         dispatch(actGetquestionbyTestId(response.data));
     } catch (error) {
         console.error(error);

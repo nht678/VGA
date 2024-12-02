@@ -162,7 +162,6 @@ export default function UserTableRow({
     });
   }, [content, group, answerModels]); // Chạy khi bất kỳ prop nào thay đổi
 
-  console.log("formData", formData);
 
   return (
     <>

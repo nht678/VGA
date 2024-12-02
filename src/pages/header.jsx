@@ -117,10 +117,11 @@ export default function Header() {
     const [status, setStatus] = useState('');
 
     const accessToken = token;  // Token JWT của bạn
+    // https://vgacareerguidance.id.vn/notification_hub
     // https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`https://vgacareerguidance.id.vn/notification_hub`, {
+            .withUrl(`https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub`, {
                 accessTokenFactory: () => accessToken
             })
             .withAutomaticReconnect()

@@ -223,10 +223,12 @@ export default function AppView() {
           <AppCurrentVisits
             title="Loại bài kiểm tra"
             chart={{
+              // colors: ['#FF5733', '#33FF57'], // Thêm màu mặc định
               series: [
                 { label: 'MBTI', value: totalMBTITests },
                 { label: 'HOLLAND', value: totalHollandTests },
               ],
+              // options: {}, // Tránh undefined
             }}
           />
         </Grid>
