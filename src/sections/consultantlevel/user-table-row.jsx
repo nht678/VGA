@@ -72,7 +72,6 @@ export default function UserTableRow({
   const { successLevel } = useSelector((state) => state.levelReducer);
 
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actLevelDeleteAsync(id));
     if (successLevel) {
       dispatch(resetLevelSuccess());

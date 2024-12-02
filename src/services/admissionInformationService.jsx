@@ -2,7 +2,6 @@ import { BASE_API, TOKEN } from "./api"
 
 const admissionInformationService = {
     getAdmissionInformation: ({ page, pageSize, search, universityid }) => {
-        console.log('TOKEN', TOKEN);
         const params = {
             'current-page': page,
             'page-size': pageSize,

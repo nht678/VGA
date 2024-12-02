@@ -60,7 +60,6 @@ export default function UserTableRow({
   rowKey,
 }) {
 
-  console.log('id', id);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { testLessons = [], total, success, typestest = [], questions = [] } = useSelector((state) => state.testLessonReducer);
   const [open, setOpen] = useState(null);
@@ -86,7 +85,6 @@ export default function UserTableRow({
     description: [isRequired('Mô tả')],
   };
 
-  console.log('formData', formData);
   const validateForm = () => {
     const newErrors = validateFormData(formData, rules);
     setErrors(newErrors);
@@ -140,7 +138,6 @@ export default function UserTableRow({
   const handleClose = () => {
     setDialog('');
   };
-  console.log('error', errors);
   const [value, setValue] = useState(options[0]);
 
   // useEffect(() => {

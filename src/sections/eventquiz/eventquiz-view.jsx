@@ -89,7 +89,6 @@ export default function EventQuizView() {
     const dispatch = useDispatch();
     const navigate = useNavigate(); // Dùng để điều hướng
     const { success, error } = useSelector((state) => state.quizReducer); // Lấy trạng thái từ store
-    console.log(success, error);
     // handleCreateQuiz
     const handleCreateQuiz = () => {
         dispatch(createQuiz(formData));
@@ -158,7 +157,6 @@ export default function EventQuizView() {
                                 Upload files
                                 <VisuallyHiddenInput
                                     type="file"
-                                    // onChange={(event) => console.log(event.target.files)}
                                     onChange={(event) => setFormData({ ...formData, coverImage: event.target.files })}
                                     multiple
                                 />

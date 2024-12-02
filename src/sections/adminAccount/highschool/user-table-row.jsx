@@ -72,8 +72,6 @@ export default function UserTableRow({
   regionId,
 }) {
 
-  console.log('goldBalance', goldBalance);
-
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -81,15 +79,6 @@ export default function UserTableRow({
   const dispatch = useDispatch();
   const { successHighSchool } = useSelector((state) => state.highschoolReducer);
   const { regions } = useSelector((state) => state.regionReducer);
-
-  // const handleDelete = () => {
-  //   // console.log("id",id);
-  //   dispatch(actHighSchoolDeleteAsync(id));
-  //   if (successHighSchool) {
-  //     dispatch(resetHighSchoolSuccess());
-  //   }
-  //   handleCloseDialog();
-  // }
   const handleBan = async () => {
     const changeStatus = status === 1 ? 2 : 1;
     await dispatch(actUserBan({ changeStatus, accountId }));

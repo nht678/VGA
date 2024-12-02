@@ -67,9 +67,6 @@ export default function UserTableRow({
   accountName,
 }) {
 
-  console.log('transactionType', transactionType);
-
-
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
 

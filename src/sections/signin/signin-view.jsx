@@ -11,8 +11,6 @@ export default function SigninView() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, error } = useSelector((state) => state.accountReducer);
-    console.log('isAuthenticated', isAuthenticated);
-
 
     const [formData, setFormData] = useState({
         email: '',
@@ -24,11 +22,9 @@ export default function SigninView() {
             [e.target.name]: e.target.value
         });
     }
-    console.log('formData', formData);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form data', formData);
         await dispatch(signinUser(formData, navigate));
         // if (isAuthenticated)
         // {

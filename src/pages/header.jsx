@@ -72,11 +72,10 @@ export default function Header() {
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((state) => state.accountReducer);
     const [isOpen, setIsOpen] = useState(false);
-    console.log('isOpen', isOpen);
 
     let role = localStorage.getItem('role');
 
-    const userNavigation = isAuthenticated
+    const userNavigation = role
         ? [
             { name: 'Hồ sơ của bạn', href: '/profile' },
             { name: 'Đăng xuất', onClick: 'logout' },
@@ -103,7 +102,6 @@ export default function Header() {
     const [notification, setNotification] = useState([]);
     const visibleNotifications = showAll ? notification : notification.slice(0, 5);
     const listRef = useRef(null);
-    console.log('listRef', listRef);
 
 
     useEffect(() => {
@@ -149,7 +147,7 @@ export default function Header() {
         return () => {
             connection.stop();
         };
-    }, [accessToken, isAuthenticated]);
+    }, [accessToken, role]);
 
     // Đóng thông báo khi click bên ngoài
     useEffect(() => {

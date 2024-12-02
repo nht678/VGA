@@ -52,13 +52,6 @@ export default function MajorView() {
 
   const [error, setErrors] = useState({});
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  console.log('option', options)
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
-
   const [formData, setFormData] = useState({
     code: '',
     name: '',
@@ -66,9 +59,6 @@ export default function MajorView() {
     majorCategoryId: '',
     image: ''
   });
-
-  console.log('formData', formData);
-
 
   const rules = {
     code: [isRequired('Mã ngành')],
@@ -87,9 +77,7 @@ export default function MajorView() {
   const dispatch = useDispatch();
 
   const { majors, total = 0, success } = useSelector((state) => state.majorReducer);
-  console.log('majors', majors)
   const { majorCategories } = useSelector((state) => state.majorCategoryReducer);
-  console.log('majorCategories', majorCategories);
 
   const [majorCategoriesValue, setMajorCategoriesValue] = useState(null); // Giá trị đã chọn
   const [majorCategoriesInputValue, setMajorCategoriesInputValue] = useState(''); // Giá trị input

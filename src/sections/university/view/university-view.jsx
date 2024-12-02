@@ -58,23 +58,15 @@ export default function UniversityView() {
   const [errors, setErrors] = useState({});
 
   const [open, setOpen] = useState(false);
-  console.log('open', open)
 
   const [openDialog, setOpenDialog] = useState('');
 
-  console.log('option', options)
   const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
 
   const dispatch = useDispatch();
 
   const { universities = [], successUniversity, total } = useSelector((state) => state.reducerUniversity);
-  console.log('universities', universities);
-  console.log('successUniversity', successUniversity)
-
-
 
   const [formData, setFormData] = useState({
     code: '',
@@ -86,15 +78,6 @@ export default function UniversityView() {
     establishedYear: '',
     type: '',
   });
-
-
-
-
-  // write code here
-
-
-
-
 
   const handleAddUniversity = () => {
     if (!validateForm()) return;

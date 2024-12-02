@@ -215,10 +215,6 @@ export default function UserTableRow({
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
-  console.log('formData', formData)
-
-
-
   return (
     <>
       <TableRow hover  >

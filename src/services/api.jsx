@@ -18,6 +18,5 @@ BASE_API.interceptors.request.use(
 
 export { BASE_API };
 export const TOKEN = localStorage.getItem('token');
-console.log('TOKENINAPI', TOKEN);
 
 

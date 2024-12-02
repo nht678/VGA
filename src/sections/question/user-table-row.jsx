@@ -41,14 +41,6 @@ export default function UserTableRow({
   answerModels
 }) {
 
-  console.log('answerModels', answerModels);
-  console.log('id', id);
-  console.log('content', content);
-  console.log('group', group);
-
-
-
-
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -118,9 +110,6 @@ export default function UserTableRow({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-
-  console.log('formData', formData);
 
   const handleAnswerChange = (index, field, value) => {
     setFormData((prev) => {

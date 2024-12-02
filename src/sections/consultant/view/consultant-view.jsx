@@ -97,7 +97,6 @@ export default function ConsultantView() {
   };
 
   const [errors, setErrors] = useState({});
-  console.log('errors', errors);
 
   // handlechange
   const handleChange = (e) => {

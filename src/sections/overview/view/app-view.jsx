@@ -119,9 +119,6 @@ export default function AppView() {
   const totalMBTITests = data.numberOfMBTITestsInMonth?.reduce((sum, value) => sum + value, 0);
   const totalHollandTests = data.numberOfHollandTestsInMonth?.reduce((sum, value) => sum + value, 0);
 
-  console.log(totalMBTITests, totalHollandTests);
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -134,7 +131,6 @@ export default function AppView() {
     fetchData();
   }
     , []);
-  console.log(data);
 
   return (
     <Container maxWidth="xl">

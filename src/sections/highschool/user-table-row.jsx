@@ -68,8 +68,6 @@ export default function UserTableRow({
   rowKey
 }) {
 
-  console.log('goldBalance', goldBalance);
-
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -79,7 +77,6 @@ export default function UserTableRow({
   const { regions } = useSelector((state) => state.regionReducer);
 
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actHighSchoolDeleteAsync(id));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());

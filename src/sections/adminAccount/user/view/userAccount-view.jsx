@@ -65,51 +65,21 @@ export default function UserAccountView() {
 
   const dispatch = useDispatch();
   const { students = [], total, usersSuccess } = useSelector((state) => state.usersReducer);
-  // const listChoolYear = students.map((item) => item.schoolYears);
-  // console.log('listChoolYear', listChoolYear);
   const getCurrentYear = () => new Date().getFullYear();
 
   const [filterYear, setFilterYear] = useState(getCurrentYear);
-  console.log('students', students);
 
   const { uploadSuccess } = useSelector((state) => state.uploadReducer);
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-
-  const nameHighSchool = localStorage.getItem('name');
-  console.log('nameHighSchool', nameHighSchool);
-
-
   const [page, setPage] = useState(0);
-  const [order, setOrder] = useState('asc');
-  const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [year, setYear] = useState('');
-  console.log('year', year);
-  const [value, setValue] = useState('');
   const [errors, setErrors] = useState({});
-  console.log('errors', errors);
+
 
 
   const [formData, setformData] = useState({
-    highSchoolId: userInfo ? userInfo.userId : '', // Đảm bảo userInfo đã được xác định
   });
-
-  const onPanelChange = (value1, mode) => {
-    setformData({ ...formData, dateOfBirth: value1.format('YYYY-MM-DD') });
-
-  };
-
-  // handlechange
-  const handleChange = (e) => {
-    setformData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
 
   // Hàm validate form
   const validateForm = () => {
@@ -140,35 +110,6 @@ export default function UserAccountView() {
 
     // Trả về true nếu không có lỗi
     return Object.keys(newErrors).length === 0;
-  };
-
-
-  const handleAddUser = () => {
-    if (!validateForm()) {
-      // Nếu form không hợp lệ, dừng lại và không gửi request
-      return;
-    }
-
-    try {
-      dispatch(actAddUserAsync(formData));
-      if (usersSuccess) {
-        dispatch(resetUserSuccess());
-        setformData({
-          name: '',
-          email: '',
-          password: '',
-          phone: '',
-          dateOfBirth: '',
-          schoolYears: '',
-          highSchoolId: userInfo ? userInfo.userId : '',
-        });
-      }
-    } catch (e) {
-      message.error('Add user failed');
-    }
-
-
-    setOpen(true);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -205,70 +146,6 @@ export default function UserAccountView() {
   };
 
 
-  const handleUpload = () => {
-    if (!selectedFile) {
-      message.error('Please select a file first!');
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-
-      // Lấy sheet đầu tiên
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      // Chuyển đổi sheet thành JSON với header là hàng đầu tiên
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-      // Tách header và rows
-      const [headers, ...rows] = jsonData;
-
-      // Lọc bỏ các hàng trống
-      const filteredRows = rows.filter(row =>
-        row.some(cell => cell !== undefined && cell !== null && cell !== '')
-      );
-
-      // Chuyển đổi các hàng còn lại thành các object dựa trên headers
-      const formattedData = filteredRows.map(row => {
-        const obj = {};
-        headers.forEach((header, index) => {
-          obj[header] = row[index];
-        });
-        return obj;
-      });
-
-      // Lấy ngày gửi hiện tại
-      const currentDate = new Date().toISOString();  // ISO format (yyyy-mm-ddThh:mm:ss)
-
-      // Chuẩn bị dữ liệu gửi đi kèm tên file và ngày gửi
-      const payload = {
-        data: formattedData,
-        fileName: selectedFile.name,
-        uploadDate: currentDate,
-      };
-      const payloadString = JSON.stringify(payload);
-      const formUpload = new FormData();
-      formUpload.append('stringJson', payloadString);
-      formUpload.append('highschoolId', userInfo.userId);
-      formUpload.append('schoolYear', year);
-      // Log FormData entries to console
-      // formUpload.forEach((value1, key) => {
-      //   console.log(`${key}:`, value1);
-      // });
-
-      dispatch(uploadFileAsync(formUpload));
-      dispatch(resetUserSuccess());
-      setOpen(false);
-    };
-
-    reader.readAsArrayBuffer(selectedFile);
-
-  };
-
-
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
@@ -288,16 +165,10 @@ export default function UserAccountView() {
     handleClose(); // Đóng menu sau khi chọn
   };
 
-
-
   useEffect(() => {
     dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName, schoolYears: filterYear }));
   }, [usersSuccess, uploadSuccess]);
 
-
-
-
-  console.log('form', formData);
   return (
     <>
 

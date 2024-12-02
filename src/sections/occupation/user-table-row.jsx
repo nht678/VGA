@@ -80,10 +80,6 @@ export default function UserTableRow({
   occupationalGroupId,
 }) {
 
-  console.log('entryLevelEducationId', entryLevelEducationId);
-
-
-
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [error, setErrors] = useState({});
@@ -92,7 +88,6 @@ export default function UserTableRow({
 
   const { occupations, total = 0, successOccupation } = useSelector((state) => state.occupationReducer);
   const { entryLevelEducations } = useSelector((state) => state.entryLevelEducationReducer);
-  console.log('entryLevelEducations', entryLevelEducations)
   const { occupationGroups } = useSelector((state) => state.occupationGroupReducer);
   const { workSkills } = useSelector((state) => state.workSkillReducer);
 
@@ -279,7 +274,6 @@ export default function UserTableRow({
 
 
   const handleDelete = () => {
-    // console.log("id",id);
     dispatch(actDeleteOccupationAsync(id));
     if (successOccupation) {
       dispatch(resetOccupation());

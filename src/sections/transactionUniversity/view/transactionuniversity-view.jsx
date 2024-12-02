@@ -109,7 +109,6 @@ export default function TransactionUniversity() {
       account_id_receiving: newValue?.account?.id
     });
   };
-  console.log('gold', gold);
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {

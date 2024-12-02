@@ -36,10 +36,8 @@ export function signinUser(data, navigate) {
             localStorage.setItem('role', response.data.role);
             localStorage.setItem('accountId', response.data.accountId);
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            console.log('userInfo', userInfo);
         }
         catch (error) {
-            console.log('Error:', error); // In lỗi để kiểm tra
             message.error('Lỗi đăng nhập');
         }
     }
@@ -63,10 +61,8 @@ export function signinUserStudent(data, navigate) {
             localStorage.setItem('role', response.data.role);
             localStorage.setItem('accountId', response.data.accountId);
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            console.log('userInfo', userInfo);
         }
         catch (error) {
-            console.log('Error:', error); // In lỗi để kiểm tra
             message.error('Lỗi đăng nhập');
         }
     }
@@ -77,6 +73,7 @@ export function signoutUserStudent(accountId, navigate) {
     return async (dispatch) => {
         try {
             // dispatch(actSignOut());
+            navigate('/signinpayment', { replace: true });
             // Trả về Promise của accountService.logout
             const response = await accountService.logout(accountId, token);
             if (response.status === 200) {
@@ -87,7 +84,6 @@ export function signoutUserStudent(accountId, navigate) {
                 localStorage.removeItem('name');
                 localStorage.removeItem('role');
                 localStorage.removeItem('accountId');
-                navigate('/signinpayment', { replace: true });
             } else {
                 message.error('Đăng xuất thất bại');
             }
@@ -105,6 +101,7 @@ export function signoutUser(accountId, navigate) {
     return async (dispatch) => {
         try {
             dispatch(actSignOut());
+            navigate('/signin', { replace: true });
             // Trả về Promise của accountService.logout
             const response = await accountService.logout(accountId, token);
             if (response.status === 200) {
@@ -115,7 +112,6 @@ export function signoutUser(accountId, navigate) {
                 localStorage.removeItem('name');
                 localStorage.removeItem('role');
                 localStorage.removeItem('accountId');
-                navigate('/signin', { replace: true });
             } else {
                 message.error('Đăng xuất thất bại');
             }

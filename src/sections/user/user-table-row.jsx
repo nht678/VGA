@@ -25,6 +25,7 @@ import { Calendar, theme, Image, Row } from 'antd';
 import Autocomplete from '@mui/material/Autocomplete';
 import InfoIcon from '@mui/icons-material/Info';
 import moment from 'moment';
+import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync } from 'src/store/users/action';
 import DeleteDialog from '../../pages/delete';
@@ -64,7 +65,7 @@ export default function UserTableRow({
     phone: phone,
     dateOfBirth: dateOfBirth,
     gender: gender,
-    schoolYears: ''
+    schoolYears: schoolYears
   });
   const [errors, setErrors] = useState({});
   // handle change
@@ -256,12 +257,14 @@ export default function UserTableRow({
               </Grid>
 
               <Grid item xs={12}>
-                <Typography variant="h6" component="div">Date Of Birth</Typography>
+                <Typography variant="h6">Date Of Birth</Typography>
                 <Calendar
                   fullscreen={false}
                   onPanelChange={onPanelChange}
                   onChange={onPanelChange}
-                  disabledDate={(current) => current && current >= moment().endOf('day')} />
+                  disabledDate={(current) => current && current >= moment().endOf('day')}
+                  defaultValue={formData?.dateOfBirth ? dayjs(formData.dateOfBirth, 'YYYY-MM-DD') : undefined}
+                />
                 {errors.dateOfBirth && <Typography variant='caption' color="error">{errors.dateOfBirth}</Typography>}
               </Grid>
               <Grid size={{ md: 6 }}>

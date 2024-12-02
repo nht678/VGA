@@ -106,11 +106,6 @@ export default function OccupationView() {
   const { entryLevelEducations } = useSelector((state) => state.entryLevelEducationReducer);
   const { occupationGroups } = useSelector((state) => state.occupationGroupReducer);
   const { workSkills } = useSelector((state) => state.workSkillReducer);
-  console.log('occupations', occupations)
-
-
-
-
 
   const handleAddOcupation = async () => {
     if (!validateForm()) return;
@@ -139,9 +134,6 @@ export default function OccupationView() {
     }
     handleClose();
   };
-
-
-  console.log('formData', formData)
 
   const handleChangeField = (field, value) => {
     setFormData((prev) => ({
@@ -228,7 +220,6 @@ export default function OccupationView() {
     try {
       const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
       await deleteObject(imageRef); // Xóa ảnh
-      console.log("Ảnh đã được xóa thành công");
     } catch (error1) {
       console.error("Lỗi khi xóa ảnh:", error1);
     }

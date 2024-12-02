@@ -60,8 +60,6 @@ export default function UserTableRow({
   description,
   rowKey
 }) {
-  console.log('id', id)
-  console.log('status', status)
 
 
   const [open, setOpen] = useState(null);

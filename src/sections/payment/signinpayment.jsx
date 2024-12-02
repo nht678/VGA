@@ -13,9 +13,6 @@ export default function SigninPayment() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, error } = useSelector((state) => state.accountReducer);
-    console.log('isAuthenticated', isAuthenticated);
-
-
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -26,8 +23,6 @@ export default function SigninPayment() {
             [e.target.name]: e.target.value
         });
     }
-    console.log('formData', formData);
-
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Form data', formData);

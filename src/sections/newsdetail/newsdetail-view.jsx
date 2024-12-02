@@ -22,16 +22,12 @@ function handleClick(event) {
 export default function NewsDetailView() {
     // useparam
     let { id } = useParams();
-    console.log(id);
     const { newsById } = useSelector((state) => state.newsForUniversityReducer);
     // useEffect
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(actGetNewsByIdAsync(id));
     }, [id]);
-
-
-
 
     return (
         <Box role="presentation" onClick={handleClick} sx={{ m: 20 }}>

@@ -76,11 +76,11 @@ export const actUniversityUpdateAsync = (data) => async (dispatch) => {
             message.error('Cập nhật thất bại');
         }
     } catch (error) {
-        if (error.response.data) {
-            message.error(error.response.data);
-        } else {
-            message.error('Cập nhật thất bại');
-        }
+        // if (error.response.data) {
+        // message.error(error.response.data);
+        // } else {
+        message.error('Cập nhật thất bại');
+        // }
     }
 }
 

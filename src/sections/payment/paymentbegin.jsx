@@ -28,9 +28,6 @@ export default function PaymentBegin() {
         amount: null,
     });
 
-    console.log("formData", formData);
-
-
     const items = [
         { price: 10000, points: 10 },
         { price: 20000, points: 20 },
@@ -51,8 +48,6 @@ export default function PaymentBegin() {
     const handlePayment = async () => {
         if (selectedRow !== null && accountId !== null) {
             try {
-                console.log("formData", formData);
-
                 // Gọi API thanh toán
                 const res = await axios.post(
                     'https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/api/v1/wallet/request-top-up-wallet-with-payos',

@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux';
 
 export default function WalletCard() {
     const { highschools } = useSelector((state) => state.highschoolReducer);
-    console.log('highschools:', highschools);
 
     const handleDistributeGold = () => {
         alert('Phân phối Gold');

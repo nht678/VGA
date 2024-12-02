@@ -3,7 +3,6 @@ import { BASE_API, TOKEN } from './api';
 
 const userServices = {
     getUsers: async ({ page, pageSize, search, highSchoolId, schoolYears }) => {
-        console.log('TOKEN', TOKEN);
         const response = await BASE_API.get(`/students`, {
             params: {
                 'current-page': page,

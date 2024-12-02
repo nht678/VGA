@@ -55,19 +55,15 @@ export default function WithdrawalRequestView() {
   const dispatch = useDispatch();
 
   let accountId = localStorage.getItem('accountId');
-  console.log('accountId', accountId);
 
   const { transactions = [], total = 0, success } = useSelector((state) => state.transactionReducer);
   const { wallet = [] } = useSelector((state) => state.walletReducer);
-  console.log('transactions', transactions);
 
   const [formData, setFormData] = useState({
     accountId: accountId,
     gold: '',
     years: '',
   });
-
-  console.log('formData', formData);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

@@ -94,7 +94,6 @@ export default function UserTableRow({
   walletBalance,
   accountId,
 }) {
-  console.log('walletBalance', walletBalance);
   let userId = localStorage.getItem('userId');
 
   const [open, setOpen] = useState(null);
@@ -189,7 +188,6 @@ export default function UserTableRow({
     dispatch(updateConsultant(id, formData));
     handleCloseDialog();
   };
-  console.log('formData1', formData);
   const handleDelete = () => {
     dispatch(deleteConsultant(id));
     handleCloseDialog();

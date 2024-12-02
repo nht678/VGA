@@ -102,7 +102,6 @@ export default function HomepageView() {
   };
 
   const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
-  console.log('news', news);
   let userId = localStorage.getItem('userId');
   const dispatch = useDispatch();
 

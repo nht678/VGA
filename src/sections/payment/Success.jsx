@@ -6,9 +6,7 @@ import { Button, Container } from "@mui/material";
 // Custom hook to parse query parameters from the URL
 const useQuery = () => {
   const { search } = useLocation();
-  console.log('search', search);
   const [query, setQuery] = useState({});
-  console.log('query', query);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(search);

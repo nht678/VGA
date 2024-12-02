@@ -77,9 +77,7 @@ export default function UserTableRow({
   const dispatch = useDispatch();
 
   const { majors, total = 0, success } = useSelector((state) => state.majorReducer);
-  console.log('majors', majors)
   const { majorCategories } = useSelector((state) => state.majorCategoryReducer);
-  console.log('majorCategories', majorCategories);
 
   const [majorCategoriesValue, setMajorCategoriesValue] = useState(
     majorCategories.find((item) => item.id === majorCategoryId) || null

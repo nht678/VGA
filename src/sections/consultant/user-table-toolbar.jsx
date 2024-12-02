@@ -27,7 +27,6 @@ const ITEM_HEIGHT = 48;
 // ----------------------------------------------------------------------
 
 export default function UserTableToolbar({ numSelected, filterName, onFilterName, filterLevel, filterLevelName, handleFilterByLevel, consultantLevels }) {
-  console.log('consultantLevels1', consultantLevels)
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);

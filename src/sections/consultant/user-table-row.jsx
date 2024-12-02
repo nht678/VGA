@@ -4,10 +4,8 @@ import { storage } from 'src/firebaseConfig';
 import { UploadOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
@@ -17,7 +15,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -25,6 +22,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
 import moment from 'moment';
+import dayjs from 'dayjs';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
 import { Calendar, theme, Image, Upload, Button as ButtonAnt } from 'antd';
@@ -88,9 +86,6 @@ export default function UserTableRow({
   certifications,
   status,
 }) {
-
-  console.log('certifications', certifications);
-
   let userId = localStorage.getItem('userId');
 
   const [open, setOpen] = useState(null);
@@ -504,6 +499,7 @@ export default function UserTableRow({
                   onPanelChange={onPanelChange}
                   onChange={onPanelChange}
                   disabledDate={(current) => current && current >= moment().endOf('day')}
+                  defaultValue={formData.doB ? dayjs(formData.doB, 'YYYY-MM-DD') : null}
                 />
                 {errors.doB && <Typography variant='caption' color="error">{errors.doB}</Typography>}
               </Grid>

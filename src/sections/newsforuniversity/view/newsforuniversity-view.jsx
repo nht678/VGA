@@ -181,7 +181,6 @@ export default function NewsForUniversityView() {
       content: formData.content,
       imageNews: uploadedUrls,
     };
-    console.log("Dữ liệu gửi đi:", newsData);
     dispatch(actAddNewsAsync(newsData));
 
     setFormData({

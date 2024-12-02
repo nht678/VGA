@@ -50,7 +50,6 @@ export default function WorkSkillView() {
   const dispatch = useDispatch();
 
   const { workSkills, total = 0, success } = useSelector((state) => state.workSkillReducer);
-  console.log('workSkills', workSkills)
 
   const [formData, setFormData] = useState({
     name: '',

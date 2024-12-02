@@ -79,7 +79,6 @@ export default function UserView() {
     schoolYears: '',
     gender: ''
   });
-  console.log('formData', formData);
 
   const onPanelChange = (value1, mode) => {
     setformData({ ...formData, dateOfBirth: value1.format('YYYY-MM-DD') });
@@ -283,9 +282,6 @@ export default function UserView() {
   }, [usersSuccess, uploadSuccess]);
 
 
-
-
-  console.log('form', formData);
   return (
     <>
 

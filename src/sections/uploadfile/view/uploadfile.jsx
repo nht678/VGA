@@ -197,7 +197,6 @@ export default function UploadFile() {
         uploadDate: currentDate,
         data: formattedData
       };
-      console.log('Filtered JSON Data:', payload);
 
       // Gửi dữ liệu JSON tới backend
       fetch('https://65dc58f6e7edadead7ebb035.mockapi.io/Nhanvien', {
@@ -279,8 +278,6 @@ export default function UploadFile() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
                   <>
-                    {console.log('row,,..', row)}
-                    {/* role="checkbox" selected={selected} */}
                     <TableRow hover tabIndex={-1} >
                       <TableCell padding="checkbox">
                         <Checkbox disableRipple checked={selected.indexOf(row.name) !== -1} onChange={(event) => handleClick(event, row.name)} />

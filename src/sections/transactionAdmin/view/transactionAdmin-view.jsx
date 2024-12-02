@@ -51,12 +51,10 @@ export default function TransactionAdminView() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [error, setError] = useState({});
-  // const [walletuniversitiesId, setWalletuniversitiesId] = useState('');
   const [goldBalance, setGoldBalance] = useState('');
   const [gold, setGold] = useState(null);
 
   let accountId = localStorage.getItem('accountId');
-  console.log('accountId', accountId);
 
   const [formData, setFormData] = useState({
     account_id_tranferring: accountId,
@@ -64,9 +62,6 @@ export default function TransactionAdminView() {
   });
 
   const [status, setStatus] = useState('false');
-  console.log('formData', formData);
-
-
   // write code here
 
   const dispatch = useDispatch();
@@ -74,14 +69,11 @@ export default function TransactionAdminView() {
 
   const { transactions = [], total = 0, success } = useSelector((state) => state.transactionReducer);
   const { universities = [] } = useSelector((state) => state.reducerUniversity);
-  console.log('universities', universities);
   const { wallet = [] } = useSelector((state) => state.walletReducer);
-  console.log('transactions', transactions);
 
   useEffect(() => {
     dispatch(getTransaction({ page: page + 1, pageSize: rowsPerPage, transactionType: '', accountId: accountId }));
     dispatch(actUniversityGetAsync({}));
-    // dispatch(getWalletbyIdAsync({ id: accountId }));
 
 
   }, [success]);
@@ -90,7 +82,6 @@ export default function TransactionAdminView() {
     setGoldBalance(wallet?.goldBalance);
   }, [wallet]); // Mảng phụ thuộc là `wallet`
 
-  console.log('error', error);
   const validateForm = () => {
     let newError = {};
     if (!gold) {
@@ -105,10 +96,6 @@ export default function TransactionAdminView() {
     if (!formData.account_id_receiving) {
       newError.account_id_receiving = 'Vui lòng chọn trường đại học';
     }
-    // if(!newError.gold){
-    //   setGold(parseInt(gold, 10));
-    // }
-
     setError(newError);
     return Object.keys(newError).length === 0; // Trả về true nếu không có lỗi
   };
@@ -127,11 +114,6 @@ export default function TransactionAdminView() {
     handleClose();
   }
 
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  console.log('value', value);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
-
   const [schoolInputValue, setschoolInputValue] = useState(''); // Input của trường năm
   const [schoolValue, setschoolValue] = useState(null); // Giá trị đã chọn cho năm
 
@@ -142,7 +124,6 @@ export default function TransactionAdminView() {
       account_id_receiving: newValue?.account?.id
     });
   };
-  console.log('gold', gold);
 
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
@@ -150,7 +131,6 @@ export default function TransactionAdminView() {
     // setGold(value1 ? parseInt(value1, 10) : null);
     setGold(value1);
   };
-  console.log('gold', gold);
 
 
   const handleChangePage = (event, newPage) => {

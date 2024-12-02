@@ -130,7 +130,6 @@ export default function HighSchoolAccountView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    console.log('newPage', newPage);
     dispatch(actHighSchoolGetAsync({ page: newPage + 1, pageSize: rowsPerPage, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {

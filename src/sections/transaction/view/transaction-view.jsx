@@ -102,7 +102,6 @@ export default function TransactionView() {
   }
 
   const [inputValue, setInputValue] = useState(''); // Giá trị input\
-  console.log('inputValue', inputValue);
 
   const options = [
     { name: '2017', value: 2017 },

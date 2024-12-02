@@ -64,8 +64,6 @@ export default function UserTableRow({
   accountName,
 }) {
 
-  console.log('transactionType', transactionType);
-
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -166,7 +164,6 @@ export default function UserTableRow({
     try {
       const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
       await deleteObject(imageRef); // Xóa ảnh
-      console.log("Ảnh đã được xóa thành công");
     } catch (error1) {
       console.error("Lỗi khi xóa ảnh:", error1);
     }

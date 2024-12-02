@@ -68,24 +68,18 @@ export default function TestLessonView() {
   const getCurrentYear = () => new Date().getFullYear();
 
   const [filterYear, setFilterYear] = useState(getCurrentYear);
-  console.log('testLessons', testLessons);
 
   const { uploadSuccess } = useSelector((state) => state.uploadReducer);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
 
   const nameHighSchool = localStorage.getItem('name');
-  console.log('nameHighSchool', nameHighSchool);
 
 
   const [page, setPage] = useState(0);
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [year, setYear] = useState('');
-  console.log('year', year);
-  const [value, setValue] = useState('');
   const [errors, setErrors] = useState({});
-  console.log('errors', errors);
 
 
   const [formData, setformData] = useState({
@@ -271,9 +265,6 @@ export default function TestLessonView() {
   }, [success]);
 
 
-
-
-  console.log('form', formData);
   return (
     <>
 
