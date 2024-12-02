@@ -318,6 +318,7 @@ export default function HighSchoolAccountView() {
                     status={row?.account?.status}
                     avatarUrl={row?.avatarUrl}
                     regionId={row?.regionId}
+                    image_Url={row?.image_Url}
                   />
                 ))}
               </TableBody>

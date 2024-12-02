@@ -27,15 +27,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
 
 import { UploadOutlined } from '@ant-design/icons';
-import { Button as ButtonAnt, message, Upload } from 'antd';
+import { Button as ButtonAnt, Upload, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 
 import { actUpdateOccupationAsync, resetOccupation, actDeleteOccupationAsync } from 'src/store/occupation/action';
-import { actGetEntryLevelEducationsAsync } from 'src/store/entryLevelEducation/action';
-import { actGetOccupationGroupAsync } from 'src/store/occupationGroup/action';
-import { actGetWorkSkillsAsync } from 'src/store/workSkill/action';
 import { validateFormData, isRequired, validateArray } from '../formValidation';
-
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -324,9 +320,6 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>
           {occupationalGroup?.length > 150 ? `${occupationalGroup.slice(0, 150)}...` : occupationalGroup}
         </TableCell>
-        {/* <TableCell sx={{ textAlign: 'center' }}>
-  {occupationalSkills?.length > 150 ? `${occupationalSkills.slice(0, 150)}...` : occupationalSkills}
-</TableCell> */}
         <TableCell sx={{ textAlign: 'center' }}>
           {education?.length > 150 ? `${education.slice(0, 150)}...` : education}
         </TableCell>
@@ -510,7 +503,174 @@ export default function UserTableRow({
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết Nghề nghiệp
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 4 }}>
+                <Image
+                  width={200}
+                  src={image}
+                  style={{ zIndex: 2 }}
+                  alt="Ảnh"
+                />
+              </Grid>
+              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Nghề nghiệp:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {name}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tình trạng
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {getStatusLabel(status)}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Cách làm việc:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {howToWork}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Nhóm nghề nghiệp:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {occupationalGroup}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Môi trường làm việc:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {workEnvironment}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Giáo dục:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {education}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Trả lương:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {payScale}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Mô tả:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {description}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tìm kiếm công việc:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {jobOutlook}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Giáo dục đầu vào:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {entryLevelEducation}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Kĩ năng nghề nghiệp:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {occupationalSkills?.map((item, index) => (
+                    <div key={index}>
+                      <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                        {item?.workSkills?.name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                        {item?.content}
+                      </Typography>
+                    </div>
+                  ))}
+                </Typography>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
 
+      </Dialog >
 
 
       <DeleteDialog

@@ -64,7 +64,8 @@ export default function UserTableRow({
   description,
   code,
   majorCategoryId,
-  rowKey
+  rowKey,
+  admissionGroup
 }) {
 
 
@@ -432,6 +433,31 @@ export default function UserTableRow({
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 6 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tình trạng:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Nhóm tuyển sinh:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 6 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {admissionGroup}
+                </Typography>
+              </Grid>
+
+
+
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Mô tả:
@@ -492,5 +518,6 @@ UserTableRow.propTypes = {
   description: PropTypes.string,
   code: PropTypes.string,
   majorCategoryId: PropTypes.string,
-  rowKey: PropTypes.number
+  rowKey: PropTypes.number,
+  admissionGroup: PropTypes.string
 };

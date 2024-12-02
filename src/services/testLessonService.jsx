@@ -1,8 +1,19 @@
 import { BASE_API } from "./api";
 
 const testLessonService = {
-    getTestLessons: async () => {
-        const response = await BASE_API.get(`/personal-tests`);
+    getTestLessons: async ({ page, pageSize, search }) => {
+        const params = {
+            'current-page': page,
+            'page-size': pageSize,
+        };
+        if (search) {
+            params.content = search;
+        }
+        const response = await BASE_API.get(`/personal-tests`,
+            {
+                params
+            }
+        );
         return response;
     },
     getTestLesson: async (id) => {

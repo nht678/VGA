@@ -81,6 +81,8 @@ export default function UserTableRow({
   rowKey,
   accountId,
   status,
+  image_Url,
+  highSchoolName,
 }) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [open, setOpen] = useState(null);
@@ -381,7 +383,7 @@ export default function UserTableRow({
               <Grid size={{ md: 4 }}>
                 <Image
                   width={200}
-                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
+                  src={image_Url || 'https://gamehow.net/upload/suckhoe_post/images/2024/11/26/2930/anh-hoc-sinh-chibi-3.jpg'}
                   style={{ zIndex: 2 }}
                 />
               </Grid>
@@ -460,12 +462,34 @@ export default function UserTableRow({
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Số năm học:
+                  Năm học:
                 </Typography>
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
                   {value?.name}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Trường cấp 3:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {highSchoolName}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tình trạng:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
                 </Typography>
               </Grid>
             </Grid>
@@ -512,4 +536,6 @@ UserTableRow.propTypes = {
   rowKey: PropTypes.number,
   accountId: PropTypes.string,
   status: PropTypes.number,
+  image_Url: PropTypes.string,
+  highSchoolName: PropTypes.string,
 };

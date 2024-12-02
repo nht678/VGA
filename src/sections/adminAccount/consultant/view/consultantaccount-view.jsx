@@ -209,7 +209,6 @@ export default function ConsultantAccountView() {
   const [filterLevelName, setFilterLevelName] = useState('Level');
 
 
-
   return (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -258,7 +257,14 @@ export default function ConsultantAccountView() {
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
                     status={row?.accountStatus || ''}
                     accountId={row?.accountId || ''}
-                    walletBalance={row?.walletBalance || ''}
+                    walletBalance={row?.walletBalance || 0}
+                    nameUniversity={row?.university?.account?.name || ''}
+                    consultantLevelPrice={row?.consultantLevel?.priceOnSlot || 0}
+                    image_Url={row?.account?.image_Url}
+                    emailuniversity={row?.university?.account?.email || ''}
+                    consultantLevelDes={row?.consultantLevel?.description || ''}
+                    certifications={row?.certifications}
+                    universityDes={row?.university?.description || ''}
                   />
                 ))}
               </TableBody>

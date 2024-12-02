@@ -102,16 +102,15 @@ export function signoutUser(accountId, navigate) {
         try {
             dispatch(actSignOut());
             navigate('/signin', { replace: true });
-            // Trả về Promise của accountService.logout
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('name');
+            localStorage.removeItem('role');
+            localStorage.removeItem('accountId');
             const response = await accountService.logout(accountId, token);
             if (response.status === 200) {
                 message.success('Đăng xuất thành công');
-                localStorage.removeItem('userInfo');
-                localStorage.removeItem('token');
-                localStorage.removeItem('userId');
-                localStorage.removeItem('name');
-                localStorage.removeItem('role');
-                localStorage.removeItem('accountId');
             } else {
                 message.error('Đăng xuất thất bại');
             }

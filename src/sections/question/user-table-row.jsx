@@ -277,6 +277,88 @@ export default function UserTableRow({
         </DialogActions>
       </Dialog>
 
+
+      <Dialog
+        open={dialog === 'Detail'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
+            marginLeft: 1,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5rem',
+            color: '#1976d2', // Primary color for the title
+            paddingBottom: 2,
+          }}
+        >
+          Chi tiết Câu hỏi
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
+          >
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Câu hỏi:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {content}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Nhóm:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {groupValue.find((groupV) => groupV.value === group)?.key || 'N/A'}
+                    </Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  {answerModels?.map((answer, index) => (
+                    <Grid size={{ md: 12 }} container spacing={2} key={index} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                      <Grid size={{ md: 12 }}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                          Đáp án {index + 1}:
+                        </Typography>
+                      </Grid>
+                      <Grid size={{ md: 12 }}>
+                        <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                          {answer.content}
+                        </Typography>
+                      </Grid>
+                      <Grid size={{ md: 12 }}>
+                        <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                          {answerValue.find((answerV) => answerV.value === answer.answerValue)?.key || 'N/A'}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog >
+
       <DeleteDialog
         open={dialog}
         onClose={handleCloseDialog}

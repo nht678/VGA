@@ -359,6 +359,7 @@ export default function MajorView() {
                     description={row?.description}
                     status={row?.status}
                     avatarUrl={row?.image}
+                    admissionGroup={row?.admissionGroup}
 
                   />
                 ))}

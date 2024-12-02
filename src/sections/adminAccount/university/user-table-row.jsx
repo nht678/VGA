@@ -76,6 +76,8 @@ export default function UserTableRow({
   establishedYear,
   rowKey,
   accountId,
+  image_Url,
+  universityLocations,
 
 }) {
 
@@ -193,10 +195,7 @@ export default function UserTableRow({
     setOpen(false);
     handleCloseDialog();
   };
-
-  const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-
+  console.log('image_Url', image_Url)
 
 
 
@@ -209,7 +208,7 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" component='div' noWrap>
+            <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -394,7 +393,7 @@ export default function UserTableRow({
               <Grid size={{ md: 4 }}>
                 <Image
                   width={200}
-                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
+                  src={image_Url || "https://png.pngtree.com/png-vector/20220107/ourmid/pngtree-school-png-image_4235229.png"}
                   style={{ zIndex: 2 }}
                 />
               </Grid>
@@ -411,6 +410,19 @@ export default function UserTableRow({
                     </Typography>
                   </Grid>
                 </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Code:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {code}
+                    </Typography>
+                  </Grid>
+                </Grid>
+
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
@@ -482,6 +494,36 @@ export default function UserTableRow({
                   {establishedYear}
                 </Typography>
               </Grid>
+
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tình trạng:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
+                </Typography>
+              </Grid>
+
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Địa chỉ:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {universityLocations?.map((location) => (
+                    <Grid size={{ md: 12 }} container key={location?.id}>
+                      <Typography variant="body2" sx={{ ml: 2, color: '#616161' }} key={location?.id}>
+                        {location?.address}
+                      </Typography>
+                    </Grid>
+                  ))}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Mô tả:
@@ -497,13 +539,6 @@ export default function UserTableRow({
         </DialogContent>
       </Dialog >
 
-
-      {/* <DeleteDialog
-        open={dialog}
-        onClose={handleCloseDialog}
-        handleDelete={handleDelete}
-      /> */}
-
       <Popover
         open={!!openMenu}
         anchorEl={openMenu}
@@ -518,10 +553,6 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Cập nhật
         </MenuItem>
-        {/* <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Xóa
-        </MenuItem> */}
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết
@@ -549,4 +580,6 @@ UserTableRow.propTypes = {
   typeUniversity: PropTypes.number,
   rowKey: PropTypes.number,
   accountId: PropTypes.string,
+  image_Url: PropTypes.string,
+  universityLocations: PropTypes.array,
 };

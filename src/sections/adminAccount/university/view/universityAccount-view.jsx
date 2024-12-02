@@ -342,6 +342,8 @@ export default function UniversityAccountView() {
                     accountId={row?.account?.id || ''}
                     code={row?.code}
                     establishedYear={row?.establishedYear}
+                    image_Url={row?.account?.image_Url}
+                    universityLocations={row?.universityLocations}
                   />
                 ))}
               </TableBody>

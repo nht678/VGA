@@ -277,7 +277,6 @@ export default function QuestionView() {
           </Dialog>
 
 
-
         </Box>
       </Stack>
 

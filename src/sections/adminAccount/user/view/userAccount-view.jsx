@@ -215,6 +215,8 @@ export default function UserAccountView() {
                     accountId={row?.account?.id || ''}
                     status={row?.account?.status || ''} // Kiểm tra row.status
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''} // Kiểm tra row.dateOfBirth
+                    image_Url={row?.account?.image_Url}
+                    highSchoolName={row?.highSchoolName}
                   />
                 ))}
               </TableBody>

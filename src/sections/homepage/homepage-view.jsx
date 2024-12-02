@@ -27,7 +27,7 @@ import { actGetNewsAsync } from '../../store/NewsForUniversity/action';
 export default function HomepageView() {
 
   const contentStyle = {
-    height: '400px',
+    height: '600px',
     color: '#fff',
     lineHeight: '400px',
     textAlign: 'center',
@@ -118,7 +118,7 @@ export default function HomepageView() {
             <img
               src="https://dnuni.fpt.edu.vn/wp-content/uploads/2022/02/Untitled-design-12-min-1600x900.png"
               alt="img"
-              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+              style={{ width: '100%', height: '600px', objectFit: 'cover' }}
             />
           </h3>
 
@@ -128,7 +128,7 @@ export default function HomepageView() {
             <img
               src="https://tuyensinh.ueh.edu.vn/wp-content/uploads/2024/06/1920x1080.png"
               alt="img"
-              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+              style={{ width: '100%', height: '600px', objectFit: 'cover' }}
             />
           </h3>
         </div>
@@ -137,7 +137,7 @@ export default function HomepageView() {
             <img
               src="https://vluwebmedia.s3.ap-southeast-1.amazonaws.com/large_xet_hoc_ba_1920x1080_01_5d8328bee8.jpg"
               alt="img"
-              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+              style={{ width: '100%', height: '600px', objectFit: 'cover' }}
             />
           </h3>
         </div>
@@ -146,7 +146,7 @@ export default function HomepageView() {
             <img
               src="https://www.hoasen.edu.vn/tuyensinh/wp-content/uploads/sites/7/2024/07/tuyensinh.png"
               alt="img"
-              style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+              style={{ width: '100%', height: '600px', objectFit: 'cover' }}
             />
           </h3>
         </div>

@@ -105,13 +105,13 @@ export default function TestLessonView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actGetTestLessonsAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actGetTestLessonsAsync({ page: newPage + 1, pageSize: rowsPerPage, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actGetTestLessonsAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actGetTestLessonsAsync({ page: 1, pageSize: newRowsPerPage, search: filterName })); // Gọi API với `pageSize` mới
   };
 
 
@@ -232,17 +232,17 @@ export default function TestLessonView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterValue, schoolYears: filterYear }));
+      dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, search: filterValue }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterValue, schoolYears: filterYear }));
+      dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, search: filterValue, }));
     }
   };
 
   const handleFilter = (selectedYear) => {
     setFilterYear(selectedYear);
     // Gọi API với giá trị filter
-    dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
+    dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName }));
     handleClose(); // Đóng menu sau khi chọn
   };
 
@@ -260,7 +260,7 @@ export default function TestLessonView() {
 
 
   useEffect(() => {
-    dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, highSchoolId: userInfo.userId, search: filterName, schoolYears: filterYear }));
+    dispatch(actGetTestLessonsAsync({ page: page + 1, pageSize: rowsPerPage, search: filterName }));
     dispatch(actGetTypesTestLessonAsync());
   }, [success]);
 
