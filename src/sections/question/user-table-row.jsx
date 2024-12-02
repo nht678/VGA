@@ -82,7 +82,7 @@ export default function UserTableRow({
     { key: "Perceiving (P)", value: 8 },
   ];
   const groupValue = [
-    { key: 'khong biet', value: 0 },
+    { key: 'MBTI', value: 0 },
     { key: "Realistic", value: 1 },
     { key: "Investigative", value: 2 },
     { key: "Artistic", value: 3 },

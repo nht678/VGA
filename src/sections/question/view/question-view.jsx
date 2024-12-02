@@ -102,7 +102,7 @@ export default function QuestionView() {
     { key: "Perceiving (P)", value: 8 },
   ];
   const groupValue = [
-    { key: 'khong biet', value: 0 },
+    { key: 'MBTI', value: 0 },
     { key: "Realistic", value: 1 },
     { key: "Investigative", value: 2 },
     { key: "Artistic", value: 3 },
@@ -196,7 +196,7 @@ export default function QuestionView() {
               <DialogContentText id="alert-dialog-description">
                 <Grid container spacing={2} sx={{ mt: 1 }}>
                   <Grid size={{ md: 12 }}>
-                    <Typography sx={{ textAlign: 'center' }} variant="h6">Nếu là bài HOLLAND vui lòng không nhập câu trả lời</Typography>
+                    <Typography sx={{ textAlign: 'center' }} variant="h6">Nếu là bài HOLLAND vui lòng không nhập đáp án và chọn nhóm không phải MBTI</Typography>
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <TextField
