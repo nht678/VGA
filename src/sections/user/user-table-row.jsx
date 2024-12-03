@@ -26,6 +26,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import InfoIcon from '@mui/icons-material/Info';
 import moment from 'moment';
 import dayjs from 'dayjs';
+import { Chip } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync } from 'src/store/users/action';
 import DeleteDialog from '../../pages/delete';
@@ -43,7 +44,31 @@ const options = [
   { name: '2024', value: 2024 },
 ];
 
-
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 1:
+      return 'Active';
+    case 2:
+      return 'Inactive';
+    case 3:
+      return 'Blocked';
+    default:
+      return 'Unknown';
+  }
+};
+// Hàm lấy màu cho Chip dựa trên trạng thái
+const getStatusColor = (status) => {
+  switch (status) {
+    case 1:
+      return 'success'; // Xanh lá
+    case 2:
+      return 'default'; // Xám
+    case 3:
+      return 'error';   // Đỏ
+    default:
+      return 'default';
+  }
+};
 export default function UserTableRow({
   name,
   avatarUrl,
@@ -54,7 +79,10 @@ export default function UserTableRow({
   id: userId,  // Đổi tên id props thành userId
   dateOfBirth,
   rowKey,
-  schoolYears
+  schoolYears,
+  image_Url,
+  highSchoolName,
+  status
 }) {
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
@@ -180,6 +208,13 @@ export default function UserTableRow({
         <TableCell>
           {dateOfBirth}
         </TableCell>
+        <TableCell align="center">
+          <Chip
+            label={getStatusLabel(status)}
+            color={getStatusColor(status)}
+            variant="outlined"
+          />
+        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -275,8 +310,8 @@ export default function UserTableRow({
                   defaultValue={gender}
                   onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                 >
-                  <FormControlLabel value control={<Radio />} label="Male" />
-                  <FormControlLabel value={false} control={<Radio />} label="Female" />
+                  <FormControlLabel value control={<Radio />} label="Nam" />
+                  <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                 </RadioGroup>
                 {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
               </Grid>
@@ -325,7 +360,7 @@ export default function UserTableRow({
               <Grid size={{ md: 4 }}>
                 <Image
                   width={200}
-                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
+                  src={image_Url || 'https://gamehow.net/upload/suckhoe_post/images/2024/11/26/2930/anh-hoc-sinh-chibi-3.jpg'}
                   style={{ zIndex: 2 }}
                 />
               </Grid>
@@ -404,7 +439,7 @@ export default function UserTableRow({
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Số năm học:
+                  Năm học:
                 </Typography>
               </Grid>
               <Grid size={{ md: 3 }}>
@@ -413,8 +448,34 @@ export default function UserTableRow({
                 </Typography>
               </Grid>
             </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Trường cấp 3:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {highSchoolName}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Tình trạng:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {getStatusLabel(status)}
+                </Typography>
+              </Grid>
+            </Grid>
           </DialogContentText>
         </DialogContent>
+
+
+
+
       </Dialog >
       <Popover
         open={!!open}
@@ -453,5 +514,8 @@ UserTableRow.propTypes = {
   email: PropTypes.string,
   phone: PropTypes.string,
   rowKey: PropTypes.number,
-  schoolYears: PropTypes.number
+  schoolYears: PropTypes.number,
+  image_Url: PropTypes.string,
+  highSchoolName: PropTypes.string,
+  status: PropTypes.number
 };

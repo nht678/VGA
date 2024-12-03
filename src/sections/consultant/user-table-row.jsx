@@ -83,8 +83,16 @@ export default function UserTableRow({
   consultantLevelId,
   gender,
   rowKey,
-  certifications,
   status,
+  walletBalance,
+  accountId,
+  nameUniversity,
+  consultantLevelPrice,
+  image_Url,
+  emailuniversity,
+  consultantLevelDes,
+  certifications,
+  universityDes,
 }) {
   let userId = localStorage.getItem('userId');
 
@@ -190,6 +198,7 @@ export default function UserTableRow({
 
   const handleClickOpenDialog = (type) => {
     setDialog(type);
+    setOpen('');
   };
   const handleClickOpenDialog1 = (type) => {
     setDialog1(type);
@@ -381,7 +390,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>
           {description}
         </TableCell>
-        <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
+        <TableCell>{gender ? 'Nam' : 'Nữ'}</TableCell>
         <TableCell
           sx={{
             textAlign: 'center',
@@ -641,7 +650,7 @@ export default function UserTableRow({
               <Grid size={{ md: 4 }}>
                 <Image
                   width={200}
-                  src="https://vietnix.vn/wp-content/uploads/2022/09/Steve-Jobs-2.webp"
+                  src={image_Url || "https://th.bing.com/th/id/OIP.c3sJJ74lDvfpM_BWe_yxSwHaGI?rs=1&pid=ImgDetMain"}
                   style={{ zIndex: 2 }}
                 />
               </Grid>
@@ -738,14 +747,93 @@ export default function UserTableRow({
                   {getStatusLabel(status)}
                 </Typography>
               </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Số dư ví:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {walletBalance}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Trường đại học:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {nameUniversity}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Giá:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {consultantLevelPrice}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Email trường đại học:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {emailuniversity}
+                </Typography>
+              </Grid>
+
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Miêu tả cấp độ:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {consultantLevelDes}
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Miêu tả Trường đại học:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {universityDes}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Chứng chỉ:
+                </Typography>
+              </Grid>
+              {certifications?.map((item, index) => (
+                <Grid size={{ md: 12 }}>
+                  <Image
+                    width={100}
+                    src={item?.imageUrl}
+                    style={{ zIndex: 2 }}
+                  />
+                  <Typography variant="body2" sx={{ color: '#616161' }}>
+                    {item?.description}
+                  </Typography>
+                </Grid>
+              ))}
             </Grid>
           </DialogContentText>
         </DialogContent>
-
-
-
-
       </Dialog >
+
 
       <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover
@@ -786,6 +874,14 @@ UserTableRow.propTypes = {
   gender: PropTypes.bool,
   consultantLevelId: PropTypes.number,
   rowKey: PropTypes.number,
-  certifications: PropTypes.array,
   status: PropTypes.bool,
+  walletBalance: PropTypes.number,
+  accountId: PropTypes.string,
+  nameUniversity: PropTypes.string,
+  consultantLevelPrice: PropTypes.number,
+  image_Url: PropTypes.string,
+  emailuniversity: PropTypes.string,
+  consultantLevelDes: PropTypes.string,
+  certifications: PropTypes.array,
+  universityDes: PropTypes.string,
 };

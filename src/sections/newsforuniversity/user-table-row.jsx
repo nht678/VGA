@@ -30,6 +30,7 @@ import { actUpdateNewsContentAsync, actCreateNewsImageAsync, actDeleteNewsImageA
 import { UploadOutlined } from '@ant-design/icons';
 import { Button as ButtonAnt, message, Upload, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
+import { display } from '@mui/system';
 
 
 export default function UserTableRow({
@@ -333,15 +334,7 @@ export default function UserTableRow({
             sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: 3 }}
           >
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
-              <Grid size={{ md: 4 }}>
-                <Image
-                  width={200}
-                  src=''
-                  style={{ zIndex: 2 }}
-                  alt={title}
-                />
-              </Grid>
-              <Grid size={{ md: 8 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
+              <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }} >
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
@@ -379,7 +372,29 @@ export default function UserTableRow({
                   {content}
                 </Typography>
               </Grid>
-
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Ảnh:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 12 }}>
+                <Stack direction="row" spacing={2}>
+                  {imageNews?.map((image, index) => (
+                    <div key={index}>
+                      <Image
+                        alt={image.descriptionTitle}
+                        src={image.imageUrl}
+                        style={{ width: 100, height: 100, objectFit: 'cover' }}
+                      />
+                      <Typography variant="body2" sx={{ color: '#616161' }}>
+                        {image.descriptionTitle}
+                      </Typography>
+                    </div>
+                  ))}
+                </Stack>
+              </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>

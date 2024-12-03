@@ -475,8 +475,16 @@ export default function ConsultantView() {
                     consultantLevelId={row?.consultantLevel?.id || ''}
                     gender={row?.gender || ''}
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
-                    certifications={row?.certifications}
                     status={row?.accountStatus || ''}
+                    accountId={row?.accountId || ''}
+                    walletBalance={row?.walletBalance || 0}
+                    nameUniversity={row?.university?.account?.name || ''}
+                    consultantLevelPrice={row?.consultantLevel?.priceOnSlot || 0}
+                    image_Url={row?.account?.image_Url}
+                    emailuniversity={row?.university?.account?.email || ''}
+                    consultantLevelDes={row?.consultantLevel?.description || ''}
+                    certifications={row?.certifications}
+                    universityDes={row?.university?.description || ''}
                   />
                 ))}
               </TableBody>

@@ -9,7 +9,6 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,17 +16,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
+import WalletIcon from '@mui/icons-material/Wallet';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
 import { useSelector, useDispatch } from 'react-redux';
-
 import { getTransaction, createDistributionofAdminUniAsync, resetTransaction } from 'src/store/transaction/action';
-import { getWalletbyIdAsync } from 'src/store/wallet/action';
 import { actUniversityGetAsync } from 'src/store/university/action';
 
 import UserTableRow from '../user-table-row';
@@ -176,10 +170,7 @@ export default function TransactionAdminView() {
         <Box>
           <Card variant="outlined" sx={{ minWidth: 300, borderRadius: 2, boxShadow: 2 }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Ví của bạn
-              </Typography>
-
+              <WalletIcon sx={{ height: '40px', width: "40px", color: '#16a34a' }} />
               <Button variant="outlined" color="secondary" onClick={() => handleClickOpen('Create')}>
                 Phân phối điểm
               </Button>

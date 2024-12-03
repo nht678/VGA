@@ -464,6 +464,7 @@ export default function UserView() {
                   { id: 'gender', label: 'Giới tính' },
                   { id: 'gold', label: 'Điểm' },
                   { id: 'dateOfBirth', label: 'Ngày sinh' },
+                  { id: 'Tình trạng', label: 'Tình trạng', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -481,6 +482,10 @@ export default function UserView() {
                     avatarUrl={row.avatarUrl || ''} // Kiểm tra row.avatarUrl
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''} // Kiểm tra row.dateOfBirth
                     schoolYears={row?.schoolYears}
+                    image_Url={row?.account?.image_Url}
+                    highSchoolName={row?.highSchoolName}
+                    status={row?.account?.status || ''} // Kiểm tra row.status
+
                   />
                 ))}
               </TableBody>

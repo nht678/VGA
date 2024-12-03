@@ -19,21 +19,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
-
-
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
 import { useSelector, useDispatch } from 'react-redux';
-
 import { actGetAdmissionInformationAsync, actAddAdmissionInformationAsync, actResetAdmissionInformation } from 'src/store/admissionInformation/action';
 import { actGetMajorsAsync } from 'src/store/major/action';
 import { actGetAdmissionMethodsAsync } from 'src/store/admissionMethod/action';
-
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
@@ -123,41 +115,6 @@ export default function AdmissionInformationsView() {
   // useSelector: Lấy state từ store thông qua key
   const majors = useSelector((state) => state.majorReducer.majors);
   const admissionMethods = useSelector((state) => state.admissionMethodReducer.admissionMethods);
-
-  const [majorInputValue, setMajorInputValue] = useState(''); // Input của trường ngành học
-  const [majorValue, setMajorValue] = useState(null); // Giá trị đã chọn cho ngành học
-
-  const [admissionMethodInputValue, setAdmissionMethodInputValue] = useState(''); // Input của trường phương thức tuyển sinh
-  const [admissionMethodValue, setAdmissionMethodValue] = useState(null); // Giá trị đã chọn cho phương thức tuyển sinh
-
-  const [yearInputValue, setYearInputValue] = useState(''); // Input của trường năm
-  const [yearValue, setYearValue] = useState(null); // Giá trị đã chọn cho năm
-
-  const handleMajorChange = (event, newValue) => {
-    setMajorValue(newValue?.id);
-    setFormData({
-      ...formData,
-      majorId: newValue?.id
-    });
-  };
-
-  const handleAdmissionMethodChange = (event, newValue) => {
-    setAdmissionMethodValue(newValue?.id);
-    setFormData({
-      ...formData,
-      admissionMethodId: newValue?.id
-    });
-  };
-
-
-  const handleYearChange = (event, newValue) => {
-    setYearValue(newValue?.value);
-    setFormData({
-      ...formData,
-      year: newValue?.value
-    });
-  };
-
   const handleAddAdmissionInfo = () => {
     if (!validateForm()) return;
     dispatch(actAddAdmissionInformationAsync({ formData, universityId: userId }));
@@ -426,6 +383,7 @@ export default function AdmissionInformationsView() {
                     tuitionFee={row?.tuitionFee}
                     year={row?.year}
                     avatarUrl={row?.avatarUrl}
+                    universityName={row?.universityName}
                   />
                 ))}
               </TableBody>

@@ -333,8 +333,8 @@ export default function UserTableRow({
                   defaultValue={gender}
                   onChange={(e) => setformData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
                 >
-                  <FormControlLabel value control={<Radio />} label="Male" />
-                  <FormControlLabel value={false} control={<Radio />} label="Female" />
+                  <FormControlLabel value control={<Radio />} label="Nam" />
+                  <FormControlLabel value={false} control={<Radio />} label="Nữ" />
                 </RadioGroup>
                 {errors.gender && <Typography color="error">{errors.gender}</Typography>} {/* Hiển thị lỗi nếu có */}
               </Grid>

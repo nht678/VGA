@@ -9,9 +9,6 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
-// import { users } from 'src/_mock/user';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -19,18 +16,11 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
-
-
-
-import Iconify from 'src/components/iconify';
+import WalletIcon from '@mui/icons-material/Wallet';
 import Scrollbar from 'src/components/scrollbar';
-
 import { useSelector, useDispatch } from 'react-redux';
-
 import { getTransaction, createDistributionAsync, resetTransaction } from 'src/store/transaction/action';
 import { getWalletbyIdAsync } from 'src/store/wallet/action';
 
@@ -195,9 +185,7 @@ export default function TransactionView() {
         <Box>
           <Card variant="outlined" sx={{ minWidth: 300, borderRadius: 2, boxShadow: 2 }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Typography variant="h6" component="div" sx={{ mb: 2 }}>
-                Ví của bạn
-              </Typography>
+              <WalletIcon sx={{ height: '40px', width: "40px", color: '#16a34a' }} />
               <Typography variant="body1" sx={{ mb: 1 }}>
                 Số điểm: <strong>{goldBalance}</strong>
               </Typography>
@@ -252,7 +240,7 @@ export default function TransactionView() {
                 <DialogActions>
                   <Button onClick={handleClose}>Hủy bỏ</Button>
                   <Button onClick={handledistribute} autoFocus>
-                    Tạo mới
+                    Phân phối
                   </Button>
                 </DialogActions>
               </Dialog>

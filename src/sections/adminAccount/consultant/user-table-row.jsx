@@ -255,7 +255,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>
           {description}
         </TableCell>
-        <TableCell>{gender ? 'Male' : 'Female'}</TableCell>
+        <TableCell>{gender ? 'Nam' : 'Nữ'}</TableCell>
         <TableCell
           sx={{
             textAlign: 'center',
