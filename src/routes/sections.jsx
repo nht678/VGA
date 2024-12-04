@@ -157,7 +157,6 @@ export default function Router() {
         </Suspense>
       )
     },
-    { path: 'hello', element: <Hello /> },
     {
       path: '/newsdetail/:id', element: (
         <Suspense fallback={<LoadingPage />}>
