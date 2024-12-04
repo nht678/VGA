@@ -129,23 +129,27 @@ export default function UserTableRow({
     address: address,
     regionId: regionId,
   });
+  console.log('regionId', regionId);
 
   const handlechange = (event) => {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
-      regionId: value?.id,
-
     });
   }
 
   const handleUpdateHighSchool = () => {
+    console.log('formData1', formData);
     if (!validateForm()) {
       return;
     }
     dispatch(actHighSchoolUpdateAsync({ formData, id }));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
+      setFormData((prevData) => ({
+        ...prevData,
+        password: '',
+      }));
     }
     handleCloseDialog();
   }
@@ -163,11 +167,7 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  const [options, setOptions] = useState([]);
   const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-
-
 
   return (
     <>
@@ -178,7 +178,7 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" component="div" noWrap>
+            <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
@@ -276,8 +276,7 @@ export default function UserTableRow({
               <Grid size={{ md: 6 }}>
                 <Autocomplete
                   onChange={handleRegionChange}
-                  id="controllable-states-demo"
-                  defaultValue={regions.find((region) => region.id === formData.regionId) || null}
+                  value={regions.find((region) => region.id === formData.regionId) || null}
                   options={regions || []} // Đảm bảo options luôn là một mảng
                   getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
                   renderInput={(params) => <TextField {...params} label="Chọn tỉnh thành" />}

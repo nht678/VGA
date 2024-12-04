@@ -64,6 +64,7 @@ export const actAddHighSchoolAsync = (data) => async (dispatch) => {
 };
 
 export const actHighSchoolUpdateAsync = ({ formData, id }) => async (dispatch) => {
+    debugger
     try {
         const response = await highschoolService.updateHighSchool({ id, formData });
         if (response.status === 200 || response.status === 201) {

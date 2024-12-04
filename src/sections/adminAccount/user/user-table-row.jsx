@@ -322,7 +322,7 @@ export default function UserTableRow({
               </Grid>
 
               <Grid item xs={12}>
-                <Typography variant="h6" component="div">Date Of Birth</Typography>
+                <Typography variant="h6" >Date Of Birth</Typography>
                 <Calendar fullscreen={false} onPanelChange={onPanelChange} onChange={onPanelChange} />
               </Grid>
               <Grid size={{ md: 6 }}>

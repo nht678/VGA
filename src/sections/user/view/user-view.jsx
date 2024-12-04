@@ -475,7 +475,7 @@ export default function UserView() {
                     name={row?.account?.name || ''} // Kiểm tra row.name
                     rowKey={index + 1}
                     id={row?.id || ''} // Kiểm tra row.id
-                    gender={row?.gender} // Kiểm tra row.gender
+                    gender={row?.gender ?? ''} // Kiểm tra row.gender
                     gold={row?.account?.wallet?.goldBalance || 0} // Kiểm tra row["gold-balance"]
                     email={row.account?.email || ''} // Kiểm tra row.account?.email
                     phone={row.account?.phone || ''} // Kiểm tra row.account?.phone

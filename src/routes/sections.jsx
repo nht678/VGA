@@ -20,7 +20,7 @@ export const EventQuiz = lazy(() => import('src/pages/eventquiz'));
 export const EditQuiz = lazy(() => import('src/pages/quizdetail'));
 export const MyQuiz = lazy(() => import('src/pages/myquiz'));
 export const NewsDetail = lazy(() => import('src/pages/newsdetail'));
-export const Profile = lazy(() => import('src/pages/profile'));
+export const ProfileHighSchool = lazy(() => import('src/pages/profileHighSchool'));
 export const Signin = lazy(() => import('src/pages/signin'));
 export const HighSchoolView = lazy(() => import('src/pages/highschool'));
 export const Logout = lazy(() => import('src/pages/logout'));
@@ -51,6 +51,7 @@ export const UniversityAccountView = lazy(() => import('src/sections/adminAccoun
 export const TestLesson = lazy(() => import('src/pages/testlesson'));
 export const WithdrawalRequest = lazy(() => import('src/pages/withdrawalRequest'));
 export const Question = lazy(() => import('src/pages/question'));
+export const ProfileUniversityPage = lazy(() => import('src/pages/profileuniversity'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -111,6 +112,7 @@ export default function Router() {
         { path: 'testlesson', element: role === '1' ? <TestLesson /> : <Navigate to="/404" replace /> },
         { path: 'withdrawalRequest', element: role === '1' ? <WithdrawalRequest /> : <Navigate to="/404" replace /> },
         { path: 'questions/:id', element: role === '1' ? <Question /> : <Navigate to="/404" replace /> },
+        {}
 
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
 
@@ -166,10 +168,18 @@ export default function Router() {
       )
     },
     {
-      path: 'profile', element:
+      path: 'profileuniversity', element:
         (
           <Suspense fallback={<LoadingPage />}>
-            <Profile />
+            <ProfileUniversityPage />
+          </Suspense>
+        )
+    },
+    {
+      path: 'profilehighschool', element:
+        (
+          <Suspense fallback={<LoadingPage />}>
+            <ProfileHighSchool />
           </Suspense>
         )
     },

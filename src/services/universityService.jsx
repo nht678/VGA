@@ -47,5 +47,13 @@ const universityService = {
             }
         )
     ,
+    updateUniversityLocation: (data) =>
+        BASE_API.put(`/university/${data.id}/location`, data.formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        )
 };
 export default universityService;

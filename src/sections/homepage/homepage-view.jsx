@@ -156,31 +156,15 @@ export default function HomepageView() {
           Về chúng tôi
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Chúng tôi là một đội ngũ các chuyên gia tận tâm, cam kết mang đến dịch vụ tốt nhất cho khách hàng. Với kinh nghiệm sâu rộng trong lĩnh vực của mình, chúng tôi không ngừng nỗ lực cải thiện chất lượng dịch vụ và đảm bảo sự hài lòng của khách hàng. Chúng tôi tin rằng mỗi khách hàng đều xứng đáng được phục vụ theo cách tốt nhất có thể, vì vậy chúng tôi luôn lắng nghe và tìm kiếm những phương pháp sáng tạo mới để đáp ứng nhu cầu của họ. Sự hài lòng của khách hàng là ưu tiên hàng đầu và là động lực thúc đẩy sự phát triển không ngừng của chúng tôi.
+          Hệ thống của chúng tôi là một nền tảng tiên tiến, kết nối chặt chẽ giữa các trường đại học, trường trung học, và học sinh, nhằm tạo ra một môi trường giáo dục hiện đại và hiệu quả. Với sứ mệnh đồng hành cùng các trường đại học trong việc quảng bá ngành học và thu hút học sinh tiềm năng, chúng tôi cung cấp các công cụ hỗ trợ tối ưu như tổ chức bài test định hướng, các sự kiện tương tác, và buổi tư vấn trực tiếp. Đồng thời, hệ thống giúp các trường trung học dễ dàng quản lý danh sách học sinh, phân bổ Gold một cách khoa học, và theo dõi tiến trình học tập của từng cá nhân. Đối với học sinh, đây không chỉ là nơi khám phá bản thân mà còn là cánh cửa mở ra cơ hội được tư vấn chuyên sâu và tham gia các hoạt động thiết thực, giúp định hướng rõ ràng cho tương lai học tập và nghề nghiệp.
         </Typography>
       </Box>
       <Box sx={{ flexGrow: 1, m: 10 }}>
         <Grid container spacing={2} >
           <Grid size={5} sx={{ display: { xs: 'none', md: 'block', lg: 'block' } }}>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              {/* <ImageList
-                sx={{ width: 500, height: 290 }}
-                variant="quilted"
-                cols={4}
-                rowHeight={140}
-              >
-                {itemData.map((item) => (
-                  <ImageListItem key={item.img} cols={item.cols || 1} rows={item.rows || 1}>
-                    <img
-                      {...srcset(item.img, 121, item.rows, item.cols)}
-                      alt={item.title}
-                      loading="lazy"
-                    />
-                  </ImageListItem>
-                ))}
-              </ImageList> */}
               <img
-                src="assets/images/avatars/Admiss1.png"
+                src="https://th.bing.com/th/id/OIP.CCjnIlqaCdwnlp1TxmsRowHaEJ?w=626&h=351&rs=1&pid=ImgDetMain"
                 alt="img"
                 style={{ width: '100%', height: '300px', objectFit: 'cover' }}
               />
@@ -188,18 +172,7 @@ export default function HomepageView() {
           </Grid>
           <Grid xs={12} size={7}>
             <Box>
-              <Typography
-                sx={{
-                  fontWeight: 'light',
-                  textAlign: { xs: 'center', sm: 'center', md: 'left' } // Chỉ căn giữa cho xs và sm, căn trái cho md trở lên
-                }}
-                variant="inherit"
-                component="h2"
-                gutterBottom
-              >
 
-                Mục tiêu chính của chúng ta là gì?
-              </Typography>
               <Typography
                 sx={{
                   textAlign: { xs: 'center', sm: 'center', md: 'left' } // Chỉ căn giữa cho xs và sm, căn trái cho md trở lên
@@ -208,7 +181,7 @@ export default function HomepageView() {
                 component="h2"
                 gutterBottom
               >
-                Mục tiêu của chúng tôi là cung cấp dịch vụ tốt nhất cho khách hàng.
+                Mục tiêu chính của chúng tôi là gì?
               </Typography>
               <Typography
                 sx={{
@@ -217,7 +190,7 @@ export default function HomepageView() {
                 variant="body1"
                 gutterBottom
               >
-                Chúng tôi là một đội ngũ các chuyên gia tận tâm, được thúc đẩy bởi sứ mệnh mang lại những dịch vụ xuất sắc cho cả học sinh và giáo viên trong cộng đồng học thuật. Mục tiêu của chúng tôi là tạo ra một môi trường phong phú, hỗ trợ và hấp dẫn, nơi mỗi cá nhân đều có thể phát triển. Chúng tôi tin vào sức mạnh chuyển đổi của giáo dục và luôn tìm kiếm những cách sáng tạo để nâng cao dịch vụ của mình, cho dù đó là thông qua công nghệ tiên tiến, hỗ trợ cá nhân hóa hay quy trình tối ưu hóa đáp ứng nhu cầu riêng biệt của các trường trung học và đại học.
+                Mục tiêu của chúng tôi là trở thành cầu nối vững chắc giữa các trường đại học, trường trung học, và học sinh, hỗ trợ tối đa trong hành trình định hướng và phát triển tương lai. Hệ thống được thiết kế để giúp các trường đại học quảng bá ngành học và tổ chức các hoạt động tương tác hiệu quả, tạo cơ hội để tiếp cận học sinh tiềm năng từ các trường trung học.
               </Typography>
               <Typography
                 sx={{
@@ -226,7 +199,7 @@ export default function HomepageView() {
                 variant="body1"
                 gutterBottom
               >
-                Sự cam kết của chúng tôi với việc cải tiến liên tục đảm bảo rằng chúng tôi luôn đi đầu trong các xu hướng giáo dục, cung cấp một nền tảng nơi học sinh có thể dễ dàng tiếp cận tài nguyên và giáo viên có thể thúc đẩy sự xuất sắc trong học tập. Bằng cách tập trung vào việc tạo ra những mối quan hệ ý nghĩa và bền vững với người dùng, chúng tôi không chỉ đáp ứng nhu cầu của họ mà còn vượt qua mong đợi của họ, đảm bảo sự thành công và hài lòng của họ trong mọi tương tác với nền tảng của chúng tôi.
+                Đối với các trường trung học, chúng tôi hướng đến việc cung cấp công cụ quản lý hiện đại, giúp dễ dàng theo dõi và phân bổ Gold đến học sinh. Thông qua đó, nhà trường có thể hỗ trợ học sinh tham gia các bài test, sự kiện, hoặc buổi tư vấn nghề nghiệp từ chuyên gia, giúp các em chuẩn bị tốt hơn cho kỳ thi tuyển sinh đại học. Với các trường đại học, mục tiêu của chúng tôi là tạo ra một kênh liên kết hiệu quả, giúp họ tiếp cận gần hơn với học sinh từ các trường trung học. Các trường đại học có thể giới thiệu chương trình học, ngành nghề và tổ chức các hoạt động tìm hiểu để thu hút những học sinh phù hợp. Đồng thời, thông qua hệ thống Gold, các trường đại học có thể cung cấp các gói tài trợ khuyến khích cho các trường trung học và học sinh tiềm năng.
               </Typography>
             </Box>
           </Grid>
@@ -258,10 +231,18 @@ export default function HomepageView() {
                             </p>
                             <div
                               className="testimonial-meta"
-                              style={{ display: "flex", alignItems: "center" }}
+                              style={{ display: "flex", alignItems: "flex-start" }}
                             >
                               <div className="client-image" style={{ width: '70px', height: '50px', borderRadius: '50%' }}>
-                                <img src={item.imageUrl || img1} alt="testimonial" />
+                                <img
+                                  src={item?.universityImageUrl || img1}
+                                  alt="testimonial"
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                  }}
+                                />
                               </div>
                               <div className="client-info">
                                 <h3>
@@ -269,7 +250,7 @@ export default function HomepageView() {
                                     ? `${item.title.substring(0, 50)}...`
                                     : item.title}
                                 </h3>
-                                <p>FPT</p>
+                                <p>{item?.universityName}</p>
                               </div>
                             </div>
                             <FaQuoteRight />

@@ -95,7 +95,6 @@ export default function UserTableRow({
   universityDes,
 }) {
   let userId = localStorage.getItem('userId');
-
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -123,6 +122,8 @@ export default function UserTableRow({
     universityId: userId,
     certifications: cleanedCertifications
   });
+  console.log('formData', formData);
+
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const { successConsultant } = useSelector((state) => state.consultantReducer);
   const [inputValue, setInputValue] = useState(''); // Giá trị input
@@ -150,13 +151,13 @@ export default function UserTableRow({
     return Object.keys(newErrors).length === 0;
   };
 
-  // handle change
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.name === 'gender' ? e.target.value === 'true' : e.target.value,
     });
   };
+
 
   const dispatch = useDispatch();
   const handleUpdate = () => {
@@ -518,10 +519,10 @@ export default function UserTableRow({
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="gender"
                   defaultValue={gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value === 'true' })}  // So sánh giá trị trả về và chuyển đổi
+                  onChange={handleChange}  // So sánh giá trị trả về và chuyển đổi
                 >
-                  <FormControlLabel value control={<Radio />} label="Nam" />
-                  <FormControlLabel value={false} control={<Radio />} label="Nữ" />
+                  <FormControlLabel value="true" control={<Radio />} label="Nam" />
+                  <FormControlLabel value="false" control={<Radio />} label="Nữ" />
                 </RadioGroup>
                 {errors.gender && <Typography variant='caption' color="error">{errors.gender}</Typography>}
               </Grid>
@@ -818,7 +819,7 @@ export default function UserTableRow({
                 </Typography>
               </Grid>
               {certifications?.map((item, index) => (
-                <Grid size={{ md: 12 }}>
+                <Grid key={index} size={{ md: 12 }}>
                   <Image
                     width={100}
                     src={item?.imageUrl}
@@ -874,7 +875,7 @@ UserTableRow.propTypes = {
   gender: PropTypes.bool,
   consultantLevelId: PropTypes.number,
   rowKey: PropTypes.number,
-  status: PropTypes.bool,
+  status: PropTypes.number,
   walletBalance: PropTypes.number,
   accountId: PropTypes.string,
   nameUniversity: PropTypes.string,

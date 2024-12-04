@@ -220,7 +220,7 @@ const Footer = () => {
           <div className="max-w-xl lg:max-w-lg">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Nhận bản tin của chúng tôi.</h2>
             <p className="mt-4 text-lg leading-8 text-gray-300">
-              Hãy cập nhật những tin tức mới nhất, nơi bạn sẽ nhận được những nội dung được chọn lọc kỹ lưỡng.
+              Luôn được cập nhật với những tin tức mới nhất từ hệ thống của chúng tôi! Bản tin là nơi tập hợp những thông tin được chọn lọc kỹ lưỡng, bao gồm các xu hướng giáo dục, cơ hội nghề nghiệp, và các sự kiện nổi bật từ các trường đại học và trung học.
             </p>
           </div>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">

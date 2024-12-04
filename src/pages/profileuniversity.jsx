@@ -1,16 +1,15 @@
-
-// Import the required libraries
 import React from 'react';
 import Header from 'src/pages/header';
-import ProfileView from 'src/sections/profile/profile-view';
+
+import ProfileUniversityView from 'src/sections/profile/profileuniversity-view';
 import Footer from 'src/sections/footer/footer';
 
-export default function ProfilePage() {
+export default function ProfileUniversityPage() {
     return (
         <>
             <Header />
-            <ProfileView />
+            <ProfileUniversityView />
             <Footer />
         </>
     );
-}   
+}

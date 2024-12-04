@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_API, TOKEN } from "./api";
 
 const consultantService = {
-    getConsultants: async ({ page, pageSize, search, level }) => {
+    getConsultants: async ({ page, pageSize, search, level, universityId }) => {
         const params = {
             'current-page': page,
             'page-size': pageSize,
@@ -17,7 +17,9 @@ const consultantService = {
         if (level) {
             params['consultant-level-id'] = level;
         }
-
+        if (universityId) {
+            params['university-id'] = universityId;
+        }
         const response = await BASE_API.get(`/consultants`, {
             params,
             headers: {

@@ -9,9 +9,9 @@ export const RESET_CONSULTANT_SUCCESS = "RESET_CONSULTANT_SUCCESS";
 export const REMOVE_CERTIFICATION = "REMOVE_CERTIFICATION";
 export const ADD_CERTIFICATION = "ADD_CERTIFICATION";
 
-export const getConsultants = ({ page, pageSize, search, level }) => async (dispatch) => {
+export const getConsultants = ({ page, pageSize, search, level, universityId }) => async (dispatch) => {
     try {
-        const response = await consultantService.getConsultants({ page, pageSize, search, level });
+        const response = await consultantService.getConsultants({ page, pageSize, search, level, universityId });
         dispatch({
             type: GET_CONSULTANTS_SUCCESS,
             payload: response.data,

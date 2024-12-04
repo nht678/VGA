@@ -11,25 +11,6 @@ export function actRegionGet(data) {
     };
 }
 
-// export function actRegionGet(data) {
-//     return {
-//         type: ACT_REGION_GET,
-//         payload: data,
-//     };
-// }
-
-
-// export function actGetRegionAsync() {
-//     return async (dispatch) => {
-//         try {
-//             const response = await apiRegion.get('');
-//             console.log('response:', response);
-//             dispatch(actRegionGet(response.data));
-//         } catch (error) {
-//             console.log('error:', error);
-//         }
-//     };
-// }
 
 export const actGetRegionAsync = () => async (dispatch) => {
     try {

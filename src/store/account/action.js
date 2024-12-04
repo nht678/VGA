@@ -73,7 +73,7 @@ export function signoutUserStudent(accountId, navigate) {
     return async (dispatch) => {
         try {
             // dispatch(actSignOut());
-            navigate('/signinpayment', { replace: true });
+
             // Trả về Promise của accountService.logout
             const response = await accountService.logout(accountId, token);
             if (response.status === 200) {
@@ -84,13 +84,16 @@ export function signoutUserStudent(accountId, navigate) {
                 localStorage.removeItem('name');
                 localStorage.removeItem('role');
                 localStorage.removeItem('accountId');
+                navigate('/signinpayment', { replace: true });
             } else {
                 message.error('Đăng xuất thất bại');
+                navigate('/signinpayment', { replace: true });
             }
 
         } catch (error) {
             console.log('Error:', error);
             message.error('Lỗi đăng xuất');
+            navigate('/signinpayment', { replace: true });
         }
     };
 }

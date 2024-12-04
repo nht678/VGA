@@ -161,13 +161,13 @@ export default function AdmissionInformationsView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actGetAdmissionInformationAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actGetAdmissionInformationAsync({ page: newPage + 1, pageSize: rowsPerPage, universityid: userId, search: filterName })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actGetAdmissionInformationAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actGetAdmissionInformationAsync({ page: 1, pageSize: newRowsPerPage, universityid: userId, search: filterName })); // Gọi API với `pageSize` mới
   };
 
   // write code here

@@ -31,12 +31,7 @@ const user = {
     imageUrl:
         'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
 }
-const navigation = [
-    { name: 'Trang chủ', href: '/', current: false },
-    { name: 'Tin tức', href: '/news', current: false },
 
-    { name: 'Quản lý', href: '/managers', current: false },
-]
 // let role = localStorage.getItem('role');
 
 // const getNavigation = () => {
@@ -75,13 +70,27 @@ export default function Header() {
 
     let role = localStorage.getItem('role');
 
-    const userNavigation = role
+    const userNavigation = role === '3' || role === '5'
         ? [
-            { name: 'Hồ sơ của bạn', href: '/profile' },
+            { name: 'Hồ sơ của bạn', href: role === '3' ? '/profilehighschool' : '/profileuniversity' },
             { name: 'Đăng xuất', onClick: 'logout' },
         ]
-        : [
-            { name: 'Đăng nhập', href: '/signin' },
+        : role === '1' ?
+            [
+                { name: 'Đăng xuất', onClick: 'logout' },
+            ] :
+            [
+                { name: 'Đăng nhập', href: '/signin' },
+            ];
+    const navigation = role ? [
+        { name: 'Trang chủ', href: '/', current: false },
+        { name: 'Tin tức', href: '/news', current: false },
+
+        { name: 'Quản lý', href: '/managers', current: false },
+    ] :
+        [
+            { name: 'Trang chủ', href: '/', current: false },
+            { name: 'Tin tức', href: '/news', current: false },
         ];
 
 
@@ -173,12 +182,21 @@ export default function Header() {
                         <div className="flex h-16 items-center justify-between">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    <Link to="/managers">
-                                        <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 2, color: 'rgba(99,102,241,1)' }} >
-                                            VGA
-                                        </Typography>
+                                    {
+                                        role ? <Link to="/managers">
+                                            <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 2, color: 'rgba(99,102,241,1)' }} >
+                                                VGA
+                                            </Typography>
 
-                                    </Link>
+                                        </Link>
+                                            :
+                                            <Link to="/">
+                                                <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, marginLeft: 2, color: 'rgba(99,102,241,1)' }} >
+                                                    VGA
+                                                </Typography>
+                                            </Link>
+                                    }
+
                                 </div>
                                 <div className="hidden md:block">
                                     <div className="ml-10 flex items-baseline space-x-4">
@@ -265,7 +283,7 @@ export default function Header() {
                                                         <ListItemAvatar>
                                                             <Avatar
                                                                 alt={item.name}
-                                                                src={item.avatar || "/static/images/avatar/default.jpg"}
+                                                                src={item.avatar}
                                                             />
                                                         </ListItemAvatar>
                                                         <ListItemText

@@ -55,7 +55,7 @@ export default function ConsultantView() {
     email: '',
     password: '',
     phone: '',
-    doB: '',
+    doB: new Date().toISOString().split('T')[0],
     description: '',
     gender: '',
     consultantLevelId: '',
@@ -103,11 +103,12 @@ export default function ConsultantView() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+      universityId: userId  // Thêm universityId vào formData
     });
   };
 
   useEffect(() => {
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, universityId: userId, level: filterLevel }));
     dispatch(actLevelGetAsync({}));
   }, [successConsultant]);
 
@@ -138,13 +139,13 @@ export default function ConsultantView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage, universityId: userId, search: filterName, level: filterLevel })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage, universityId: userId, search: filterName, level: filterLevel })); // Gọi API với `pageSize` mới
   };
 
   const [open, setOpen] = useState('');
@@ -169,17 +170,17 @@ export default function ConsultantView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue, level: filterLevel, universityId: userId }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage }));
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, universityId: userId, level: filterLevel }));
     }
   };
   const handleFilterByLevel = async (Selectedlevel) => {
     setFilterLevel(Selectedlevel);  // Cập nhật tạm thời giá trị tìm kiếm cho input
     setFilterLevelName(`Level ${Selectedlevel}`);
 
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: Selectedlevel }));
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: Selectedlevel, universityId: userId }));
   };
 
   const [filterLevel, setFilterLevel] = useState('');
@@ -268,7 +269,7 @@ export default function ConsultantView() {
   }
 
 
-
+  console.log('consultants', consultants);
 
   return (
     <>
@@ -464,7 +465,7 @@ export default function ConsultantView() {
               <TableBody>
                 {consultants.map((row, index) => (
                   <UserTableRow
-                    key={row?.id}
+                    key={index}
                     id={row?.id || ''}
                     rowKey={index + 1}
                     name={row.name || ''}
@@ -473,7 +474,7 @@ export default function ConsultantView() {
                     avatarUrl={row.avatarUrl || ''}
                     description={row.description || ''}
                     consultantLevelId={row?.consultantLevel?.id || ''}
-                    gender={row?.gender || ''}
+                    gender={row?.gender ?? ''} // undefined or null 
                     dateOfBirth={row.dateOfBirth ? new Date(row.dateOfBirth).toISOString().split('T')[0] : ''}
                     status={row?.accountStatus || ''}
                     accountId={row?.accountId || ''}

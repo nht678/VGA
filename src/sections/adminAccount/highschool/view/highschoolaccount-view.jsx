@@ -64,7 +64,7 @@ export default function HighSchoolAccountView() {
 
   const dispatch = useDispatch();
 
-  const { highschools, total, successHighSchool } = useSelector((state) => state.highschoolReducer);
+  const { highschools, total = [], successHighSchool } = useSelector((state) => state.highschoolReducer);
   const { regions } = useSelector((state) => state.regionReducer);
 
   const handleAddHighSchool = () => {

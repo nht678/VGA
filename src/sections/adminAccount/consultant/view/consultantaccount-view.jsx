@@ -57,128 +57,31 @@ export default function ConsultantAccountView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [options, setOptions] = useState([]); // Danh sách tỉnh thành
-  const [value, setValue] = useState(null); // Giá trị đã chọn
-  const [inputValue, setInputValue] = useState(''); // Giá trị input
-
-  const onPanelChange = (value1, mode) => {
-    setformData({ ...formData, doB: value1.format('YYYY-MM-DD') });
-  };
-
-  const [errors, setErrors] = useState({});
-
-  // handlechange
-  const handleChange = (e) => {
-    setformData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) {
-      newErrors.name = 'Tên là bắt buộc';
-    }
-    if (!formData.email) {
-      newErrors.email = 'Email là bắt buộc';
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu là bắt buộc';
-    }
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại là bắt buộc';
-    }
-    // Kiểm tra định dạng số điện thoại (đơn giản)
-    const phoneRegex = /^[0-9]{10,11}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
-    if (!formData.doB) {
-      newErrors.doB = 'Ngày sinh là bắt buộc';
-    }
-    if (!formData.description) {
-      newErrors.description = 'Mô tả là bắt buộc';
-    }
-    if (!formData.consultantLevelId) {
-      newErrors.consultantLevelId = 'Level là bắt buộc';
-    }
-    if (formData.gender === undefined) {
-      newErrors.gender = 'Vui lòng chọn giới tính';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   useEffect(() => {
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName }));
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: filterLevel }));
     dispatch(actLevelGetAsync({}));
-    // dispatch(actLevelGetAsync)
   }, [successConsultant]);
-
-  const handleAddConsultant = () => {
-    if (!validateForm()) return;
-    dispatch(addConsultant(formData));
-    if (successConsultant) {
-      // message.success('Add Consultant Success');
-      dispatch(resetConsultantSuccess);
-    };
-    setformData({
-      name: '',
-      email: '',
-      password: '',
-      phone: '',
-      doB: '',
-      description: '',
-      consultantLevelId: '',
-    });
-
-    setOpen(false);
-  }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, level: filterLevel })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage, search: filterName, level: filterLevel })); // Gọi API với `pageSize` mới
   };
-
-
-
-  // write code here
-  const [open, setOpen] = useState('');
-
-  const handleClickOpen = (Typedialog) => {
-    setOpen(Typedialog);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleLevelChange = (event, newValue) => {
-    setValue(newValue);
-    setformData({ ...formData, consultantLevelId: newValue?.id || '' });
-  };
-
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue, level: filterLevel }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage }));
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, level: filterLevel }));
     }
   };
   const handleFilterByLevel = async (Selectedlevel) => {
@@ -190,7 +93,6 @@ export default function ConsultantAccountView() {
 
   const [filterLevel, setFilterLevel] = useState('');
   const [filterLevelName, setFilterLevelName] = useState('Level');
-
 
   return (
     <>
