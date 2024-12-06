@@ -1,16 +1,13 @@
 import * as React from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import Typography from '@mui/material/Typography';
-
 import { Link, useNavigate } from 'react-router-dom';
 import { Image, Button, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-
-
 import { List as ListMui, ListItemButton as ListItemButtonMui, ListItemText as ListItemTextMui, Menu as MenuMui, MenuItem as MenuItemMui } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -65,11 +62,16 @@ const options = [
 export default function Header() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { isAuthenticated } = useSelector((state) => state.accountReducer);
     const [isOpen, setIsOpen] = useState(false);
 
     let role = localStorage.getItem('role');
-
+    let token = localStorage.getItem('token');
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        console.log(decodedToken); // Payload sẽ được in ra
+    } else {
+        console.error("Token không tồn tại");
+    }
     const userNavigation = role === '3' || role === '5'
         ? [
             { name: 'Hồ sơ của bạn', href: role === '3' ? '/profilehighschool' : '/profileuniversity' },
@@ -121,7 +123,6 @@ export default function Header() {
         fetchNotification();
     }, [accountId]);
 
-    let token = localStorage.getItem('token');
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState('');
 

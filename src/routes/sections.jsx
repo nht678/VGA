@@ -8,20 +8,15 @@ import UniversityView from 'src/sections/university/view/university-view';
 export const Dashboard = lazy(() => import('src/pages/app'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const CounterComponent = lazy(() => import('src/sections/test'));
 export const Homepage = lazy(() => import('src/pages/homepage'));
 export const Header = lazy(() => import('src/pages/header'));
 export const News = lazy(() => import('src/pages/news'));
-export const EventQuiz = lazy(() => import('src/pages/eventquiz'));
-export const EditQuiz = lazy(() => import('src/pages/quizdetail'));
-export const MyQuiz = lazy(() => import('src/pages/myquiz'));
 export const NewsDetail = lazy(() => import('src/pages/newsdetail'));
 export const ProfileHighSchool = lazy(() => import('src/pages/profileHighSchool'));
 export const Signin = lazy(() => import('src/pages/signin'));
 export const HighSchoolView = lazy(() => import('src/pages/highschool'));
-export const Logout = lazy(() => import('src/pages/logout'));
 export const ConsultantView = lazy(() => import('src/pages/consultant'));
 export const ConsultantLevelView = lazy(() => import('src/pages/consultantlevel'));
 export const Transaction = lazy(() => import('src/pages/transaction'));
@@ -78,13 +73,6 @@ export default function Router() {
       children: [
         // { element: <IndexPage />, index: true },
         { path: 'students', element: role === '3' || role === '1' ? <UserPage /> : <Navigate to="/404" replace /> },
-        // { path: 'products', element: <ProductsPage /> },
-        // { path: 'blog', element: <BlogPage /> },
-        // { path: 'upload', element: <UploadFile /> },
-        // { path: 'counter', element: <CounterComponent /> },
-        // { path: 'eventquiz', element: <EventQuiz /> },
-        // { path: 'editquiz', element: <EditQuiz /> `},
-        // { path: 'myquiz', element: <MyQuiz /> },
         { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
         { path: 'transactions', element: role === '3' || role === "1" || role === "5" ? <Transaction /> : <Navigate to="/404" replace /> },
         { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
@@ -110,10 +98,7 @@ export default function Router() {
         { path: 'testlesson', element: role === '1' ? <TestLesson /> : <Navigate to="/404" replace /> },
         { path: 'withdrawalRequest', element: role === '1' ? <WithdrawalRequest /> : <Navigate to="/404" replace /> },
         { path: 'questions/:id', element: role === '1' ? <Question /> : <Navigate to="/404" replace /> },
-        {}
-
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
-
       ],
     },
     {
@@ -185,14 +170,6 @@ export default function Router() {
       element: (
         <Suspense fallback={<LoadingPage />}>
           <Signin />
-        </Suspense>
-      )
-    },
-    {
-      path: 'logout',
-      element: (
-        <Suspense fallback={<LoadingPage />}>
-          <Logout />
         </Suspense>
       )
     },

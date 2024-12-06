@@ -7,7 +7,7 @@ export default function Wallet() {
     return (
         <>
             <Helmet>
-                <title> Wallet </title>
+                <title>Ví</title>
             </Helmet>
 
             <WalletView />

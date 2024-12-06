@@ -28,7 +28,7 @@ import { actHighSchoolDeleteAsync, actHighSchoolUpdateAsync, resetHighSchoolSucc
 import { actUserBan } from 'src/store/users/action';
 import DeleteDialog from 'src/pages/delete';
 import { Image } from 'antd';
-import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../../formValidation';
+import { validateFormData, isRequired, isEmail, isPhone } from '../../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -93,7 +93,6 @@ export default function UserTableRow({
     name: [isRequired('Tên')],
     email: [isRequired('Email'), isEmail],
     phone: [isRequired('Số điện thoại'), isPhone],
-    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
     address: [isRequired('Địa chỉ')],
     regionId: [isRequired('Tỉnh thành')],
   };
@@ -125,7 +124,6 @@ export default function UserTableRow({
     name: name,
     email: email,
     phone: phone,
-    password: '',
     address: address,
     regionId: regionId,
   });
@@ -148,7 +146,6 @@ export default function UserTableRow({
       dispatch(resetHighSchoolSuccess());
       setFormData((prevData) => ({
         ...prevData,
-        password: '',
       }));
     }
     handleCloseDialog();
@@ -250,16 +247,6 @@ export default function UserTableRow({
                   onChange={handlechange}
                   error={!!errors.phone}
                   helperText={errors.phone}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  name='password'
-                  label="Mật khẩu"
-                  onChange={handlechange}
-                  error={!!errors.password}
-                  helperText={errors.password}
                 />
               </Grid>
               <Grid size={{ md: 6 }}>

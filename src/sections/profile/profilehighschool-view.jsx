@@ -1,15 +1,18 @@
 
 import React, { useEffect, useState } from 'react';
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Typography from '@mui/material/Typography';
 import { useSelector, useDispatch } from 'react-redux';
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-import { fetdataProfileHighSchool } from '../../services/profileService';
+import { fetdataProfileHighSchool, actChangePassword } from '../../services/profileService';
 import { actGetRegionAsync } from '../../store/region/action';
 import { actHighSchoolUpdateAsync } from '../../store/highschool/action';
 import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../formValidation';
 
 
 export default function ProfileHighSchoolView() {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [profileHighSchool, setProfileHighSchool] = useState([]);
     const [errors, setErrors] = useState({});
 
@@ -20,7 +23,22 @@ export default function ProfileHighSchoolView() {
 
     let userId = localStorage.getItem('userId');
 
-    console.log(profileHighSchool);
+    let accountId = localStorage.getItem('accountId');
+    const openDialog = () => setIsDialogOpen(true);
+    const closeDialog = () => setIsDialogOpen(false);
+    const handleSave = async () => {
+
+        if (newPassword !== confirmPassword) {
+            alert('Mật khẩu không khớp');
+            return;
+        }
+        const response = await actChangePassword({ newPassword, id: accountId });
+        if (response.status === 200) {
+            closeDialog();
+        }
+
+
+    };
 
     const [formData, setFormData] = useState({
         regionId: "", // Giá trị mặc định là chuỗi rỗng
@@ -28,7 +46,6 @@ export default function ProfileHighSchoolView() {
         email: "",
         address: "",
         phone: "",
-        password: "",
     });
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,7 +58,6 @@ export default function ProfileHighSchoolView() {
         name: [isRequired('Tên')],
         email: [isRequired('Email'), isEmail],
         phone: [isRequired('Số điện thoại'), isPhone],
-        password: [isValidPassword('Mật khẩu')],
         regionId: [isRequired('Vùng')],
         address: [isRequired('Địa chỉ')],
     };
@@ -86,7 +102,6 @@ export default function ProfileHighSchoolView() {
 
     return (
         <div className='flex justify-center  py-20 sm:grid-cols-6 '>
-
             <form className="w-full max-w-3xl" onSubmit={updateProfileHighSchool}>
                 <div className="space-y-12">
                     <div className="border-b border-gray-900/10 pb-12">
@@ -145,21 +160,75 @@ export default function ProfileHighSchoolView() {
                                     />
                                 </div>
                             </div>
-                            <div className="sm:col-span-full">
+                            <div className="sm:col-span-6">
                                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                                     Mật khẩu
                                 </label>
-                                <div className="mt-2">
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        autoComplete="password"
-                                        onChange={handleChange}
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    />
-                                </div>
-                                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
+                                <button
+                                    type="button"
+                                    onClick={openDialog}
+                                    className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                >
+                                    Đổi mật khẩu
+                                </button>
+
+                                {/* Dialog */}
+                                <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={isDialogOpen} onClose={closeDialog}>
+                                    <DialogBackdrop className="fixed inset-0 bg-opacity-30" transition >
+                                        <DialogPanel className="flex items-center justify-center min-h-screen">
+                                            <div className="bg-white p-4 rounded-md shadow-lg w-96">
+                                                <DialogTitle className="flex items-center gap-2">
+                                                    <Typography variant="h6">Vui lòng nhập mật khẩu mới của bạn</Typography>
+                                                </DialogTitle>
+                                                {/* Input mật khẩu mới */}
+                                                <div className="mt-4">
+                                                    <label htmlFor="newPassword" className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Mật khẩu mới
+                                                    </label>
+                                                    <input
+                                                        id="newPassword"
+                                                        name="newPassword"
+                                                        type="password"
+                                                        autoComplete="newPassword"
+                                                        value={newPassword}
+                                                        onChange={(e) => setNewPassword(e.target.value)}
+                                                        className="block w-full rounded-md border py-1.5 mt-2"
+                                                    />
+
+                                                    <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Xác nhận mật khẩu
+                                                    </label>
+                                                    <input
+                                                        id="confirmPassword"
+                                                        name="confirmPassword"
+                                                        type="password"
+                                                        value={confirmPassword}
+                                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                                        className="block w-full rounded-md border py-1.5 mt-2"
+                                                    />
+
+                                                    <div className="mt-4 flex justify-end gap-4">
+                                                        <button
+                                                            type="button"
+                                                            onClick={closeDialog}
+                                                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                                        >
+                                                            Hủy
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleSave}
+                                                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                                        >
+                                                            Lưu
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </DialogPanel>
+                                    </DialogBackdrop>
+                                </Dialog>
                             </div>
                             <div className="sm:col-span-6">
                                 <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">

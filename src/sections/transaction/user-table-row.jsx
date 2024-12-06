@@ -253,6 +253,6 @@ UserTableRow.propTypes = {
   transactionDateTime: PropTypes.string,
   goldAmount: PropTypes.number,
   rowKey: PropTypes.number,
-  transactionType: PropTypes.string,
+  transactionType: PropTypes.number,
   accountName: PropTypes.string,
 };

@@ -7,7 +7,7 @@ export default function WithdrawalRequest() {
     return (
         <>
             <Helmet>
-                <title> Withdrawal Request </title>
+                <title>Yêu cầu rút tiền</title>
             </Helmet>
 
             <WithdrawalRequestView />

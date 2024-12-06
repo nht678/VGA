@@ -5,7 +5,6 @@ export const ACT_UNIVERSITY_GET = 'ACT_UNIVERSITY_GET';
 export const ADD_UNIVERSITY = 'ADD_UNIVERSITY';
 export const UPDATE_UNIVERSITY = 'UPDATE_UNIVERSITY';
 export const DELETE_UNIVERSITY = 'DELETE_UNIVERSITY';
-export const UPDATE_UNIVERSITY_LOCATION = 'UPDATE_UNIVERSITY_LOCATION';
 
 export function actUniversityGet(data) {
     return {
@@ -30,12 +29,6 @@ export function actUniversityDelete(id) {
     return {
         type: DELETE_UNIVERSITY,
         payload: id,
-    };
-}
-export function actUpdateUniversityLocation(data) {
-    return {
-        type: UPDATE_UNIVERSITY_LOCATION,
-        payload: data,
     };
 }
 
@@ -80,24 +73,6 @@ export const actUniversityUpdateAsync = (data) => async (dispatch) => {
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
             dispatch(actUniversityUpdate(response.data));
-        } else {
-            message.error('Cập nhật thất bại');
-        }
-    } catch (error) {
-        // if (error.response.data) {
-        // message.error(error.response.data);
-        // } else {
-        message.error('Cập nhật thất bại');
-        // }
-    }
-}
-
-export const actUniversityUpdateLocationAsync = (data) => async (dispatch) => {
-    try {
-        const response = await universityService.updateUniversityLocation(data);
-        if (response.status === 200 || response.status === 201) {
-            message.success('Cập nhật thành công');
-            dispatch(actUpdateUniversityLocation(response.data));
         } else {
             message.error('Cập nhật thất bại');
         }

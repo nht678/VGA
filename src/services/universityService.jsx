@@ -48,7 +48,15 @@ const universityService = {
         )
     ,
     updateUniversityLocation: (data) =>
-        BASE_API.put(`/university/${data.id}/location`, data.formData,
+        BASE_API.put(`university-location${data?.id}`, data.formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${TOKEN}`,
+                },
+            }
+        ),
+    deleteUniversityLocation: (id) =>
+        BASE_API.delete(`/university-location/${id}`,
             {
                 headers: {
                     Authorization: `Bearer ${TOKEN}`,

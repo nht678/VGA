@@ -6,7 +6,7 @@ export default function TestLesson() {
     return (
         <>
             <Helmet>
-                <title>Test Lesson</title>
+                <title>Bài kiểm tra</title>
             </Helmet>
             <TestLessonView />
         </>

@@ -8,7 +8,7 @@ export default function Consultant() {
     return ( // Thêm return ở đây
         <>
             <Helmet>
-                <title>Consultants</title>
+                <title>Tư vấn viên</title>
             </Helmet>
             <ConsultantView />
         </>

@@ -6,7 +6,7 @@ export default function NewsForUniversity() {
     return (
         <>
             <Helmet>
-                <title> News For University | Minimal UI </title>
+                <title>Tin tức</title>
             </Helmet>
             <NewsForUniversityView />
         </>

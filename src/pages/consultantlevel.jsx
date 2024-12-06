@@ -7,7 +7,7 @@ export default function ConsultantLevelPage() {
     return (
         <>
             <Helmet>
-                <title> Consultant Level </title>
+                <title> Cấp độ tư vấn viên </title>
             </Helmet>
 
             <ConsultantLevelView />

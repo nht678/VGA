@@ -2,15 +2,11 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { Typography } from '@mui/material';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
 import Grid from '@mui/material/Grid2';
 import { Carousel } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-
 import './style.css';
-
 import { useTranslation } from "react-i18next";
 import { Row, Col } from "react-bootstrap";
 import { FaQuoteRight } from "react-icons/fa";

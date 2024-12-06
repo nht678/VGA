@@ -1,21 +1,39 @@
 
 import React, { useEffect, useState } from 'react';
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import Typography from '@mui/material/Typography';
 import { useSelector, useDispatch } from 'react-redux';
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-import { fetchProfileUniversity } from '../../services/profileService';
+import { fetchProfileUniversity, actupdateProfileUniversity, actdeleteProfileUniversity, actcreateProfileUniversity, actChangePassword } from '../../services/profileService';
 import { actGetRegionAsync } from '../../store/region/action';
-import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../formValidation';
+import { validateFormData, isRequired, isEmail, isPhone } from '../formValidation';
 import { actUniversityUpdateAsync } from '../../store/university/action';
 
 
 export default function ProfileUniversityView() {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [profileUniversity, setProfileUniversity] = useState([]);
     const [universityLocations, setuniversityLocations] = useState([]);
     const [errors, setErrors] = useState({});
 
-    const dispatch = useDispatch();
+    let accountId = localStorage.getItem('accountId');
+    const openDialog = () => setIsDialogOpen(true);
+    const closeDialog = () => setIsDialogOpen(false);
+    const handleSave = async () => {
+        if (newPassword !== confirmPassword) {
+            alert('Mật khẩu không khớp');
+            return;
+        }
+        const response = await actChangePassword({ newPassword, id: accountId });
+        if (response.status === 200) {
+            closeDialog();
+        }
 
+
+    };
+
+    const dispatch = useDispatch();
     const { regions = [] } = useSelector((state) => state.regionReducer);
     console.log(regions);
 
@@ -27,19 +45,12 @@ export default function ProfileUniversityView() {
         name: "",
         email: "",
         phone: "",
-        password: "",
         type: "",
         code: "",
         establishedYear: "",
         description: "",
     });
-    const [formDataLocation, setFormDataLocation] = useState([
-        {
-            regionId: "",
-            address: "",
-        },
-    ]
-    );
+    const [formDataLocation, setFormDataLocation] = useState([]);
     console.log('formDataLocation', formDataLocation);
 
     const handleChange = (e) => {
@@ -53,11 +64,9 @@ export default function ProfileUniversityView() {
         name: [isRequired('Tên')],
         email: [isRequired('Email'), isEmail],
         phone: [isRequired('Số điện thoại'), isPhone],
-        password: [isValidPassword('Mật khẩu')],
     };
 
     const validateForm = () => {
-        debugger
         const newErrors = validateFormData(formData, rules);
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -65,16 +74,83 @@ export default function ProfileUniversityView() {
 
     const updateProfileUniversity = (e) => {
         e.preventDefault();
-        console.log('formData', formData);
         // if (!validateForm()) return;
         dispatch(actUniversityUpdateAsync({ formData, id: userId }));
     }
+
+
+    const universityType = [
+        { Type: 1, name: 'Trường công lập' },
+        { Type: 2, name: 'trường tư thục' },
+    ];
+
+    const establishedYearUni = ['1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+
+    // Hàm cập nhật dòng dữ liệu
+    const handleUpdate = async (index) => {
+        const updatedItem = universityLocations[index];
+        const payload = {
+            regionId: updatedItem?.regionId,
+            address: updatedItem?.address,
+        };
+
+
+        try {
+            const response = actupdateProfileUniversity({ id: updatedItem?.id, formData: payload });
+            if (response.status === 200) {
+                const updatedData = await response?.data.json();
+
+                // Cập nhật state trong giao diện
+                setuniversityLocations((prev) =>
+                    prev.map((item, i) => (i === index ? updatedData : item))
+                );
+            }
+        } catch (error) {
+            console.error("Error updating location:", error);
+        }
+    };
+
+    // Hàm xử lý xóa dòng dữ liệu
+    const handleDelete = async (index) => {
+        const deletedItem = universityLocations[index];
+        console.log('deletedItem', deletedItem);
+        try {
+            const response = await actdeleteProfileUniversity(deletedItem?.id);
+            if (response.status === 200) {
+                // Xóa item trong state
+                setuniversityLocations((prev) => prev.filter((_, i) => i !== index));
+            }
+        } catch (error) {
+            console.error("Error deleting location:", error);
+        }
+    };
+
+    const [reloadpage, setReloadPage] = useState(false);
+
+
+    const handleCreateLocation = async () => {
+        const response = await actcreateProfileUniversity({ formDataLocation, id: userId });
+        if (response.status === 200) {
+            setFormDataLocation([]);
+            setReloadPage((prev) => !prev);
+        }
+    }
+    // Hàm xử lý thêm dòng mới
+    const addRow = () => {
+        setFormDataLocation((prev) => [...prev, { regionId: "", address: "" }]);
+    };
+    // Hàm xử lý tạo mới
+
+    const deleteRow = (index) => {
+        setFormDataLocation((prev) => prev.filter((_, i) => i !== index));
+    };
+
     useEffect(() => {
         // code here
         fetchProfileUniversity(userId).then((data) => {
             setProfileUniversity(data);
         });
-    }, []);
+    }, [reloadpage]);
 
     useEffect(() => {
         if (profileUniversity) {
@@ -87,13 +163,6 @@ export default function ProfileUniversityView() {
                 description: profileUniversity?.description || "",
                 type: profileUniversity?.type || "",
             });
-            setFormDataLocation([
-                {
-                    regionId: profileUniversity?.location?.regionId || "",
-                    address: profileUniversity?.location?.address || "",
-                },
-            ]
-            );
             setuniversityLocations(profileUniversity?.universityLocations || []);
         }
     }, [profileUniversity]);
@@ -102,78 +171,8 @@ export default function ProfileUniversityView() {
         dispatch(actGetRegionAsync());
     }, []);
 
-    const universityType = [
-        { Type: 1, name: 'Trường công lập' },
-        { Type: 2, name: 'trường tư thục' },
-    ];
-
-    const establishedYearUni = ['1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
-
-    // Hàm cập nhật dòng dữ liệu
-    const handleUpdate = async (index) => {
-        const updatedItem = universityLocations[index];
-        console.log('updatedItem', updatedItem);
-
-
-        // Gửi dữ liệu tới backend
-        try {
-            // const response = await fetch(`/api/update-location/${updatedItem.id}`, {
-            //     method: "PUT",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify(updatedItem),
-            // });
-
-            // if (!response.ok) throw new Error("Failed to update location");
-
-            // const updatedData = await response.json();
-
-            // Cập nhật state trong giao diện
-            // setuniversityLocations((prev) =>
-            //     prev.map((item, i) => (i === index ? updatedData : item))
-            // );
-        } catch (error) {
-            console.error("Error updating location:", error);
-        }
-    };
-
-    // Hàm xử lý xóa dòng dữ liệu
-    const handleDelete = async (index) => {
-        const deletedItem = universityLocations[index];
-        console.log('deletedItem', deletedItem);
-
-        // Gửi yêu cầu xóa tới backend
-        try {
-            // const response = await fetch(`/api/delete-location/${deletedItem.id}`, {
-            //     method: "DELETE",
-            // });
-
-            // if (!response.ok) throw new Error("Failed to delete location");
-
-            // Xóa item trong state
-            setuniversityLocations((prev) => prev.filter((_, i) => i !== index));
-        } catch (error) {
-            console.error("Error deleting location:", error);
-        }
-    };
-
-    const handleCreateLocation = async () => {
-        console.log('formDataLocation', formDataLocation);
-    }
-    // Hàm xử lý thêm dòng mới
-    const addRow = () => {
-        setFormDataLocation((prev) => [...prev, { regionId: "", address: "" }]);
-    };
-    // Hàm xử lý tạo mới
-
-    const deleteRow = (index) => {
-        setFormDataLocation((prev) => prev.filter((_, i) => i !== index));
-    };
-
     return (
         <div className='flex justify-center  py-20 sm:grid-cols-6 '>
-
             <form className="w-full max-w-3xl" onSubmit={updateProfileUniversity}>
                 <div className="space-y-12">
                     <div className="border-b border-gray-900/10 pb-12">
@@ -267,17 +266,71 @@ export default function ProfileUniversityView() {
                                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                                     Mật khẩu
                                 </label>
-                                <div className="mt-2">
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        autoComplete="password"
-                                        onChange={handleChange}
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    />
-                                </div>
-                                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
+                                <button
+                                    type="button"
+                                    onClick={openDialog}
+                                    className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                >
+                                    Đổi mật khẩu
+                                </button>
+
+                                {/* Dialog */}
+                                <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={isDialogOpen} onClose={closeDialog}>
+                                    <DialogBackdrop className="fixed inset-0 bg-opacity-30" transition >
+                                        <DialogPanel className="flex items-center justify-center min-h-screen">
+                                            <div className="bg-white p-4 rounded-md shadow-lg w-96">
+                                                <DialogTitle className="flex items-center gap-2">
+                                                    <Typography variant="h6">Vui lòng nhập mật khẩu mới của bạn</Typography>
+                                                </DialogTitle>
+                                                {/* Input mật khẩu mới */}
+                                                <div className="mt-4">
+                                                    <label htmlFor="newPassword" className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Mật khẩu mới
+                                                    </label>
+                                                    <input
+                                                        id="newPassword"
+                                                        name="newPassword"
+                                                        type="password"
+                                                        autoComplete="newPassword"
+                                                        value={newPassword}
+                                                        onChange={(e) => setNewPassword(e.target.value)}
+                                                        className="block w-full rounded-md border py-1.5 mt-2"
+                                                    />
+
+                                                    <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Xác nhận mật khẩu
+                                                    </label>
+                                                    <input
+                                                        id="confirmPassword"
+                                                        name="confirmPassword"
+                                                        type="password"
+                                                        value={confirmPassword}
+                                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                                        className="block w-full rounded-md border py-1.5 mt-2"
+                                                    />
+
+                                                    <div className="mt-4 flex justify-end gap-4">
+                                                        <button
+                                                            type="button"
+                                                            onClick={closeDialog}
+                                                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                                        >
+                                                            Hủy
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleSave}
+                                                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                                        >
+                                                            Lưu
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </DialogPanel>
+                                    </DialogBackdrop>
+                                </Dialog>
                             </div>
                             <div className="sm:col-span-6">
                                 <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">
@@ -397,14 +450,14 @@ export default function ProfileUniversityView() {
                                                 onClick={() => handleUpdate(index)}
                                                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                                             >
-                                                Update
+                                                Cập nhật
                                             </button>
                                             <button
                                                 type='button'
                                                 onClick={() => handleDelete(index)}
                                                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                                             >
-                                                Delete
+                                                Xóa
                                             </button>
                                         </div>
                                     </div>

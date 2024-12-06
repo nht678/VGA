@@ -6,7 +6,7 @@ export default function TransactionAdmin() {
     return (
         <>
             <Helmet>
-                <title>TransactionAdmin</title>
+                <title>Giao dịch</title>
             </Helmet>
             <TransactionAdminView />
         </>

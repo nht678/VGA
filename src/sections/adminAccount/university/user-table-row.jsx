@@ -30,7 +30,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actUniversityUpdateAsync, actUniversityDeleteAsync, resetUniversitySuccess } from 'src/store/university/action';
 import { actUserBan } from 'src/store/users/action';
 import { propTypes } from 'react-bootstrap/esm/Image';
-import { validateFormData, isRequired, isEmail, isPhone, isValidPassword } from '../../formValidation';
+import { validateFormData, isRequired, isEmail, isPhone } from '../../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -97,7 +97,6 @@ export default function UserTableRow({
     name: [isRequired('Tên')],
     email: [isRequired('Email'), isEmail],
     phone: [isRequired('Số điện thoại'), isPhone],
-    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
     description: [isRequired('Mô tả')],
     establishedYear: [isRequired('Năm thành lập')],
     type: [isRequired('Trường')],
@@ -136,7 +135,6 @@ export default function UserTableRow({
     name: name,
     email: email,
     phone: phone,
-    password: '',
     description: description,
     establishedYear: establishedYear,
     type: typeUniversity,
@@ -299,17 +297,7 @@ export default function UserTableRow({
                 />
               </Grid>
               <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  name='password'
-                  label="Mật khẩu"
-                  onChange={handlechange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <FormControl fullWidth sx={{ m: 1 }}>
+                <FormControl fullWidth >
                   <InputLabel id="demo-controlled-open-select-label">Trường</InputLabel>
                   <Select
                     labelId="demo-controlled-open-select-label"

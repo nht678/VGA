@@ -7,9 +7,9 @@ import Footer from 'src/sections/footer/footer';
 export default function NewsDetail() {
     return (
         <>
-            {/* <Helmet>
-                <title> News Detail | Minimal UI </title>
-            </Helmet> */}
+            <Helmet>
+                <title> Chi tiết tin tức </title>
+            </Helmet>
             <Header />
             <NewsDetailView />
             <Footer />

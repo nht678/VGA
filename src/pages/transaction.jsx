@@ -6,7 +6,7 @@ export default function Transaction() {
     return (
         <>
             <Helmet>
-                <title>Transaction</title>
+                <title>Giao dịch</title>
             </Helmet>
             <TransactionView />
         </>

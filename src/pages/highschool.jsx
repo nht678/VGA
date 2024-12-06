@@ -7,7 +7,7 @@ export default function HighSchoolPage() {
     return (
         <>
             <Helmet>
-                <title> Trường cấp ba</title>
+                <title>Trường cấp ba</title>
             </Helmet>
 
             <HighSchoolView />

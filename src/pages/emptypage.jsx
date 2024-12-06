@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { signoutUser } from '../store/account/action';
 
@@ -17,5 +17,13 @@ export default function EmptyPage() {
     //         window.location.reload(); // Reload lại trang
     //     }
     // }, [dispatch, isAuthenticated]);
-    return <Box sx={{ height: 550 }} />;
+    return (
+        <>
+            <Helmet>
+                <title>Quản lý</title>
+            </Helmet>
+            <Box sx={{ height: 550 }} />;
+        </>
+    )
+
 }

@@ -36,7 +36,14 @@ export default function NewsDetailView() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 5 }}>
-                {newsById?.content || 'Chưa có nội dung'}
+                {newsById?.content
+                    ? newsById.content.split('\n').map((line, index) => (
+                        <React.Fragment key={index}>
+                            {line}
+                            <br />
+                        </React.Fragment>
+                    ))
+                    : 'Chưa có nội dung'}
             </Typography>
             {newsById?.imageNews?.map((image, index) => (
                 <Box key={index} sx={{ m: 10 }}>
