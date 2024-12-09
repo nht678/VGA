@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from 'src/firebaseConfig';
 
@@ -19,6 +19,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 
 import { UploadOutlined } from '@ant-design/icons';
 import { Button as ButtonAnt, message, Upload } from 'antd';
@@ -33,12 +40,12 @@ import Scrollbar from 'src/components/scrollbar';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { actGetNewsAsync, actAddNewsAsync, resetNewsSuccess } from 'src/store/NewsForUniversity/action';
+import { actGetMajorsAsync } from 'src/store/major/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import UserTableToolbar from '../user-table-toolbar';
 import { validateFormData, isRequired, isArrayNotEmpty } from '../../formValidation';
-
 
 // ----------------------------------------------------------------------
 
@@ -58,6 +65,7 @@ export default function NewsForUniversityView() {
       title: '',
       content: '',
       imageNews: [],
+      hashtag: '',
     }
   );
 
@@ -75,6 +83,7 @@ export default function NewsForUniversityView() {
   const dispatch = useDispatch();
 
   const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
+  const { majors } = useSelector((state) => state.majorReducer);
   // Function để cập nhật formData với giá trị đã chọn
   const handlechange = (e) => {
     setFormData({
@@ -180,6 +189,7 @@ export default function NewsForUniversityView() {
       title: formData.title,
       content: formData.content,
       imageNews: uploadedUrls,
+      hashtag: formData?.hashtag,
     };
     dispatch(actAddNewsAsync(newsData));
 
@@ -187,16 +197,71 @@ export default function NewsForUniversityView() {
       title: '',
       content: '',
       imageNews: [],
+      hashtag: '',
     });
+    setMajorName([]);
+    setMajorIds([]);
     setSelectedFiles([]);
     dispatch(resetNewsSuccess());
     handleClose();
   };
 
+
+
+
+  function getStyles(name, majorName, theme) {
+    return {
+      fontWeight: majorName.includes(name)
+        ? theme.typography.fontWeightMedium
+        : theme.typography.fontWeightRegular,
+    };
+  }
+  const theme = useTheme();
+  const [majorName, setMajorName] = useState([]);
+  const [majorIds, setMajorIds] = useState([]); // Lưu trữ danh sách majorId
+  console.log("majorIds", majorIds);
+  console.log("majorName", majorName);
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    const selectedNames = typeof value === 'string' ? value.split(',') : value;
+    console.log("selectedNames", selectedNames);
+    setMajorName(selectedNames);
+
+    // Ánh xạ từ name sang majorId
+    const selectedIds = majors
+      .filter((major) => selectedNames.includes(major.name))
+      .map((major) => major.id);
+    setMajorIds(selectedIds);
+    // Lấy chuỗi từ majorIds
+    const majorIdString = selectedIds.join(',');
+    console.log("majorIdString", majorIdString);
+    setFormData({
+      ...formData,
+      hashtag: majorIdString,
+    });
+  };
+
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
   useEffect(() => {
     dispatch(actGetNewsAsync({ page: page + 1, pageSize: rowsPerPage, universityid: userId }));
-
   }, [success]);
+
+  useEffect(() => {
+    dispatch(actGetMajorsAsync({}));
+  }, []);
 
   return (
     <>
@@ -246,6 +311,40 @@ export default function NewsForUniversityView() {
                     </Upload>
                     {error.imageNews && <Typography variant="caption" sx={{ color: 'red' }}>{error.imageNews}</Typography>}
                   </Grid>
+                  <Grid size={{ md: 12 }} container>
+                    <Typography variant="h6">Hashtag</Typography>
+                    <Grid size={{ md: 12 }}>
+                      <FormControl sx={{ m: 1, width: '100%' }} >
+                        <InputLabel id="demo-multiple-chip-label">Hashtag</InputLabel>
+                        <Select
+                          labelId="demo-multiple-chip-label"
+                          id="demo-multiple-chip"
+                          multiple
+                          value={majorName}
+                          onChange={handleChange}
+                          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map((value) => (
+                                <Chip key={value} label={value} />
+                              ))}
+                            </Box>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {majors.map((major, index) => (
+                            <MenuItem
+                              key={index}
+                              value={major?.name}
+                              style={getStyles(major?.name, majorName, theme)}
+                            >
+                              {major?.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
 
                 </Grid>
 
@@ -292,6 +391,7 @@ export default function NewsForUniversityView() {
                       .toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                       : ''}
                     imageNews={row?.imageNews}
+                    _HashTag={row?._HashTag}
                   />
                 ))}
               </TableBody>

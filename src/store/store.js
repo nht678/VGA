@@ -21,6 +21,7 @@ import occupationGroupReducer from './occupationGroup/reducer';
 import workSkillReducer from './workSkill/reducer';
 import newsForUniversityReducer from './NewsForUniversity/reducer';
 import testLessonReducer from './testLesson/reducer';
+import reportReducer from './report/reducer';
 
 
 const store = configureStore({
@@ -47,6 +48,7 @@ const store = configureStore({
         workSkillReducer,
         newsForUniversityReducer,
         testLessonReducer,
+        reportReducer,
     }
 });
 

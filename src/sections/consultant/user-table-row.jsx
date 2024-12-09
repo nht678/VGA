@@ -28,10 +28,12 @@ import Button from '@mui/material/Button';
 import { Calendar, theme, Image, Upload, Button as ButtonAnt } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import Chip from '@mui/material/Chip';
+// import link react router dom
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateConsultant, deleteConsultant, removeCertificationAsyn, resetConsultantSuccess, addCertificationAsyn } from 'src/store/consultant/action';
 import DeleteDialog from '../../pages/delete';
-import { validateFormData, isRequired, isValidPassword, isPhone, isEmail } from '../formValidation';
+import { validateFormData, isRequired, isPhone, isEmail } from '../formValidation';
 
 const getColorByLevel = (level) => {
   switch (level) {
@@ -93,8 +95,8 @@ export default function UserTableRow({
   consultantLevelDes,
   certifications,
   universityDes,
+  consultantRelations
 }) {
-  let userId = localStorage.getItem('userId');
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
   const [errors, setErrors] = useState({});
@@ -102,32 +104,33 @@ export default function UserTableRow({
     id: item.id,
     description: item.description,
     imageUrl: item.imageUrl,
+    majorId: item.majorId,
   })) || [
       {
         id: '',
         description: "",
         imageUrl: "",
+        majorId: '',
       },
     ];
   const [formData, setFormData] = useState({
     name: name,
     email: email,
-    password: '',
     phone: phone,
     status: true,
     doB: dateOfBirth,
     gender: gender,
     description: description,
     consultantLevelId: consultantLevelId,
-    universityId: userId,
-    certifications: cleanedCertifications
+    certifications: cleanedCertifications,
+    consultantRelations: consultantRelations
   });
-  console.log('formData', formData);
 
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const { successConsultant } = useSelector((state) => state.consultantReducer);
-  const [inputValue, setInputValue] = useState(''); // Giá trị input
-  // const [value, setValue] = useState(null); // Giá trị đã chọn
+  const { majors, success } = useSelector((state) => state.majorReducer);
+  const { universities } = useSelector((state) => state.reducerUniversity);
+  console.log("universities", universities);
   const handleLevelChange = (event, newValue) => {
     // setValue(newValue);
     setFormData({ ...formData, consultantLevelId: newValue?.id || '' });
@@ -136,7 +139,6 @@ export default function UserTableRow({
   const rules = {
     name: [isRequired('Tên')],
     email: [isRequired('Email'), isEmail],
-    password: [isRequired('Mật khẩu'), isValidPassword('Mật khẩu')],
     phone: [isRequired('Số điện thoại'), isPhone],
     doB: [isRequired('Ngày sinh')],
     description: [isRequired('Mô tả')],
@@ -180,12 +182,6 @@ export default function UserTableRow({
     setFormData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
   };
   const { token } = theme.useToken();
-  const wrapperStyle = {
-    width: '100%',
-    border: `1px solid ${token.colorBorderSecondary}`,
-    borderRadius: token.borderRadiusLG,
-  };
-
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -334,7 +330,18 @@ export default function UserTableRow({
     imageUrl: "",
   });
 
+  const updateRelation = (index, key, value) => {
+    const newRelations = [...formData.consultantRelations];
+    newRelations[index][key] = value;
+    setFormData({ ...formData, consultantRelations: newRelations });
+  }
 
+  const removeRelation = (id1, index) => {
+    const newRelations = [...formData.consultantRelations];
+    newRelations.splice(index, 1);
+    setFormData({ ...formData, consultantRelations: newRelations });
+    // dispatch(removeCertificationAsyn(id1));
+  }
 
   const updateCertification = (index, key, value) => {
     const newCertifications = [...formData.certifications];
@@ -346,8 +353,20 @@ export default function UserTableRow({
     const newCertifications = [...formData.certifications];
     newCertifications.splice(index, 1);
     setFormData({ ...formData, certifications: newCertifications });
-    dispatch(removeCertificationAsyn(id1));
+    // dispatch(removeCertificationAsyn(id1));
   }
+  // addrowrelation
+  const addRowRelation = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      consultantRelations: [
+        ...prevData.consultantRelations,
+        {
+          universityId: '',
+        },
+      ],
+    }));
+  };
 
   const addCertification = () => {
     dispatch(addCertificationAsyn(formData1, id));
@@ -454,16 +473,7 @@ export default function UserTableRow({
                   helperText={errors.email}
                 />
               </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Mật khẩu"
-                  name='password'
-                  onChange={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
-              </Grid>
+
               <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
@@ -475,8 +485,19 @@ export default function UserTableRow({
                   helperText={errors.phone}
                 />
               </Grid>
-
               <Grid size={{ md: 6 }}>
+                <Autocomplete
+                  onChange={handleLevelChange}
+                  value={consultantLevels.find((level) => level.id === formData?.consultantLevelId) || null}
+                  id="controllable-states-demo"
+                  options={consultantLevels || []} // Đảm bảo options luôn là một mảng
+                  getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
+                  renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
+                />
+                {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>}
+              </Grid>
+
+              <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Description</Typography>
                 <textarea
                   style={{ width: '100%', height: '100px', border: '1px solid #d9d9d9', borderRadius: '4px' }}
@@ -488,18 +509,7 @@ export default function UserTableRow({
                 />
                 {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
               </Grid>
-              <Grid size={{ md: 6 }}>
-                <Typography variant="h6">Cấp độ</Typography>
-                <Autocomplete
-                  onChange={handleLevelChange}
-                  value={consultantLevels.find((level) => level.id === formData?.consultantLevelId) || null}
-                  id="controllable-states-demo"
-                  options={consultantLevels || []} // Đảm bảo options luôn là một mảng
-                  getOptionLabel={(option) => option?.name || ''} // Hiển thị chuỗi rỗng nếu option.name không có
-                  renderInput={(params) => <TextField {...params} label="Chọn cấp độ" />}
-                />
-                {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>}
-              </Grid>
+
 
 
               <Grid item xs={12}>
@@ -529,26 +539,40 @@ export default function UserTableRow({
               {formData.certifications.map((certification, index) => (
                 <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px' }}>
                   <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
-                    <Grid size={{ md: 12 }}>
-                      <Typography variant="h6">Ảnh</Typography>
-                      <Upload {...uploadProps(index)} fileList={fileList[index]} accept='image/*' listType="picture">
-                        {!formData.certifications[index]?.imageUrl && (
-                          <ButtonAnt type="primary" icon={<UploadOutlined />}>
-                            Upload
-                          </ButtonAnt>
-                        )}
-                      </Upload>
-
+                    <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }} >
+                      <Grid size={{ md: 5.5 }}>
+                        <Typography sx={{ mb: 1 }} variant="h6">Ngành</Typography>
+                        <Autocomplete
+                          fullWidth
+                          value={majors?.find((major) => major.id === certification.majorId) || null}
+                          onChange={(e, newValue) =>
+                            updateCertification(index, "majorId", newValue?.id)
+                          }
+                          options={majors || []}
+                          getOptionLabel={(option) => option?.name || ""}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Chọn ngành học" />
+                          )}
+                        />
+                      </Grid>
+                      <Grid size={{ md: 5.5 }}>
+                        <Typography variant="h6">Hình ảnh</Typography>
+                        <Upload {...uploadProps(index)} fileList={fileList[index]} accept='image/*' listType="picture">
+                          {!formData.certifications[index]?.imageUrl && (
+                            <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                              Upload
+                            </ButtonAnt>
+                          )}
+                        </Upload>
+                      </Grid>
+                      <Grid size={{ md: 11 }} sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                        <Typography variant="h6">Nội dung</Typography>
+                        <textarea defaultValue={certification?.description} onChange={(e) => updateCertification(index, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid size={{ md: 12 }}>
-                      <Typography variant="h6">Nội dung</Typography>
-                      <textarea defaultValue={certification?.description} onChange={(e) => updateCertification(index, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
-                      />
-                    </Grid>
-
-
                   </Grid>
-                  <Grid size={{ md: 12 }} sx={{ my: 1, justifyContent: 'center', display: 'flex' }}>
+                  <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                     <Button
                       variant="outlined"
                       color="error"
@@ -559,7 +583,37 @@ export default function UserTableRow({
                   </Grid>
                 </Grid>
               ))}
+              {formData.consultantRelations.map((relation, index) => (
+                <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px', justifyContent: 'center' }}>
+                  <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
+                    <Autocomplete
+                      fullWidth
+                      value={universities?.find((university) => university.id === relation.universityId) || null}
+                      onChange={(e, newValue) =>
+                        updateRelation(index, "universityId", newValue?.id)
+                      }
+                      options={universities || []}
+                      getOptionLabel={(option) => option?.account?.name || ""}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Chọn trường đại học" />
+                      )}
+                    />
+                  </Grid>
+                  <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                    <Button variant="outlined" color="error" onClick={() => removeRelation(relation?.id, index)}>
+                      Xóa
+                    </Button>
+                  </Grid>
+                </Grid>
+              ))}
+              <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex' }}>
+                <Button variant="contained" onClick={addRowRelation}>
+                  Thêm trường đại học
+                </Button>
+              </Grid>
+
             </Grid>
+
             <Grid size={{ md: 12 }} sx={{ mt: 2, justifyContent: 'center', display: 'flex' }}>
               <Button variant="contained" onClick={() => handleClickOpenDialog1('addCertification')}>
                 Thêm chứng chỉ
@@ -611,14 +665,12 @@ export default function UserTableRow({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Hủy bỏ</Button>
+          <Button onClick={handleClose1}>Hủy bỏ</Button>
           <Button onClick={addCertification} autoFocus>
             Thêm
           </Button>
         </DialogActions>
       </Dialog>
-
-
 
       <Dialog
         open={dialog === 'Detail'}
@@ -803,12 +855,14 @@ export default function UserTableRow({
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Miêu tả Trường đại học:
+                  Các lịch tư vấn viên:
                 </Typography>
               </Grid>
               <Grid size={{ md: 9 }}>
-                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                  {universityDes}
+                <Typography variant="body1" sx={{ ml: 2 }} >
+                  <Link to={`/historybooking/${id}`} style={{ color: '#16a34a', textDecoration: '#16a34a' }}>
+                    Chi tiết
+                  </Link>
                 </Typography>
               </Grid>
             </Grid>
@@ -834,8 +888,6 @@ export default function UserTableRow({
           </DialogContentText>
         </DialogContent>
       </Dialog >
-
-
       <DeleteDialog open={dialog} onClose={handleCloseDialog} handleDelete={() => handleDelete()} />
       <Popover
         open={!!open}
@@ -885,4 +937,5 @@ UserTableRow.propTypes = {
   consultantLevelDes: PropTypes.string,
   certifications: PropTypes.array,
   universityDes: PropTypes.string,
+  consultantRelations: PropTypes.array
 };

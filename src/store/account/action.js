@@ -22,7 +22,7 @@ export function signinUser(data, navigate) {
     return async (dispatch) => {
         try {
             const response = await accountService.login(data);
-            if (response.status === 200) {
+            if (response.status === 200 && (response.data.role === 1 || response.data.role === 3 || response.data.role === 5)) {
                 message.success('Đăng nhập thành công');
                 navigate('/managers', { replace: true });
                 dispatch(actLogin(response.data));
@@ -35,7 +35,7 @@ export function signinUser(data, navigate) {
             localStorage.setItem('name', response.data.name);
             localStorage.setItem('role', response.data.role);
             localStorage.setItem('accountId', response.data.accountId);
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            localStorage.setItem('imageUrl', response.data.imageUrl);
         }
         catch (error) {
             message.error('Lỗi đăng nhập');

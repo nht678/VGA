@@ -69,13 +69,6 @@ export default function TestLessonView() {
 
   const [filterYear, setFilterYear] = useState(getCurrentYear);
 
-  const { uploadSuccess } = useSelector((state) => state.uploadReducer);
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-
-  const nameHighSchool = localStorage.getItem('name');
-
-
   const [page, setPage] = useState(0);
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);

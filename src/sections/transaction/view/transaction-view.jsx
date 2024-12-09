@@ -90,9 +90,6 @@ export default function TransactionView() {
       handleClose();
     }
   }
-
-  const [inputValue, setInputValue] = useState(''); // Giá trị input\
-
   const options = [
     { name: '2017', value: 2017 },
     { name: '2018', value: 2018 },

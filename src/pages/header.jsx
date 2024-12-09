@@ -22,32 +22,6 @@ import notificationService from '../services/notifycation';
 
 
 
-const user = {
-    name: 'Tom Cook',
-    email: 'tom@example.com',
-    imageUrl:
-        'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
-}
-
-// let role = localStorage.getItem('role');
-
-// const getNavigation = () => {
-//     const navItems = [
-//         { name: 'Trang chủ', href: '/', current: false },
-//         { name: 'Tin tức', href: '/news', current: false },
-//     ];
-
-//     if (role === '1' || role === '2') {
-//         navItems.push({ name: 'Quản lý', href: '/managers', current: false });
-//     }
-
-//     return navItems;
-// };
-
-// const navigation = getNavigation();
-
-
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
@@ -66,12 +40,15 @@ export default function Header() {
 
     let role = localStorage.getItem('role');
     let token = localStorage.getItem('token');
-    if (token) {
-        const decodedToken = jwtDecode(token);
-        console.log(decodedToken); // Payload sẽ được in ra
-    } else {
-        console.error("Token không tồn tại");
+    let imageUrl = localStorage.getItem('imageUrl');
+
+    const user = {
+        name: 'Tom Cook',
+        email: 'tom@example.com',
+        imageUrl: role ? (imageUrl || 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain') : 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
+
     }
+
     const userNavigation = role === '3' || role === '5'
         ? [
             { name: 'Hồ sơ của bạn', href: role === '3' ? '/profilehighschool' : '/profileuniversity' },

@@ -23,11 +23,10 @@ import { Chip } from '@mui/material';
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
-import { actUpdateWorkSkillAsync, actDeleteWorkSkillAsync, actResetSuccess } from 'src/store/workSkill/action';
+import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
+import { Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
-import { Image } from 'antd'
-import { validateFormData, isRequired } from '../formValidation';
-
+import { validateFormData, isRequired, isValidPrice } from '../formValidation';
 
 // Hàm lấy nhãn trạng thái
 const getStatusLabel = (status) => {
@@ -57,10 +56,11 @@ export default function UserTableRow({
   name,
   avatarUrl,
   id,
+  priceOnSlot,
   status,
+  description,
   rowKey
 }) {
-
 
 
   const [open, setOpen] = useState(null);
@@ -69,14 +69,21 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
 
-  const { workSkills, total = 0, success } = useSelector((state) => state.workSkillReducer);
+  const { successLevel } = useSelector((state) => state.levelReducer);
 
-  const [formData, setFormData] = useState({
-    name: name,
-  });
+  const handleDelete = () => {
+    dispatch(actLevelDeleteAsync(id));
+    if (successLevel) {
+      dispatch(resetLevelSuccess());
+    }
+    handleCloseDialog();
+  }
 
   const rules = {
     name: [isRequired('Tên')],
+    priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
+    description: [isRequired('Mô tả')],
+
   };
 
   const validateForm = () => {
@@ -84,14 +91,6 @@ export default function UserTableRow({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const handleDelete = () => {
-    dispatch(actDeleteWorkSkillAsync(id));
-    if (success) {
-      dispatch(actResetSuccess());
-    }
-    handleCloseDialog();
-  }
 
 
   const handleOpenMenu = (event) => {
@@ -110,7 +109,11 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-
+  const [formData, setFormData] = useState({
+    name: name,
+    description: description,
+    priceOnSlot: priceOnSlot,
+  });
 
   const handlechange = (event) => {
     setFormData({
@@ -120,16 +123,15 @@ export default function UserTableRow({
     });
   }
 
-  const handleUpdateWorkSkill = () => {
-    if (!validateForm()) {
-      return;
+  const handleUpdateLevel = () => {
+    if (!validateForm()) return;
+    dispatch(actLevelUpdateAsync({ formData, id }));
+    if (successLevel) {
+      dispatch(resetLevelSuccess());
     }
-    dispatch(actUpdateWorkSkillAsync({ formData, id }));
-    if (success) {
-      dispatch(actResetSuccess());
-    }
-    handleClose();
-  };
+    handleCloseDialog();
+  }
+
 
   const handleClose = () => {
     setDialog(null);
@@ -150,6 +152,11 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
+
+
+        <TableCell sx={{ textAlign: 'center' }}>{priceOnSlot}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{description}</TableCell>
+
 
         <TableCell align="center">
           <Chip
@@ -173,12 +180,12 @@ export default function UserTableRow({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          Cập nhật kĩ năng công việc
+          {"Cập nhật thông tin cấp độ tư vấn viên"}
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 12 }}>
+              <Grid size={{ md: 6 }}>
                 <TextField
                   fullWidth
                   defaultValue={name}
@@ -189,12 +196,31 @@ export default function UserTableRow({
                   helperText={errors.name}
                 />
               </Grid>
+              <Grid size={{ md: 6 }}>
+                <TextField
+                  fullWidth
+                  defaultValue={priceOnSlot}
+                  name='priceOnSlot'
+                  label="Giá trên mỗi slot"
+                  onChange={handlechange}
+                  error={!!errors.priceOnSlot}
+                  helperText={errors.priceOnSlot}
+                />
+              </Grid>
+
+
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Mô tả</Typography>
+                <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                />
+                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
+              </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateWorkSkill} autoFocus>
+          <Button onClick={handleUpdateLevel} autoFocus>
             Cập nhật
           </Button>
         </DialogActions>
@@ -221,7 +247,7 @@ export default function UserTableRow({
             paddingBottom: 2,
           }}
         >
-          Chi tiết kĩ năng công việc
+          Chi tiết cấp độ tư vấn viên
         </DialogTitle>
         <DialogContent>
           <DialogContentText
@@ -233,7 +259,7 @@ export default function UserTableRow({
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                      Kĩ năng công việc
+                      Tên:
                     </Typography>
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -245,7 +271,19 @@ export default function UserTableRow({
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                      Tình trạng
+                      Giá mỗi slot:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                      {priceOnSlot}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Tình trạng:
                     </Typography>
                   </Grid>
                   <Grid size={{ md: 6 }}>
@@ -256,10 +294,28 @@ export default function UserTableRow({
                 </Grid>
               </Grid>
             </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Mô tả:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {description}
+                </Typography>
+              </Grid>
+            </Grid>
           </DialogContentText>
         </DialogContent>
 
+
+
+
       </Dialog >
+
+
+
 
       <DeleteDialog
         open={dialog}
@@ -299,5 +355,7 @@ UserTableRow.propTypes = {
   name: PropTypes.string,
   id: PropTypes.number,
   status: PropTypes.bool,
-  rowKey: PropTypes.number,
+  priceOnSlot: PropTypes.number,
+  description: PropTypes.string,
+  rowKey: PropTypes.number
 };

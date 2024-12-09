@@ -115,15 +115,36 @@ export default function QuestionView() {
     content: "",
     group: '',
     personalTestId: id,
-    answers: [
-      { content: "", answerValue: '' },
-      { content: "", answerValue: '' },
-    ],
+    answers: [],
   });
+
+  const [typeTest, setTypeTest] = useState(null);
+
 
   const rules = {
     content: [isRequired('Câu hỏi')],
   };
+  useEffect(() => {
+    if (typeTest?.questionType === "MBTI") {
+      setFormData((prev) => ({
+        ...prev,
+        answers: [
+          { content: "", answerValue: '' },
+          { content: "", answerValue: '' },
+        ],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        answers: [],
+      }));
+    }
+  }, [typeTest]);
+
+  const typeTestOptions = [
+    { questionType: "MBTI", value: "MBTI" },
+    { questionType: "HOLLAND", value: "HOLLAND" },
+  ];
 
   const validateForm = () => {
     const newErrors = validateFormData(formData, rules);
@@ -171,6 +192,7 @@ export default function QuestionView() {
     dispatch(actGetquestionbyTestIdAsync({ page: page + 1, pageSize: rowsPerPage, id }));
   }, [successQuestion]);
 
+  console.log('formData', formData);
 
   return (
     <>
@@ -197,6 +219,24 @@ export default function QuestionView() {
                 <Grid container spacing={2} sx={{ mt: 1 }}>
                   <Grid size={{ md: 12 }}>
                     <Typography sx={{ textAlign: 'center' }} variant="h6">Nếu là bài HOLLAND vui lòng không nhập đáp án và chọn nhóm không phải MBTI</Typography>
+                  </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Loại câu hỏi</Typography>
+                    <Autocomplete
+                      options={typeTestOptions}
+                      getOptionLabel={(option) => option.questionType}
+                      value={typeTest}
+                      onChange={(e, value) => setTypeTest(value)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          label="Loại câu hỏi"
+                          variant="outlined"
+                          margin="dense"
+                        />
+                      )}
+                    />
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <TextField
@@ -230,41 +270,41 @@ export default function QuestionView() {
                     />
                     {error.group && <Typography variant='caption' color="error"> {error.group} </Typography>}
                   </Grid>
-
-                  {formData.answers.map((answer, index) => (
-                    <Grid container size={{ md: 12 }} spacing={2} key={index}>
-                      <Grid size={{ md: 12 }}>
-                        <Typography variant="h6">Đáp án {index + 1}</Typography>
+                  {typeTest?.questionType === "MBTI" &&
+                    formData.answers.map((answer, index) => (
+                      <Grid container size={{ md: 12 }} spacing={2} key={index}>
+                        <Grid size={{ md: 12 }}>
+                          <Typography variant="h6">Đáp án {index + 1}</Typography>
+                        </Grid>
+                        <Grid size={{ md: 12 }}>
+                          <TextField
+                            fullWidth
+                            label="Nội dung"
+                            variant="outlined"
+                            margin="dense"
+                            value={answer.content}
+                            onChange={(e) => handleAnswerChange(index, "content", e.target.value)}
+                          />
+                        </Grid>
+                        <Grid size={{ md: 12 }}>
+                          <Autocomplete
+                            options={answerValue}
+                            getOptionLabel={(option) => option.key}
+                            value={answerValue.find((item) => item.value === answer.answerValue) || null}
+                            onChange={(e, value) => handleAnswerChange(index, "answerValue", value?.value)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                fullWidth
+                                label="Giá trị"
+                                variant="outlined"
+                                margin="dense"
+                              />
+                            )}
+                          />
+                        </Grid>
                       </Grid>
-                      <Grid size={{ md: 12 }}>
-                        <TextField
-                          fullWidth
-                          label="Nội dung"
-                          variant="outlined"
-                          margin="dense"
-                          value={answer.content}
-                          onChange={(e) => handleAnswerChange(index, "content", e.target.value)}
-                        />
-                      </Grid>
-                      <Grid size={{ md: 12 }}>
-                        <Autocomplete
-                          options={answerValue}
-                          getOptionLabel={(option) => option.key}
-                          value={answerValue.find((item) => item.value === answer.answerValue) || null}
-                          onChange={(e, value) => handleAnswerChange(index, "answerValue", value?.value)}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              fullWidth
-                              label="Giá trị"
-                              variant="outlined"
-                              margin="dense"
-                            />
-                          )}
-                        />
-                      </Grid>
-                    </Grid>
-                  ))}
+                    ))}
                 </Grid>
               </DialogContentText>
             </DialogContent>

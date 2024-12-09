@@ -33,6 +33,8 @@ import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
 import { getConsultants, resetConsultantSuccess, addConsultant } from 'src/store/consultant/action';
 import { actLevelGetAsync } from 'src/store/level/action';
+import { actGetMajorsAsync } from 'src/store/major/action';
+import { actUniversityGetAsync } from 'src/store/university/action';
 
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -45,6 +47,7 @@ export default function ConsultantView() {
 
   const dispatch = useDispatch();
   const { consultants, total = 0, successConsultant } = useSelector((state) => state.consultantReducer);
+  const { majors, success } = useSelector((state) => state.majorReducer);
   const { consultantLevels } = useSelector((state) => state.levelReducer);
 
   let userId = localStorage.getItem('userId');
@@ -59,14 +62,14 @@ export default function ConsultantView() {
     description: '',
     gender: '',
     consultantLevelId: '',
-    universityId: userId,
     certifications: [
-      {
-        description: "",
-        imageUrl: ""
-      }
+      // {
+      //   description: "",
+      //   imageUrl: ""
+      // }
     ]
   });
+  console.log('successConsultant', successConsultant)
 
   const rules = {
     name: [isRequired('Tên')],
@@ -103,20 +106,25 @@ export default function ConsultantView() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-      universityId: userId  // Thêm universityId vào formData
     });
   };
 
   useEffect(() => {
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, universityId: userId, level: filterLevel }));
-    dispatch(actLevelGetAsync({}));
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: filterLevel }));
   }, [successConsultant]);
+
+  useEffect(() => {
+    dispatch(actGetMajorsAsync({}));
+    dispatch(actLevelGetAsync({}));
+    dispatch(actUniversityGetAsync({}))
+  }, []);
 
   const handleAddConsultant = () => {
     if (!validateForm()) return;
     dispatch(addConsultant(formData));
     if (successConsultant) {
-      dispatch(resetConsultantSuccess);
+      debugger
+      dispatch(resetConsultantSuccess());
     };
     setFormData({
       name: '',
@@ -129,7 +137,8 @@ export default function ConsultantView() {
       certifications: [
         {
           description: "",
-          imageUrl: ""
+          imageUrl: "",
+          majorId: ""
         }
       ]
     });
@@ -139,13 +148,13 @@ export default function ConsultantView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage, universityId: userId, search: filterName, level: filterLevel })); // Cập nhật trang và gọi API
+    dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, level: filterLevel })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage, universityId: userId, search: filterName, level: filterLevel })); // Gọi API với `pageSize` mới
+    dispatch(getConsultants({ page: 1, pageSize: newRowsPerPage, search: filterName, level: filterLevel })); // Gọi API với `pageSize` mới
   };
 
   const [open, setOpen] = useState('');
@@ -170,17 +179,17 @@ export default function ConsultantView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue, level: filterLevel, universityId: userId }));
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterValue, level: filterLevel }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, universityId: userId, level: filterLevel }));
+      dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, level: filterLevel }));
     }
   };
   const handleFilterByLevel = async (Selectedlevel) => {
     setFilterLevel(Selectedlevel);  // Cập nhật tạm thời giá trị tìm kiếm cho input
     setFilterLevelName(`Level ${Selectedlevel}`);
 
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: Selectedlevel, universityId: userId }));
+    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: Selectedlevel }));
   };
 
   const [filterLevel, setFilterLevel] = useState('');
@@ -268,8 +277,7 @@ export default function ConsultantView() {
     setFormData({ ...formData, certifications: newCertifications });
   }
 
-
-  console.log('consultants', consultants);
+  console.log('formData', formData);
 
   return (
     <>
@@ -386,17 +394,34 @@ export default function ConsultantView() {
                   {formData.certifications.map((certification, index) => (
                     <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px' }}>
                       <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }}>
-                        <Grid size={{ md: 12 }}>
-                          <Typography variant="h6">Ảnh</Typography>
-                          <Upload {...uploadProps(index)} fileList={fileList[index]} listType='picture' accept='image/*'>
-                            {!formData.certifications[index]?.imageUrl && (
-                              <ButtonAnt type="primary" icon={<UploadOutlined />}>
-                                Upload
-                              </ButtonAnt>
-                            )}
-                          </Upload>
+                        <Grid container size={{ md: 12 }} spacing={2} sx={{ justifyContent: 'center' }} >
+                          <Grid size={{ md: 5.5 }}>
+                            <Typography sx={{ mb: 1 }} variant="h6">Ngành</Typography>
+                            <Autocomplete
+                              fullWidth
+                              value={majors?.find((major) => major.id === certification.majorId) || null}
+                              onChange={(e, newValue) =>
+                                updateCertification(index, "majorId", newValue?.id)
+                              }
+                              options={majors || []}
+                              getOptionLabel={(option) => option?.name || ""}
+                              renderInput={(params) => (
+                                <TextField {...params} label="Chọn ngành học" />
+                              )}
+                            />
+                          </Grid>
+                          <Grid size={{ md: 5.5, mt: 1 }}>
+                            <Typography variant="h6">Hình ảnh</Typography>
+                            <Upload {...uploadProps(index)} fileList={fileList[index]} listType='picture' accept='image/*' style={{ width: '100%' }}>
+                              {!formData.certifications[index]?.imageUrl && (
+                                <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                                  Upload
+                                </ButtonAnt>
+                              )}
+                            </Upload>
+                          </Grid>
                         </Grid>
-                        <Grid size={{ md: 12 }}>
+                        <Grid size={{ md: 11 }} sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                           <Typography variant="h6">Nội dung</Typography>
                           <textarea onChange={(e) => updateCertification(index, 'description', e.target.value)} placeholder="Hãy viết nội dung....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                           />
@@ -433,7 +458,7 @@ export default function ConsultantView() {
 
 
         </Box>
-      </Stack>
+      </Stack >
 
       <Card>
         <UserTableToolbar
@@ -486,6 +511,7 @@ export default function ConsultantView() {
                     consultantLevelDes={row?.consultantLevel?.description || ''}
                     certifications={row?.certifications}
                     universityDes={row?.university?.description || ''}
+                    consultantRelations={row?.consultantRelations}
                   />
                 ))}
               </TableBody>

@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from 'src/firebaseConfig';
-
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -17,12 +14,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid2';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
-import { Chip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+
 
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteDialog from 'src/pages/delete';
@@ -30,7 +33,7 @@ import { actUpdateNewsContentAsync, actCreateNewsImageAsync, actDeleteNewsImageA
 import { UploadOutlined } from '@ant-design/icons';
 import { Button as ButtonAnt, message, Upload, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
-import { display } from '@mui/system';
+import { has } from 'lodash';
 
 
 export default function UserTableRow({
@@ -39,7 +42,9 @@ export default function UserTableRow({
   content,
   createAt,
   imageNews,
-  rowKey
+  rowKey,
+  _HashTag,
+
 }) {
 
   const [open, setOpen] = useState(null);
@@ -48,6 +53,7 @@ export default function UserTableRow({
 
   const dispatch = useDispatch();
   const { news, total = 0, success } = useSelector((state) => state.newsForUniversityReducer);
+  const { majors } = useSelector((state) => state.majorReducer);
 
   const handleDelete = async () => {
     await dispatch(actDeleteNewsAsync(id)); // Đảm bảo hàm này hoàn tất
@@ -88,12 +94,6 @@ export default function UserTableRow({
   // const [imageNews, setImageNews] = useState([]); // Lưu thông tin hình ảnh
   const [fileList, setFileList] = useState([]); // Lưu danh sách file cho upload component
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [imageToUpdate, setImageToUpdate] = useState(null); // Hình ảnh cần cập nhật
-  const [formData, setFormData] = useState({
-    title: title,
-    content: content,
-    imageNews: [],
-  });
 
   useEffect(() => {
     if (imageNews && imageNews.length > 0) {
@@ -111,7 +111,7 @@ export default function UserTableRow({
     setFileList(fileList1);
   };
 
-  // const uploadImage = async (file) => {
+
   //   const storageRef = ref(storage, `images/${file.name}`);
   //   await uploadBytes(storageRef, file);
   //   return getDownloadURL(storageRef);
@@ -222,6 +222,63 @@ export default function UserTableRow({
     handleCloseDialog();
   };
 
+  function getStyles(name, majorName, theme) {
+    return {
+      fontWeight: majorName.includes(name)
+        ? theme.typography.fontWeightMedium
+        : theme.typography.fontWeightRegular,
+    };
+  }
+  const theme = useTheme();
+  const hashtagvalue = _HashTag?.map(item => item.values) || [];
+  const hashtagKey = _HashTag?.map(item => item.keys) || [];
+  const hashTagKeyFormat = hashtagKey.join(',');
+
+
+  const [formData, setFormData] = useState({
+    title: title,
+    content: content,
+    imageNews: [],
+    hashtag: hashTagKeyFormat,
+  });
+
+  console.log("formData", formData);
+
+  const [majorName, setMajorName] = useState(hashtagvalue);
+  const [majorIds, setMajorIds] = useState([]); // Lưu trữ danh sách majorId
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    const selectedNames = typeof value === 'string' ? value.split(',') : value;
+    setMajorName(selectedNames);
+
+    // Ánh xạ từ name sang majorId
+    const selectedIds = majors
+      .filter((major) => selectedNames.includes(major.name))
+      .map((major) => major.id);
+    setMajorIds(selectedIds);
+    // Lấy chuỗi từ majorIds
+    const majorIdString = selectedIds.join(',');
+    setFormData({
+      ...formData,
+      hashtag: majorIdString,
+    });
+  };
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+
   return (
     <>
       <TableRow hover >
@@ -231,7 +288,7 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="subtitle2" component='div' noWrap>
+            <Typography variant="subtitle2" noWrap>
               {title}
             </Typography>
           </Stack>
@@ -294,6 +351,44 @@ export default function UserTableRow({
                     Upload
                   </ButtonAnt>
                 </Upload>
+              </Grid>
+              <Grid size={{ md: 12 }} container>
+                <Typography variant="h6">Hashtag</Typography>
+                <Grid size={{ md: 12 }}>
+                  <FormControl sx={{ m: 1, width: '100%' }} >
+                    <InputLabel id="demo-multiple-chip-label">Hashtag</InputLabel>
+                    <Select
+                      labelId="demo-multiple-chip-label"
+                      id="demo-multiple-chip"
+                      multiple
+                      value={majorName} // Giữ majorName là giá trị chính của Select
+                      // defaultValue={majors
+                      //   .filter((major) => hashtagKeys.includes(major.id))
+                      //   .map((major) => major.name)}
+
+                      onChange={handleChange}
+                      input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                      MenuProps={MenuProps}
+                    >
+                      {majors.map((major, index) => (
+                        <MenuItem
+                          key={index}
+                          value={major?.name}
+                          style={getStyles(major?.name, majorName, theme)}
+                        >
+                          {major?.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
               </Grid>
             </Grid>
           </DialogContentText>
@@ -442,5 +537,6 @@ UserTableRow.propTypes = {
   content: PropTypes.string,
   createAt: PropTypes.string,
   imageNews: PropTypes.any,
-  rowKey: PropTypes.number
+  rowKey: PropTypes.number,
+  _HashTag: PropTypes.array,
 };
