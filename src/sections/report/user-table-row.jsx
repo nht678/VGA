@@ -28,38 +28,17 @@ import { Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import { validateFormData, isRequired, isValidPrice } from '../formValidation';
 
-// Hàm lấy nhãn trạng thái
-const getStatusLabel = (status) => {
-  switch (status) {
-    case true:
-      return 'Active';
-    case false:
-      return 'Blocked';
-    default:
-      return 'Unknown';
-  }
-};
 
-// Hàm lấy màu cho Chip dựa trên trạng thái
-const getStatusColor = (status) => {
-  switch (status) {
-    case true:
-      return 'success'; // Xanh lá
-    case false:
-      return 'error';   // Đỏ
-    default:
-      return 'default';
-  }
-};
 
 export default function UserTableRow({
-  name,
-  avatarUrl,
+  consultantName,
   id,
-  priceOnSlot,
-  status,
-  description,
-  rowKey
+  studentName,
+  startTime,
+  endTime,
+  consultationDay,
+  rowKey,
+  note,
 }) {
 
 
@@ -71,26 +50,26 @@ export default function UserTableRow({
 
   const { successLevel } = useSelector((state) => state.levelReducer);
 
-  const handleDelete = () => {
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-    }
-    handleCloseDialog();
-  }
+  // const handleDelete = () => {
+  //   dispatch(actLevelDeleteAsync(id));
+  //   if (successLevel) {
+  //     dispatch(resetLevelSuccess());
+  //   }
+  //   handleCloseDialog();
+  // }
 
-  const rules = {
-    name: [isRequired('Tên')],
-    priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
-    description: [isRequired('Mô tả')],
+  // const rules = {
+  //   name: [isRequired('Tên')],
+  //   priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
+  //   description: [isRequired('Mô tả')],
 
-  };
+  // };
 
-  const validateForm = () => {
-    const newErrors = validateFormData(formData, rules);
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // const validateForm = () => {
+  //   const newErrors = validateFormData(formData, rules);
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
 
   const handleOpenMenu = (event) => {
@@ -109,28 +88,28 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const [formData, setFormData] = useState({
-    name: name,
-    description: description,
-    priceOnSlot: priceOnSlot,
-  });
+  // const [formData, setFormData] = useState({
+  //   name: name,
+  //   description: description,
+  //   priceOnSlot: priceOnSlot,
+  // });
 
-  const handlechange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
+  // const handlechange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     [event.target.name]: event.target.value,
 
-    });
-  }
+  //   });
+  // }
 
-  const handleUpdateLevel = () => {
-    if (!validateForm()) return;
-    dispatch(actLevelUpdateAsync({ formData, id }));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-    }
-    handleCloseDialog();
-  }
+  // const handleUpdateLevel = () => {
+  //   if (!validateForm()) return;
+  //   dispatch(actLevelUpdateAsync({ formData, id }));
+  //   if (successLevel) {
+  //     dispatch(resetLevelSuccess());
+  //   }
+  //   handleCloseDialog();
+  // }
 
 
   const handleClose = () => {
@@ -148,23 +127,19 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {consultantName}
             </Typography>
           </Stack>
         </TableCell>
 
 
-        <TableCell sx={{ textAlign: 'center' }}>{priceOnSlot}</TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>{description}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{studentName}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{`${startTime}-${endTime}`}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{consultationDay}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{note}</TableCell>
 
 
-        <TableCell align="center">
-          <Chip
-            label={getStatusLabel(status)}
-            color={getStatusColor(status)}
-            variant="outlined"
-          />
-        </TableCell>
+
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -173,7 +148,7 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <Dialog
+      {/* <Dialog
         open={dialog === 'edit'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -224,10 +199,10 @@ export default function UserTableRow({
             Cập nhật
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
 
 
-      <Dialog
+      {/* <Dialog
         open={dialog === 'Detail'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -312,16 +287,16 @@ export default function UserTableRow({
 
 
 
-      </Dialog >
+      </Dialog > */}
 
 
 
 
-      <DeleteDialog
+      {/* <DeleteDialog
         open={dialog}
         onClose={handleCloseDialog}
         handleDelete={handleDelete}
-      />
+      /> */}
 
       <Popover
         open={!!open}
@@ -335,11 +310,11 @@ export default function UserTableRow({
       >
         <MenuItem onClick={() => handleClickOpenDialog('edit')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Cập nhật
+          Chấp nhận
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Xóa
+          Hủy bỏ
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
@@ -351,11 +326,12 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  name: PropTypes.string,
+  studentName: PropTypes.string,
+  consultantName: PropTypes.string,
   id: PropTypes.number,
-  status: PropTypes.bool,
-  priceOnSlot: PropTypes.number,
-  description: PropTypes.string,
-  rowKey: PropTypes.number
+  startTime: PropTypes.string,
+  endTime: PropTypes.string,
+  rowKey: PropTypes.number,
+  consultationDay: PropTypes.string,
+  note: PropTypes.string,
 };

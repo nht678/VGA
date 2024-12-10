@@ -47,6 +47,7 @@ export const Question = lazy(() => import('src/pages/question'));
 export const ProfileUniversityPage = lazy(() => import('src/pages/profileuniversity'));
 export const Report = lazy(() => import('src/pages/report'));
 export const HistoryBookingOfConsultantView = lazy(() => import('src/pages/historybookingofConsultant'));
+export const DashboardUni = lazy(() => import('src/sections/dashboardUniver/overview/view/app-viewuni'));
 
 export const EmptyPage = lazy(() => import('src/pages/emptypage'));
 
@@ -76,6 +77,7 @@ export default function Router() {
         // { element: <IndexPage />, index: true },
         { path: 'students', element: role === '3' || role === '1' ? <UserPage /> : <Navigate to="/404" replace /> },
         { path: '/dashboard', element: role === '1' ? <Dashboard /> : <Navigate to="/404" replace /> },
+        { path: '/dashboarduni', element: role === '5' ? <DashboardUni /> : <Navigate to="/404" replace /> },
         { path: 'transactions', element: role === '3' || role === "1" || role === "5" ? <Transaction /> : <Navigate to="/404" replace /> },
         { path: '/managers', element: < EmptyPage /> }, // Đây là thành phần chính cho managers
         { path: 'highschool', element: role === '1' ? <HighSchoolView /> : <Navigate to="/404" replace /> },

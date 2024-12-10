@@ -63,7 +63,6 @@ export default function ProfileHighSchoolView() {
     };
 
     const validateForm = () => {
-        debugger
         const newErrors = validateFormData(formData, rules);
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -71,7 +70,6 @@ export default function ProfileHighSchoolView() {
 
     const updateProfileHighSchool = (e) => {
         e.preventDefault();
-        debugger
         if (!validateForm()) return;
         dispatch(actHighSchoolUpdateAsync({ formData, id: userId }));
     }

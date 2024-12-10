@@ -53,45 +53,19 @@ const getStatusColor = (status) => {
 };
 
 export default function UserTableRow({
-  name,
-  avatarUrl,
+  consultantName,
   id,
-  priceOnSlot,
-  status,
-  description,
-  rowKey
+  studentName,
+  startTime,
+  endTime,
+  consultationDay,
+  rowKey,
+  note,
 }) {
 
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [errors, setErrors] = useState({});
-
-  const dispatch = useDispatch();
-
-  const { successLevel } = useSelector((state) => state.levelReducer);
-
-  const handleDelete = () => {
-    dispatch(actLevelDeleteAsync(id));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-    }
-    handleCloseDialog();
-  }
-
-  const rules = {
-    name: [isRequired('Tên')],
-    priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
-    description: [isRequired('Mô tả')],
-
-  };
-
-  const validateForm = () => {
-    const newErrors = validateFormData(formData, rules);
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -109,29 +83,6 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const [formData, setFormData] = useState({
-    name: name,
-    description: description,
-    priceOnSlot: priceOnSlot,
-  });
-
-  const handlechange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-
-    });
-  }
-
-  const handleUpdateLevel = () => {
-    if (!validateForm()) return;
-    dispatch(actLevelUpdateAsync({ formData, id }));
-    if (successLevel) {
-      dispatch(resetLevelSuccess());
-    }
-    handleCloseDialog();
-  }
-
 
   const handleClose = () => {
     setDialog(null);
@@ -148,23 +99,19 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {consultantName}
             </Typography>
           </Stack>
         </TableCell>
 
 
-        <TableCell sx={{ textAlign: 'center' }}>{priceOnSlot}</TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>{description}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{studentName}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{`${startTime}-${endTime}`}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{consultationDay}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{note}</TableCell>
 
 
-        <TableCell align="center">
-          <Chip
-            label={getStatusLabel(status)}
-            color={getStatusColor(status)}
-            variant="outlined"
-          />
-        </TableCell>
+
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -173,61 +120,7 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <Dialog
-        open={dialog === 'edit'}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
-        </DialogTitle>
-        <DialogContent >
-          <DialogContentText id="alert-dialog-description">
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={name}
-                  name='name'
-                  label="Tên"
-                  onChange={handlechange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
-                  onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
-                />
-              </Grid>
-
-
-              <Grid size={{ md: 12 }}>
-                <Typography variant="h6">Mô tả</Typography>
-                <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
-                />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
-              </Grid>
-            </Grid>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateLevel} autoFocus>
-            Cập nhật
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-
-      <Dialog
+      {/* <Dialog
         open={dialog === 'Detail'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -312,16 +205,9 @@ export default function UserTableRow({
 
 
 
-      </Dialog >
+      </Dialog > */}
 
 
-
-
-      <DeleteDialog
-        open={dialog}
-        onClose={handleCloseDialog}
-        handleDelete={handleDelete}
-      />
 
       <Popover
         open={!!open}
@@ -349,13 +235,15 @@ export default function UserTableRow({
     </>
   );
 }
-
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  name: PropTypes.string,
+  studentName: PropTypes.string,
+  consultantName: PropTypes.string,
   id: PropTypes.number,
-  status: PropTypes.bool,
-  priceOnSlot: PropTypes.number,
-  description: PropTypes.string,
-  rowKey: PropTypes.number
+  startTime: PropTypes.string,
+  endTime: PropTypes.string,
+  rowKey: PropTypes.number,
+  consultationDay: PropTypes.string,
+  note: PropTypes.string,
 };
+
+

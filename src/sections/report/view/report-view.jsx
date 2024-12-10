@@ -80,7 +80,7 @@ export default function ReportView() {
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Các tố cáo</Typography>
+        <Typography sx={{ mt: 5, mb: 5 }} variant="h4">Các tố cáo tư vấn viên</Typography>
       </Stack>
 
       <Card>
@@ -95,24 +95,26 @@ export default function ReportView() {
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
                 headLabel={[
-                  { id: 'name', label: 'Tên' },
-                  { id: 'phone', label: 'Giá của mỗi slot', align: 'center' },
-                  { id: 'description', label: 'Mô tả', align: 'center' },
-                  { id: 'status', label: 'Tình trạng', align: 'center' },
+                  { id: 'nameconsul', label: 'Tên người tư vấn' },
+                  { id: 'namestu', label: 'Tên học sinh', align: 'center' },
+                  { id: 'time', label: 'Thời gian', align: 'center' },
+                  { id: 'date', label: 'Ngày', align: 'center' },
+                  { id: 'note', label: 'Mô tả', align: 'center' },
                   { id: '' },
                 ]}
               />
               <TableBody>
                 {reports?.map((row, index) => (
                   <UserTableRow
-                    key={row?.id}
+                    key={index}
                     id={row?.id}
                     rowKey={index + 1}
-                    name={row?.name}
-                    description={row?.description}
-                    priceOnSlot={row?.priceOnSlot}
-                    status={row?.status}
-                    avatarUrl={row?.avatarUrl}
+                    consultantName={row?.consultantName}
+                    studentName={row?.studentName}
+                    startTime={row?.startTime}
+                    endTime={row?.endTime}
+                    consultationDay={row?.consultationDay}
+                    note={row?.note}
                   />
                 ))}
               </TableBody>

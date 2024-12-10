@@ -17,7 +17,7 @@ export const actReset = () => ({
 
 export const getReport = ({ page, pageSize, search, TypeBooking, consultantID }) => async (dispatch) => {
     console.log('getReport', page, pageSize, search, TypeBooking, consultantID);
-    debugger
     const response = await reportService.getReports({ page, pageSize, search, TypeBooking, consultantID });
+    debugger
     dispatch(actGetReport(response.data));
 }

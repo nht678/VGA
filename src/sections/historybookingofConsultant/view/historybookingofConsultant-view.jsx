@@ -37,18 +37,19 @@ export default function HistoryBookingOfConsultantView() {
   const dispatch = useDispatch();
 
   const { reports = [], success, total = 0 } = useSelector((state) => state.reportReducer);
+  console.log('reports', reports);
   // use useparam
   const { id } = useParams();
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(getReport({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, TypeBooking: 4 })); // Cập nhật trang và gọi API
+    dispatch(getReport({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, consultantID: id })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(getReport({ page: 1, pageSize: newRowsPerPage, search: filterName, TypeBooking: 4 })); // Gọi API với `pageSize` mới
+    dispatch(getReport({ page: 1, pageSize: newRowsPerPage, search: filterName, consultantID: id })); // Gọi API với `pageSize` mới
   };
 
   const handleFilterByName = async (event) => {
@@ -56,10 +57,10 @@ export default function HistoryBookingOfConsultantView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(getReport({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(getReport({ page: 1, pageSize: rowsPerPage, search: filterValue, consultantID: id }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(getReport({ page: 1, pageSize: rowsPerPage, TypeBooking: 4 }));
+      dispatch(getReport({ page: 1, pageSize: rowsPerPage, search: filterName, consultantID: id }));
     }
   };
 
@@ -87,24 +88,26 @@ export default function HistoryBookingOfConsultantView() {
             <Table stickyHeader sx={{ minWidth: 800 }}>
               <UserTableHead
                 headLabel={[
-                  { id: 'name', label: 'Tên' },
-                  { id: 'phone', label: 'Giá của mỗi slot', align: 'center' },
-                  { id: 'description', label: 'Mô tả', align: 'center' },
-                  { id: 'status', label: 'Tình trạng', align: 'center' },
+                  { id: 'nameconsul', label: 'Tên người tư vấn' },
+                  { id: 'namestu', label: 'Tên học sinh', align: 'center' },
+                  { id: 'time', label: 'Thời gian', align: 'center' },
+                  { id: 'date', label: 'Ngày', align: 'center' },
+                  { id: 'note', label: 'Mô tả', align: 'center' },
                   { id: '' },
                 ]}
               />
               <TableBody>
                 {reports?.map((row, index) => (
                   <UserTableRow
-                    key={row?.id}
+                    key={index}
                     id={row?.id}
                     rowKey={index + 1}
-                    name={row?.name}
-                    description={row?.description}
-                    priceOnSlot={row?.priceOnSlot}
-                    status={row?.status}
-                    avatarUrl={row?.avatarUrl}
+                    consultantName={row?.consultantName}
+                    studentName={row?.studentName}
+                    startTime={row?.startTime}
+                    endTime={row?.endTime}
+                    consultationDay={row?.consultationDay}
+                    note={row?.note}
                   />
                 ))}
               </TableBody>

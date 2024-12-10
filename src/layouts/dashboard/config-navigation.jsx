@@ -220,6 +220,7 @@ const NavConfigComponent = () => {
         { title: 'Học sinh', path: '/students' },
         { title: 'Giao dịch', path: '/transactions' },
       ] : role === '5' ? [
+        { title: 'Thống kê', path: '/dashboarduni' },
         {
           title: 'Quản lý tư vấn viên', path: '#2', children: [
             // { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },

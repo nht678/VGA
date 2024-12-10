@@ -123,7 +123,6 @@ export default function ConsultantView() {
     if (!validateForm()) return;
     dispatch(addConsultant(formData));
     if (successConsultant) {
-      debugger
       dispatch(resetConsultantSuccess());
     };
     setFormData({

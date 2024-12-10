@@ -20,7 +20,6 @@ const reportService = {
                 params
             }
         );
-        debugger
         return response;
     },
 };
