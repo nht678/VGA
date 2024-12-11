@@ -7,7 +7,7 @@ const reportService = {
             'page-size': pageSize,
         };
         if (search) {
-            params.content = search;
+            params['consultant-name'] = search;
         }
         if (TypeBooking) {
             params['booking-status'] = TypeBooking;
@@ -22,6 +22,10 @@ const reportService = {
         );
         return response;
     },
+    handleReport: async (id, data) => {
+        const response = await BASE_API.put(`/booking/process-report//${id}`, data);
+        return response;
+    }
 };
 
 export default reportService

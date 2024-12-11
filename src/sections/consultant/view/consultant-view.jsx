@@ -276,8 +276,6 @@ export default function ConsultantView() {
     setFormData({ ...formData, certifications: newCertifications });
   }
 
-  console.log('formData', formData);
-
   return (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>

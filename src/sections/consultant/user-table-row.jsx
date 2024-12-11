@@ -25,13 +25,22 @@ import moment from 'moment';
 import dayjs from 'dayjs';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
-import { Calendar, theme, Image, Upload, Button as ButtonAnt } from 'antd';
+import { Calendar, Image, Upload, Button as ButtonAnt } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import Chip from '@mui/material/Chip';
 // import link react router dom
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Box from '@mui/material/Box';
+
+
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateConsultant, deleteConsultant, removeCertificationAsyn, resetConsultantSuccess, addCertificationAsyn } from 'src/store/consultant/action';
+import { actUserBan } from 'src/store/users/action';
 import DeleteDialog from '../../pages/delete';
 import { validateFormData, isRequired, isPhone, isEmail } from '../formValidation';
 
@@ -88,9 +97,9 @@ export default function UserTableRow({
   status,
   walletBalance,
   accountId,
-  nameUniversity,
   consultantLevelPrice,
   image_Url,
+  nameUniversity,
   emailuniversity,
   consultantLevelDes,
   certifications,
@@ -126,10 +135,14 @@ export default function UserTableRow({
     consultantRelations: consultantRelations
   });
 
+  console.log('consultantRelations', consultantRelations)
+
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const { successConsultant } = useSelector((state) => state.consultantReducer);
   const { majors, success } = useSelector((state) => state.majorReducer);
   const { universities } = useSelector((state) => state.reducerUniversity);
+  const theme = useTheme();
+
   console.log("universities", universities);
   const handleLevelChange = (event, newValue) => {
     // setValue(newValue);
@@ -181,7 +194,6 @@ export default function UserTableRow({
   const onPanelChange = (value1, mode) => {
     setFormData({ ...formData, DateOfBirth: value1.format('YYYY-MM-DD') });
   };
-  const { token } = theme.useToken();
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -328,6 +340,7 @@ export default function UserTableRow({
   const [formData1, setFormData1] = useState({
     description: "",
     imageUrl: "",
+    majorId: "",
   });
 
   const updateRelation = (index, key, value) => {
@@ -343,6 +356,55 @@ export default function UserTableRow({
     // dispatch(removeCertificationAsyn(id1));
   }
 
+
+  const defaultUniversity = universities.filter((university) => consultantRelations?.universityId?.includes(university.id)).map((university) => university.account?.name || []);
+  const [nameUniversitySelect, setNameUniversitySelect] = useState(defaultUniversity);
+  console.log('defaultUniversity', defaultUniversity)
+  function getStyles(name1, nameuniversityselect, theme1) {
+    return {
+      fontWeight: nameuniversityselect.includes(name1)
+        ? theme1.typography.fontWeightMedium
+        : theme1.typography.fontWeightRegular,
+    };
+  }
+
+  const handlechange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    const selectedNames = typeof value === 'string' ? value.split(',') : value;
+    setNameUniversitySelect(selectedNames); // Cập nhật danh sách đã chọn
+
+    // Ánh xạ 
+    const selectedIds = universities
+      .filter((university) => selectedNames.includes(university.account?.name))
+      .map((university) => university.id);
+
+    // Chuyển đổi thành mảng đối tượng { universityId: id }
+    const formConsultantRelations = selectedIds.map((id1) => ({ universityId: id1 }))
+
+
+    setFormData({
+      ...formData,
+      consultantRelations: formConsultantRelations,
+    });
+  };
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+
+
+
   const updateCertification = (index, key, value) => {
     const newCertifications = [...formData.certifications];
     newCertifications[index][key] = value;
@@ -353,7 +415,7 @@ export default function UserTableRow({
     const newCertifications = [...formData.certifications];
     newCertifications.splice(index, 1);
     setFormData({ ...formData, certifications: newCertifications });
-    // dispatch(removeCertificationAsyn(id1));
+    dispatch(removeCertificationAsyn(id1));
   }
   // addrowrelation
   const addRowRelation = () => {
@@ -381,6 +443,18 @@ export default function UserTableRow({
       handleClose1();
     }
   }
+
+  const handleBan = async () => {
+    const changeStatus = status === 1 ? 2 : 1;
+    await dispatch(actUserBan({ changeStatus, accountId }));
+    if (successConsultant) {
+      dispatch(resetConsultantSuccess());
+    }
+    handleCloseDialog();
+    handleCloseMenu();
+  };
+
+
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -583,7 +657,7 @@ export default function UserTableRow({
                   </Grid>
                 </Grid>
               ))}
-              {formData.consultantRelations.map((relation, index) => (
+              {/* {formData.consultantRelations.map((relation, index) => (
                 <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px', justifyContent: 'center' }}>
                   <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
                     <Autocomplete
@@ -610,6 +684,40 @@ export default function UserTableRow({
                 <Button variant="contained" onClick={addRowRelation}>
                   Thêm trường đại học
                 </Button>
+              </Grid> */}
+              <Grid size={{ md: 12 }} container>
+                <Typography variant="h6">Trường đại học</Typography>
+                <Grid size={{ md: 12 }}>
+                  <FormControl sx={{ m: 1, width: '100%' }} >
+                    <InputLabel id="demo-multiple-chip-label">Chọn trường đại học</InputLabel>
+                    <Select
+                      labelId="demo-multiple-chip-label"
+                      id="demo-multiple-chip"
+                      multiple
+                      value={nameUniversitySelect} // Giá trị đã chọn
+                      onChange={handlechange}
+                      input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                      MenuProps={MenuProps}
+                    >
+                      {universities.map((universitie, index) => (
+                        <MenuItem
+                          key={index}
+                          value={universitie.account?.name}
+                          style={getStyles(universitie.account?.name, nameUniversitySelect, theme)}
+                        >
+                          {universitie.account?.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
               </Grid>
 
             </Grid>
@@ -641,7 +749,21 @@ export default function UserTableRow({
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 12 }}>
+              <Grid size={{ md: 5.5 }}>
+                <Typography sx={{ mb: 1 }} variant="h6">Ngành</Typography>
+                <Autocomplete
+                  fullWidth
+                  onChange={(e, newValue) =>
+                    setFormData1((prev) => ({ ...prev, majorId: newValue?.id }))
+                  }
+                  options={majors || []}
+                  getOptionLabel={(option) => option?.name || ""}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Chọn ngành học" />
+                  )}
+                />
+              </Grid>
+              <Grid size={{ md: 5.5 }}>
                 <Typography variant="h6">Ảnh</Typography>
                 <Upload
                   listType="picture"
@@ -830,17 +952,6 @@ export default function UserTableRow({
                   {consultantLevelPrice}
                 </Typography>
               </Grid>
-              <Grid size={{ md: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Email trường đại học:
-                </Typography>
-              </Grid>
-              <Grid size={{ md: 3 }}>
-                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                  {emailuniversity}
-                </Typography>
-              </Grid>
-
             </Grid>
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
               <Grid size={{ md: 3 }}>
@@ -873,9 +984,10 @@ export default function UserTableRow({
                 </Typography>
               </Grid>
               {certifications?.map((item, index) => (
-                <Grid key={index} size={{ md: 12 }}>
+                <Grid key={index} size={{ md: 3 }}>
                   <Image
                     width={100}
+                    height={100}
                     src={item?.imageUrl}
                     style={{ zIndex: 2 }}
                   />
@@ -903,13 +1015,17 @@ export default function UserTableRow({
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Cập nhật
         </MenuItem>
+        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
+          <InfoIcon sx={{ mr: 2 }} />
+          Chi tiết
+        </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
-          <InfoIcon sx={{ mr: 2 }} />
-          Chi tiết
+        <MenuItem onClick={handleBan} sx={{ color: 'error.main' }}>
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+          {status === 1 ? 'Chặn' : 'Mở chặn'}
         </MenuItem>
       </Popover>
     </>

@@ -103,7 +103,7 @@ export default function Router() {
         { path: 'withdrawalRequest', element: role === '1' ? <WithdrawalRequest /> : <Navigate to="/404" replace /> },
         { path: 'questions/:id', element: role === '1' ? <Question /> : <Navigate to="/404" replace /> },
         { path: 'report', element: role === '1' ? <Report /> : <Navigate to="/404" replace /> },
-        { path: 'historybooking/:id', element: role === '1' ? <HistoryBookingOfConsultantView /> : <Navigate to="/404" replace /> },
+        { path: 'historybooking/:id', element: role === '1' || role === '5' ? <HistoryBookingOfConsultantView /> : <Navigate to="/404" replace /> },
         // { path: 'wallet', element: role === '2' ? <Wallet /> : <Navigate to="/404" replace /> }
       ],
     },

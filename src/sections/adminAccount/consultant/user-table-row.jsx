@@ -14,21 +14,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import { Link } from 'react-router-dom';
 import { Calendar, theme, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import { useDispatch, useSelector } from 'react-redux';
@@ -463,14 +452,18 @@ export default function UserTableRow({
                   {consultantLevelDes}
                 </Typography>
               </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Miêu tả Trường đại học:
+                  Các lịch tư vấn viên:
                 </Typography>
               </Grid>
               <Grid size={{ md: 9 }}>
-                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                  {universityDes}
+                <Typography variant="body1" sx={{ ml: 2 }} >
+                  <Link to={`/historybooking/${id}`} style={{ color: '#16a34a', textDecoration: '#16a34a' }}>
+                    Chi tiết
+                  </Link>
                 </Typography>
               </Grid>
             </Grid>
@@ -481,9 +474,10 @@ export default function UserTableRow({
                 </Typography>
               </Grid>
               {certifications?.map((item, index) => (
-                <Grid size={{ md: 12 }}>
+                <Grid size={{ md: 3 }}>
                   <Image
                     width={100}
+                    height={100}
                     src={item?.imageUrl}
                     style={{ zIndex: 2 }}
                   />
@@ -507,10 +501,10 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleBan} sx={{ color: 'error.main' }}>
+        {/* <MenuItem onClick={handleBan} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           {status === 1 ? 'Chặn' : 'Mở chặn'}
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết

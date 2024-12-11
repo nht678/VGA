@@ -64,7 +64,7 @@ export default function ReportView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(getReport({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(getReport({ page: 1, pageSize: rowsPerPage, TypeBooking: 4, search: filterValue }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
       dispatch(getReport({ page: 1, pageSize: rowsPerPage, TypeBooking: 4 }));
@@ -99,7 +99,7 @@ export default function ReportView() {
                   { id: 'namestu', label: 'Tên học sinh', align: 'center' },
                   { id: 'time', label: 'Thời gian', align: 'center' },
                   { id: 'date', label: 'Ngày', align: 'center' },
-                  { id: 'note', label: 'Mô tả', align: 'center' },
+                  { id: 'comment', label: 'Mô tả', align: 'center' },
                   { id: '' },
                 ]}
               />
@@ -114,7 +114,8 @@ export default function ReportView() {
                     startTime={row?.startTime}
                     endTime={row?.endTime}
                     consultationDay={row?.consultationDay}
-                    note={row?.note}
+                    comment={row?.comment}
+                    image={row?.image}
                   />
                 ))}
               </TableBody>

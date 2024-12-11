@@ -14,19 +14,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid2';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
-import { Chip } from '@mui/material';
+import { Image } from 'antd';
 
 import { useDispatch, useSelector } from 'react-redux';
-import DeleteDialog from 'src/pages/delete';
-import { actLevelDeleteAsync, resetLevelSuccess, actLevelUpdateAsync } from 'src/store/level/action';
-import { Image } from 'antd';
+import { actReset, actHandleReport } from 'src/store/report/action';
 import InfoIcon from '@mui/icons-material/Info';
-import { validateFormData, isRequired, isValidPrice } from '../formValidation';
+
 
 
 
@@ -38,38 +34,42 @@ export default function UserTableRow({
   endTime,
   consultationDay,
   rowKey,
-  note,
+  image,
+  comment
 }) {
 
 
   const [open, setOpen] = useState(null);
   const [dialog, setDialog] = useState('');
-  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
+  const { reports = [], success, } = useSelector((state) => state.reportReducer);
 
-  const { successLevel } = useSelector((state) => state.levelReducer);
 
-  // const handleDelete = () => {
-  //   dispatch(actLevelDeleteAsync(id));
-  //   if (successLevel) {
-  //     dispatch(resetLevelSuccess());
-  //   }
-  //   handleCloseDialog();
-  // }
+  const handleAccept = () => {
+    dispatch(actHandleReport(id, formData));
+    if (success) {
+      dispatch(actReset());
+      setDialog(null);
+    }
+  };
 
-  // const rules = {
-  //   name: [isRequired('Tên')],
-  //   priceOnSlot: [isRequired('Giá'), isValidPrice("Giá", 50)],
-  //   description: [isRequired('Mô tả')],
 
-  // };
-
-  // const validateForm = () => {
-  //   const newErrors = validateFormData(formData, rules);
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
+  const handleClickOpenDialog = (action) => {
+    if (action === 'Accept') {
+      setFormData({
+        ...formData,
+        type: 3,
+      });
+    } else if (action === 'Reject') {
+      setFormData({
+        ...formData,
+        type: 2, // Cập nhật giá trị type thành 'Reject'
+      });
+    }
+    setDialog(action);
+    setOpen(null);
+  };
 
 
   const handleOpenMenu = (event) => {
@@ -80,37 +80,23 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const handleClickOpenDialog = (type) => {
-    setDialog(type);
-    setOpen(null);
-  };
 
   const handleCloseDialog = () => {
     setDialog('');
   };
-  // const [formData, setFormData] = useState({
-  //   name: name,
-  //   description: description,
-  //   priceOnSlot: priceOnSlot,
-  // });
+  const [formData, setFormData] = useState({
+    type: '',
+    comment: '',
+    image: ''
+  });
 
-  // const handlechange = (event) => {
-  //   setFormData({
-  //     ...formData,
-  //     [event.target.name]: event.target.value,
+  const handlechange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
 
-  //   });
-  // }
-
-  // const handleUpdateLevel = () => {
-  //   if (!validateForm()) return;
-  //   dispatch(actLevelUpdateAsync({ formData, id }));
-  //   if (successLevel) {
-  //     dispatch(resetLevelSuccess());
-  //   }
-  //   handleCloseDialog();
-  // }
-
+    });
+  }
 
   const handleClose = () => {
     setDialog(null);
@@ -136,7 +122,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{studentName}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{`${startTime}-${endTime}`}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{consultationDay}</TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>{note}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{comment}</TableCell>
 
 
 
@@ -148,61 +134,79 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      {/* <Dialog
-        open={dialog === 'edit'}
+      <Dialog
+        open={dialog === 'Accept'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        maxWidth="md"
+        fullWidth
+        style={{ zIndex: 1 }}
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
-          {"Cập nhật thông tin cấp độ tư vấn viên"}
+          Chấp nhận báo cáo
         </DialogTitle>
         <DialogContent >
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={name}
-                  name='name'
-                  label="Tên"
-                  onChange={handlechange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-              </Grid>
-              <Grid size={{ md: 6 }}>
-                <TextField
-                  fullWidth
-                  defaultValue={priceOnSlot}
-                  name='priceOnSlot'
-                  label="Giá trên mỗi slot"
-                  onChange={handlechange}
-                  error={!!errors.priceOnSlot}
-                  helperText={errors.priceOnSlot}
-                />
-              </Grid>
-
-
               <Grid size={{ md: 12 }}>
-                <Typography variant="h6">Mô tả</Typography>
-                <textarea defaultValue={description} name='description' onChange={handlechange} placeholder="Hãy viết Mô tả....." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                <Typography variant="h6">Hình ảnh</Typography>
+                {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px' }} />}
+              </Grid>
+              <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h6">Nhập nội dung</Typography>
+                <textarea name='comment' onChange={handlechange} placeholder="Hãy viết mô tả..." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
                 />
-                {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
               </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Hủy bỏ</Button>
-          <Button onClick={handleUpdateLevel} autoFocus>
-            Cập nhật
+          <Button onClick={handleAccept} autoFocus>
+            Chấp nhận
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
+
+      <Dialog
+        open={dialog === 'Reject'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="md"
+        fullWidth
+        style={{ zIndex: 1 }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
+          Không chấp nhận báo cáo
+        </DialogTitle>
+        <DialogContent >
+          <DialogContentText id="alert-dialog-description">
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid size={{ md: 6 }}>
+                <Typography variant="h6">Hình ảnh</Typography>
+                {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px' }} />}
+              </Grid>
+              <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h6">Nhập nội dung</Typography>
+                <textarea name='comment' onChange={handlechange} placeholder="Hãy viết mô tả..." style={{ width: '100%', height: '100px', borderRadius: '5px', border: '1px solid black' }}
+                />
+              </Grid>
+            </Grid>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Hủy bỏ</Button>
+          <Button onClick={handleAccept} autoFocus>
+            Chấp nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
-      {/* <Dialog
+
+      <Dialog
         open={dialog === 'Detail'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -222,7 +226,7 @@ export default function UserTableRow({
             paddingBottom: 2,
           }}
         >
-          Chi tiết cấp độ tư vấn viên
+          Chi tiết các tố cáo
         </DialogTitle>
         <DialogContent>
           <DialogContentText
@@ -234,36 +238,36 @@ export default function UserTableRow({
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                      Tên:
+                      Tên người tư vấn:
                     </Typography>
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                      {name}
+                      {consultantName}
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                      Giá mỗi slot:
+                      Tên học sinh:
                     </Typography>
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                      {priceOnSlot}
+                      {studentName}
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid size={{ md: 12 }} container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px' }} >
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                      Tình trạng:
+                      Thời gian:
                     </Typography>
                   </Grid>
                   <Grid size={{ md: 6 }}>
                     <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                      {getStatusLabel(status)}
+                      {`${startTime}-${endTime}`}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -277,26 +281,14 @@ export default function UserTableRow({
               </Grid>
               <Grid size={{ md: 9 }}>
                 <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                  {description}
+                  {comment}
                 </Typography>
               </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
+      </Dialog >
 
-
-
-
-      </Dialog > */}
-
-
-
-
-      {/* <DeleteDialog
-        open={dialog}
-        onClose={handleCloseDialog}
-        handleDelete={handleDelete}
-      /> */}
 
       <Popover
         open={!!open}
@@ -308,13 +300,13 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={() => handleClickOpenDialog('edit')}>
+        <MenuItem onClick={() => handleClickOpenDialog('Accept')}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Chấp nhận
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleClickOpenDialog('Reject')}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Hủy bỏ
+          Từ chối
         </MenuItem>
         <MenuItem onClick={() => handleClickOpenDialog('Detail')}>
           <InfoIcon sx={{ mr: 2 }} />
@@ -328,10 +320,11 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   studentName: PropTypes.string,
   consultantName: PropTypes.string,
-  id: PropTypes.number,
+  id: PropTypes.string,
   startTime: PropTypes.string,
   endTime: PropTypes.string,
   rowKey: PropTypes.number,
   consultationDay: PropTypes.string,
-  note: PropTypes.string,
+  image: PropTypes.string,
+  comment: PropTypes.string
 };
