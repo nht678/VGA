@@ -122,6 +122,10 @@ export default function UserTableRow({
         majorId: '',
       },
     ];
+
+  const consultantRelationsName = consultantRelations.map((consultantRelation) => consultantRelation?.universityName);
+  const consultantRelationUniversityId = consultantRelations.map((consultantRelation) => consultantRelation?.universityId);
+
   const [formData, setFormData] = useState({
     name: name,
     email: email,
@@ -132,10 +136,11 @@ export default function UserTableRow({
     description: description,
     consultantLevelId: consultantLevelId,
     certifications: cleanedCertifications,
-    consultantRelations: consultantRelations
+    consultantRelations: consultantRelationUniversityId
   });
 
-  console.log('consultantRelations', consultantRelations)
+
+
 
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const { successConsultant } = useSelector((state) => state.consultantReducer);
@@ -357,9 +362,12 @@ export default function UserTableRow({
   }
 
 
-  const defaultUniversity = universities.filter((university) => consultantRelations?.universityId?.includes(university.id)).map((university) => university.account?.name || []);
-  const [nameUniversitySelect, setNameUniversitySelect] = useState(defaultUniversity);
-  console.log('defaultUniversity', defaultUniversity)
+  // const defaultUniversity = universities.filter((university) => consultantRelations?.universityId?.includes(university.id)).map((university) => university.account?.name || []);
+  // const defaultUniversityNames = universities
+  //   .filter((university) => consultantRelations.some((relation) => relation.universityId === university.id))
+  //   .map((university) => university?.account?.name || "Unknown Name");
+
+  const [nameUniversitySelect, setNameUniversitySelect] = useState(consultantRelationsName);
   function getStyles(name1, nameuniversityselect, theme1) {
     return {
       fontWeight: nameuniversityselect.includes(name1)
@@ -1019,10 +1027,10 @@ export default function UserTableRow({
           <InfoIcon sx={{ mr: 2 }} />
           Chi tiết
         </MenuItem>
-        <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
+        {/* <MenuItem onClick={() => handleClickOpenDialog('Delete')} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Xóa
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={handleBan} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           {status === 1 ? 'Chặn' : 'Mở chặn'}

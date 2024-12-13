@@ -35,8 +35,6 @@ const NavConfigComponent = () => {
   const { isAuthenticated } = useSelector((state) => state.accountReducer);
 
 
-  //   useEffect(() => {
-
   //     const config =
   //       role === '1' ? [
   //         {

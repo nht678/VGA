@@ -26,12 +26,6 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-const options = [
-    'Show some love to MUI',
-    'Show all notification content',
-    'Hide sensitive notification content',
-    'Hide all notification content',
-];
 
 export default function Header() {
     const navigate = useNavigate();
@@ -45,7 +39,7 @@ export default function Header() {
     const user = {
         name: 'Tom Cook',
         email: 'tom@example.com',
-        imageUrl: role ? (imageUrl || 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain') : 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
+        imageUrl: role ? (imageUrl != null ? 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain' : imageUrl) : 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
 
     }
 
@@ -105,9 +99,10 @@ export default function Header() {
 
     const accessToken = token;  // Token JWT của bạn
     // https://vgacareerguidance.id.vn/notification_hub
+    // https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/
     // useEffect(() => {
     //     const connection = new signalR.HubConnectionBuilder()
-    //         .withUrl(`https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/notification_hub`, {
+    //         .withUrl(`https://vgacareerguidance.id.vn/api/v1/notification_hub`, {
     //             accessTokenFactory: () => accessToken
     //         })
     //         .withAutomaticReconnect()
