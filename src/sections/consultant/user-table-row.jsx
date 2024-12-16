@@ -123,8 +123,8 @@ export default function UserTableRow({
       },
     ];
 
-  const consultantRelationsName = consultantRelations.map((consultantRelation) => consultantRelation?.universityName);
-  const consultantRelationUniversityId = consultantRelations.map((consultantRelation) => consultantRelation?.universityId);
+  const consultantRelationsName = consultantRelations?.map((consultantRelation) => consultantRelation?.universityName);
+  const consultantRelationUniversityId = consultantRelations?.map((consultantRelation) => consultantRelation?.universityId);
 
   const [formData, setFormData] = useState({
     name: name,
@@ -148,7 +148,6 @@ export default function UserTableRow({
   const { universities } = useSelector((state) => state.reducerUniversity);
   const theme = useTheme();
 
-  console.log("universities", universities);
   const handleLevelChange = (event, newValue) => {
     // setValue(newValue);
     setFormData({ ...formData, consultantLevelId: newValue?.id || '' });
@@ -182,11 +181,11 @@ export default function UserTableRow({
   const dispatch = useDispatch();
   const handleUpdate = () => {
     if (!validateForm()) return;
+    dispatch(updateConsultant(id, formData));
+    handleCloseDialog();
     if (successConsultant) {
       dispatch(resetConsultantSuccess());
     }
-    dispatch(updateConsultant(id, formData));
-    handleCloseDialog();
     setOpen('');
   };
   const handleDelete = () => {
@@ -270,11 +269,75 @@ export default function UserTableRow({
     },
   });
 
+  const [imageUrl1, setImageUrl1] = useState(avatarUrl || ""); // Lưu URL ảnh (có thể là ảnh cũ nếu có avatarUrl)
+  const [fileList2, setFileList2] = useState([]); // Danh sách file của Upload
+
+  useEffect(() => {
+    if (image_Url) {
+      setImageUrl1(image_Url); // Cập nhật imageUrl với avatarUrl nếu có
+      setFileList2([{
+        uid: '-1', // Đảm bảo có một uid cho ảnh hiện tại
+        name: 'image.jpg', // Đặt tên file phù hợp (có thể lấy tên ảnh từ avatarUrl)
+        status: 'done', // Đảm bảo file đã được tải lên
+        url: image_Url, // URL ảnh cũ từ Firebase
+      }]);
+    }
+  }, [image_Url]); // Cập nhật fileList khi avatarUrl thay đổi
+
+  const uploadProps2 = {
+    name: "file",
+    listType: "picture",
+    fileList: fileList2, // Hiển thị ảnh cũ nếu có
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl1(url); // Lưu URL vào state
+        setFileList2([{
+          uid: file.uid,
+          name: file.name,
+          status: 'done',
+          url,
+        }]);
+
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(file.url); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setFileList2([]); // Xóa file trong fileList
+        setImageUrl1(""); // Xóa URL trong state
+
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+
 
   // Hàm xóa ảnh từ Firebase
-  const deleteImageFromFirebase = async (imageUrl1) => {
+  const deleteImageFromFirebase = async (imageUrl2) => {
     try {
-      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      const imageRef = ref(storage, imageUrl2); // Tạo reference từ URL
       await deleteObject(imageRef); // Xóa ảnh
       console.log("Ảnh đã được xóa thành công");
     } catch (error1) {
@@ -370,7 +433,7 @@ export default function UserTableRow({
   const [nameUniversitySelect, setNameUniversitySelect] = useState(consultantRelationsName);
   function getStyles(name1, nameuniversityselect, theme1) {
     return {
-      fontWeight: nameuniversityselect.includes(name1)
+      fontWeight: nameuniversityselect?.includes(name1)
         ? theme1.typography.fontWeightMedium
         : theme1.typography.fontWeightRegular,
     };
@@ -591,6 +654,20 @@ export default function UserTableRow({
                 />
                 {errors.description && <Typography variant='caption' color="error">{errors.description}</Typography>}
               </Grid>
+              <Grid size={{ md: 12 }}>
+                <Typography variant="h6">Ảnh</Typography>
+                <Upload
+                  {...uploadProps2}
+                  accept="image/*" // Chỉ cho phép chọn các file ảnh
+                >
+                  {!imageUrl1 && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                    <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                      Upload
+                    </ButtonAnt>
+                  )}
+                </Upload>
+                {errors.image_Url && <Typography variant='caption' color="error" >{errors.image_Url}</Typography>}
+              </Grid>
 
 
 
@@ -665,34 +742,6 @@ export default function UserTableRow({
                   </Grid>
                 </Grid>
               ))}
-              {/* {formData.consultantRelations.map((relation, index) => (
-                <Grid container size={{ md: 12 }} spacing={2} sx={{ mt: 1 }} key={index} style={{ border: '1px solid black', borderRadius: '8px', justifyContent: 'center' }}>
-                  <Grid size={{ md: 6 }} sx={{ mt: 1 }}>
-                    <Autocomplete
-                      fullWidth
-                      value={universities?.find((university) => university.id === relation.universityId) || null}
-                      onChange={(e, newValue) =>
-                        updateRelation(index, "universityId", newValue?.id)
-                      }
-                      options={universities || []}
-                      getOptionLabel={(option) => option?.account?.name || ""}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Chọn trường đại học" />
-                      )}
-                    />
-                  </Grid>
-                  <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                    <Button variant="outlined" color="error" onClick={() => removeRelation(relation?.id, index)}>
-                      Xóa
-                    </Button>
-                  </Grid>
-                </Grid>
-              ))}
-              <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex' }}>
-                <Button variant="contained" onClick={addRowRelation}>
-                  Thêm trường đại học
-                </Button>
-              </Grid> */}
               <Grid size={{ md: 12 }} container>
                 <Typography variant="h6">Trường đại học</Typography>
                 <Grid size={{ md: 12 }}>
@@ -974,7 +1023,7 @@ export default function UserTableRow({
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Các lịch tư vấn viên:
+                  Lịch tư vấn:
                 </Typography>
               </Grid>
               <Grid size={{ md: 9 }}>

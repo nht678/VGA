@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+import { Button as ButtonAnt, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -73,6 +78,7 @@ export default function UniversityAccountView() {
     description: '',
     establishedYear: '',
     type: '',
+    image_Url: '',
   });
 
   const rules = {
@@ -137,6 +143,68 @@ export default function UniversityAccountView() {
       type: e.target.value,
     });
   };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
+
+  const uploadProps = {
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl(url); // Lưu URL vào state
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setImageUrl(""); // Xóa URL trong state
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+
+  const fileList = imageUrl
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -278,6 +346,22 @@ export default function UniversityAccountView() {
                       renderInput={(params) => <TextField {...params} label="Năm thành lập" />}
                     />
                     {errors.establishedYear && <Typography variant='caption' color="error">{errors.establishedYear}</Typography>}
+                  </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Ảnh</Typography>
+                    <Upload
+                      listType="picture"
+                      {...uploadProps}
+                      fileList={fileList}
+                      accept="image/*" // Chỉ cho phép chọn các file ảnh
+                    >
+                      {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                        <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                          Upload
+                        </ButtonAnt>
+                      )}
+                    </Upload>
+                    {errors.image_Url && <Typography variant='caption' color="error" >{errors.image_Url}</Typography>}
                   </Grid>
                   <Grid size={{ md: 12 }}>
                     <Typography variant="h6">Mô tả</Typography>

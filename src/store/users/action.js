@@ -56,7 +56,7 @@ export function actAddUserAsync(data) {
         try {
             const response = await userServices.addUser(data);
             if (response.status === 201 || response.status === 200) {
-                dispatch(actAddUser(response));
+                dispatch(actAddUser(response?.data));
                 message.success('Thêm mới thành công');
             } else {
                 message.error('Thêm mới thất bại');
@@ -73,7 +73,7 @@ export function actUserUpdateAsync(data, userId) {
         try {
             const response = await userServices.updateUser(data, userId);
             if (response.status === 200 || response.status === 201) {
-                dispatch(actUserUpdate(response));
+                dispatch(actUserUpdate(response?.data));
                 message.success('Cập nhật thành công');
             } else {
                 message.error('Cập nhật thất bại');

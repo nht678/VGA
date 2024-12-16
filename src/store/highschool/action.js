@@ -40,8 +40,8 @@ export const resetHighSchoolSuccess = () => ({
 export const actHighSchoolGetAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
         const response = await highschoolService.getHighSchools({ page, pageSize, search });
-        if (response) {
-            dispatch(actHighSchoolGet(response));
+        if (response.status === 200 || response.status === 201) {
+            dispatch(actHighSchoolGet(response?.data));
         }
     } catch (error) {
         console.error(error);
@@ -52,7 +52,7 @@ export const actAddHighSchoolAsync = (data) => async (dispatch) => {
     try {
         const response = await highschoolService.addHighSchool(data);
         if (response.status === 200 || response.status === 201) {
-            dispatch(actAddHighSchool(response));
+            dispatch(actAddHighSchool(response?.data));
             message.success('Thêm mới thành công');
         } else {
             message.error('Thêm mới thất bại');
@@ -68,7 +68,7 @@ export const actHighSchoolUpdateAsync = ({ formData, id }) => async (dispatch) =
         const response = await highschoolService.updateHighSchool({ id, formData });
         if (response.status === 200 || response.status === 201) {
             message.success('Cập nhật thành công');
-            dispatch(actHighSchoolUpdate(response));
+            dispatch(actHighSchoolUpdate(response?.data));
         } else {
             message.error('Cập nhật thất bại');
         }

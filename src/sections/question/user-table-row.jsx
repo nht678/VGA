@@ -233,8 +233,8 @@ export default function UserTableRow({
               </Grid>
 
               {formData.answers.map((answer, index) => (
-                <Grid container spacing={2} key={index}>
-                  <Grid size={{ md: 12 }}>
+                <Grid container size={{ md: 12 }} spacing={2} key={index}>
+                  <Grid fullWidth size={{ md: 12 }}>
                     <Typography variant="h6">Đáp án {index + 1}</Typography>
                   </Grid>
                   <Grid size={{ md: 12 }}>

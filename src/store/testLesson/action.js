@@ -168,7 +168,8 @@ export const actUploadFileTestAsync = (data) => async (dispatch) => {
             message.error('Upload thất bại');
         }
     } catch (error) {
-        console.error(error);
+        const errorMessage = error?.response?.data || "Đã xảy ra lỗi không xác định";
+        message.error(errorMessage);
     }
 }
 

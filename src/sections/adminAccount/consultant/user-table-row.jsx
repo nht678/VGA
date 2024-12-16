@@ -411,32 +411,12 @@ export default function UserTableRow({
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Trường đại học:
-                </Typography>
-              </Grid>
-              <Grid size={{ md: 3 }}>
-                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                  {nameUniversity}
-                </Typography>
-              </Grid>
-              <Grid size={{ md: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Giá:
                 </Typography>
               </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
                   {consultantLevelPrice}
-                </Typography>
-              </Grid>
-              <Grid size={{ md: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Email trường đại học:
-                </Typography>
-              </Grid>
-              <Grid size={{ md: 3 }}>
-                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
-                  {emailuniversity}
                 </Typography>
               </Grid>
 
@@ -456,7 +436,7 @@ export default function UserTableRow({
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                  Các lịch tư vấn viên:
+                  Lịch tư vấn:
                 </Typography>
               </Grid>
               <Grid size={{ md: 9 }}>
@@ -474,7 +454,7 @@ export default function UserTableRow({
                 </Typography>
               </Grid>
               {certifications?.map((item, index) => (
-                <Grid size={{ md: 3 }}>
+                <Grid size={{ md: 9 }}>
                   <Image
                     width={100}
                     height={100}

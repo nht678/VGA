@@ -100,36 +100,37 @@ export default function Header() {
     const accessToken = token;  // Token JWT của bạn
     // https://vgacareerguidance.id.vn/notification_hub
     // https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/
-    // useEffect(() => {
-    //     const connection = new signalR.HubConnectionBuilder()
-    //         .withUrl(`https://vgacareerguidance.id.vn/api/v1/notification_hub`, {
-    //             accessTokenFactory: () => accessToken
-    //         })
-    //         .withAutomaticReconnect()
-    //         .build();
+    useEffect(() => {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`https://vgacareerguidance.id.vn/notification_hub`, {
+                accessTokenFactory: () => accessToken
+            })
+            .withAutomaticReconnect()
+            .build();
 
-    //     // Kết nối SignalR
-    //     connection.start()
-    //         .then(() => {
-    //             setStatus('Connected to SignalR');
-    //             console.log('Connected to SignalR hub.');
+        // Kết nối SignalR
+        connection.start()
+            .then(() => {
+                setStatus('Connected to SignalR');
+                console.log('Connected to SignalR hub.');
 
-    //             // Nhận thông báo từ server
-    //             connection.on('ReceiveNotification', (notitfycation) => {
-    //                 console.log('Received notification:', notitfycation);
-    //                 setNotification(prevMessages => [...prevMessages, notitfycation]);
-    //             });
-    //         })
-    //         .catch(err => {
-    //             setStatus(`Connection failed: ${err}`);
-    //             console.error(err);
-    //         });
+                // Nhận thông báo từ server
+                connection.on('ReceiveNotification', (notitfycation) => {
+                    console.log('Received notification:', notitfycation);
+                    setNotification(prevMessages => [...prevMessages, notitfycation]);
+                });
+            })
+            .catch(err => {
+                setStatus(`Connection failed: ${err}`);
+                console.error(err);
+            });
 
-    //     // Clean up khi component unmount
-    //     return () => {
-    //         connection.stop();
-    //     };
-    // }, [accessToken, role]);
+        // Clean up khi component unmount
+        return () => {
+            connection.stop();
+            console.log('connection stop');
+        };
+    }, [accessToken, role]);
 
     // Đóng thông báo khi click bên ngoài
     useEffect(() => {

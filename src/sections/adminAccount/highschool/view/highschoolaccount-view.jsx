@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from 'src/firebaseConfig';
+import { Button as ButtonAnt, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -21,16 +25,11 @@ import TextField from '@mui/material/TextField';
 
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/system/Grid';
-import { message } from 'antd';
-
-
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
-
-import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
 import { actHighSchoolGetAsync, actAddHighSchoolAsync, resetHighSchoolSuccess } from 'src/store/highschool/action';
 import { actGetRegionAsync } from 'src/store/region/action';
@@ -59,12 +58,14 @@ export default function HighSchoolAccountView() {
     password: '',
     address: '',
     regionId: '',
+    image_Url: '',
   });
   // write code here
 
   const dispatch = useDispatch();
 
-  const { highschools, total = [], successHighSchool } = useSelector((state) => state.highschoolReducer);
+  const { highschools, total = 0, successHighSchool } = useSelector((state) => state.highschoolReducer);
+  console.log('highschools', highschools);
   const { regions } = useSelector((state) => state.regionReducer);
 
   const handleAddHighSchool = () => {
@@ -82,6 +83,7 @@ export default function HighSchoolAccountView() {
         password: '',
         address: '',
         regionId: '',
+        image_Url: '',
       });
     }
     handleClose();
@@ -149,6 +151,68 @@ export default function HighSchoolAccountView() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
+
+  const uploadProps = {
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        setSelectedFile(file);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl(url); // Lưu URL vào state
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        setSelectedFile(null); // Xóa file trong state
+        setImageUrl(""); // Xóa URL trong state
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl1) => {
+    try {
+      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+
+  const fileList = imageUrl
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
 
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
@@ -264,6 +328,22 @@ export default function HighSchoolAccountView() {
                     />
                     {errors.regionId && <Typography variant='caption' color="error">{errors.regionId}</Typography>}
                   </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Ảnh</Typography>
+                    <Upload
+                      listType="picture"
+                      {...uploadProps}
+                      fileList={fileList}
+                      accept="image/*" // Chỉ cho phép chọn các file ảnh
+                    >
+                      {!imageUrl && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                        <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                          Upload
+                        </ButtonAnt>
+                      )}
+                    </Upload>
+                    {errors.image_Url && <Typography variant='caption' color="error" >{errors?.image_Url}</Typography>}
+                  </Grid>
 
                 </Grid>
 
@@ -318,7 +398,7 @@ export default function HighSchoolAccountView() {
                     status={row?.account?.status}
                     avatarUrl={row?.avatarUrl}
                     regionId={row?.regionId}
-                    image_Url={row?.image_Url}
+                    image_Url={row?.account?.image_Url}
                   />
                 ))}
               </TableBody>

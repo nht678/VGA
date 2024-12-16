@@ -62,6 +62,7 @@ export default function ConsultantView() {
     description: '',
     gender: '',
     consultantLevelId: '',
+    image_Url: '',
     certifications: [
       // {
       //   description: "",
@@ -69,7 +70,6 @@ export default function ConsultantView() {
       // }
     ]
   });
-  console.log('successConsultant', successConsultant)
 
   const rules = {
     name: [isRequired('Tên')],
@@ -110,7 +110,7 @@ export default function ConsultantView() {
   };
 
   useEffect(() => {
-    dispatch(getConsultants({ page: 1, pageSize: rowsPerPage, search: filterName, level: filterLevel }));
+    dispatch(getConsultants({ page: page + 1, pageSize: rowsPerPage, search: filterName, level: filterLevel }));
   }, [successConsultant]);
 
   useEffect(() => {
@@ -133,6 +133,7 @@ export default function ConsultantView() {
       doB: '',
       description: '',
       consultantLevelId: '',
+      image_Url: '',
       certifications: [
         {
           description: "",
@@ -150,6 +151,7 @@ export default function ConsultantView() {
     dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, level: filterLevel })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
+    debugger
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
@@ -194,7 +196,6 @@ export default function ConsultantView() {
   const [filterLevel, setFilterLevel] = useState('');
   const [filterLevelName, setFilterLevelName] = useState('Level');
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState(""); // Lưu URL ảnh
 
   const uploadProps = (index) => ({
@@ -231,18 +232,6 @@ export default function ConsultantView() {
     },
   });
 
-
-  // Hàm xóa ảnh từ Firebase
-  const deleteImageFromFirebase = async (imageUrl1) => {
-    try {
-      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
-      await deleteObject(imageRef); // Xóa ảnh
-      console.log("Ảnh đã được xóa thành công");
-    } catch (error1) {
-      console.error("Lỗi khi xóa ảnh:", error1);
-    }
-  };
-
   const fileList = imageUrl
     ? [
       {
@@ -253,6 +242,67 @@ export default function ConsultantView() {
       },
     ]
     : []; // Nếu chưa có ảnh thì danh sách trống
+
+  const [imageUrl1, setImageUrl1] = useState(""); // Lưu URL ảnh
+  console.log('imageUrl1', imageUrl1);
+
+  const uploadProps1 = {
+    name: "file",
+    beforeUpload: async (file) => {
+      try {
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        setImageUrl1(url); // Lưu URL vào state
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: url, // Lưu URL vào formData.image
+        }));
+
+        return false; // Ngăn upload mặc định
+      } catch (error3) {
+        console.error("Upload failed:", error3);
+        return false;
+      }
+    },
+    onRemove: async (file) => {
+      try {
+        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        setImageUrl1(""); // Xóa URL trong state
+        setFormData((prevData) => ({
+          ...prevData,
+          image_Url: "", // Xóa URL trong formData
+        }));
+      } catch (error2) {
+        console.error("Failed to remove image:", error2);
+      }
+    },
+  };
+
+  const fileList1 = imageUrl1
+    ? [
+      {
+        uid: "-1", // UID duy nhất cho mỗi ảnh
+        name: "Uploaded Image", // Tên hiển thị
+        status: "done", // Trạng thái upload
+        url: imageUrl1, // URL ảnh để hiển thị
+      },
+    ]
+    : []; // Nếu chưa có ảnh thì danh sách trống
+
+  // Hàm xóa ảnh từ Firebase
+  const deleteImageFromFirebase = async (imageUrl2) => {
+    try {
+      const imageRef = ref(storage, imageUrl2); // Tạo reference từ URL
+      await deleteObject(imageRef); // Xóa ảnh
+      console.log("Ảnh đã được xóa thành công");
+    } catch (error1) {
+      console.error("Lỗi khi xóa ảnh:", error1);
+    }
+  };
+
+
 
 
   const updateCertification = (index, key, value) => {
@@ -367,6 +417,23 @@ export default function ConsultantView() {
                     />
                     {errors.consultantLevelId && <Typography variant='caption' color="error">{errors.consultantLevelId}</Typography>} {/* Hiển thị lỗi nếu có */}
                   </Grid>
+                  <Grid size={{ md: 12 }}>
+                    <Typography variant="h6">Ảnh</Typography>
+                    <Upload
+                      listType="picture"
+                      {...uploadProps1}
+                      fileList={fileList1}
+                      accept="image/*" // Chỉ cho phép chọn các file ảnh
+                    >
+                      {!imageUrl1 && ( // Chỉ hiển thị nút upload nếu chưa có ảnh
+                        <ButtonAnt type="primary" icon={<UploadOutlined />}>
+                          Upload
+                        </ButtonAnt>
+                      )}
+                    </Upload>
+                    {errors.image_Url && <Typography variant='caption' color="error" >{errors.image_Url}</Typography>}
+                  </Grid>
+
                   <Grid item xs={12}>
                     <Typography variant="h6">Ngày sinh</Typography>
                     <Calendar

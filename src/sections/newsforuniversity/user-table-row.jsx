@@ -34,6 +34,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button as ButtonAnt, message, Upload, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
 import { has } from 'lodash';
+import { display } from '@mui/system';
 
 
 export default function UserTableRow({
@@ -89,7 +90,7 @@ export default function UserTableRow({
   }
 
   const handleClose = () => {
-    setDialog(null);
+    setDialog('');
   };
   // const [imageNews, setImageNews] = useState([]); // Lưu thông tin hình ảnh
   const [fileList, setFileList] = useState([]); // Lưu danh sách file cho upload component
@@ -218,6 +219,9 @@ export default function UserTableRow({
 
     console.log("Dữ liệu cập nhật nội dung:", updatedContent);
     dispatch(actUpdateNewsContentAsync({ formData: updatedContent, id }));
+    if (success) {
+      dispatch(resetNewsSuccess());
+    }
 
     handleCloseDialog();
   };
@@ -231,6 +235,7 @@ export default function UserTableRow({
   }
   const theme = useTheme();
   const hashtagvalue = _HashTag?.map(item => item.values) || [];
+  console.log("hashtagvalue", hashtagvalue);
   const hashtagKey = _HashTag?.map(item => item.keys) || [];
   const hashTagKeyFormat = hashtagKey.join(',');
 
@@ -474,21 +479,19 @@ export default function UserTableRow({
                   Ảnh:
                 </Typography>
               </Grid>
-              <Grid size={{ md: 12 }}>
-                <Stack direction="row" spacing={2}>
-                  {imageNews?.map((image, index) => (
-                    <div key={index}>
-                      <Image
-                        alt={image.descriptionTitle}
-                        src={image.imageUrl}
-                        style={{ width: 100, height: 100, objectFit: 'cover' }}
-                      />
-                      <Typography variant="body2" sx={{ color: '#616161' }}>
-                        {image.descriptionTitle}
-                      </Typography>
-                    </div>
-                  ))}
-                </Stack>
+              <Grid size={{ md: 12 }} container spacing={2}>
+                {imageNews?.map((image, index) => (
+                  <Grid size={{ md: 6 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} key={index}>
+                    <Image
+                      alt={image.descriptionTitle}
+                      src={image.imageUrl}
+                      style={{ width: 100, height: 100, objectFit: 'cover' }}
+                    />
+                    <Typography variant="body2" sx={{ color: '#616161' }}>
+                      {image.descriptionTitle}
+                    </Typography>
+                  </Grid>
+                ))}
               </Grid>
             </Grid>
           </DialogContentText>

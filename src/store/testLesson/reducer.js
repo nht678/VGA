@@ -18,6 +18,7 @@ const testLessonReducer = (state = initialState, action) => {
                 ...state,
                 testLessons: action.payload?.questions,
                 total: action.payload?.total,
+                success: true,
             };
         case CREATE_TEST_LESSON:
             return {

@@ -62,6 +62,7 @@ export default function NewsForUniversityView() {
 
   const [formData, setFormData] = useState(
     {
+      universityId: userId,
       title: '',
       content: '',
       imageNews: [],
@@ -191,18 +192,21 @@ export default function NewsForUniversityView() {
       imageNews: uploadedUrls,
       hashtag: formData?.hashtag,
     };
+    console.log("newsData", newsData);
     dispatch(actAddNewsAsync(newsData));
+    if (success) {
+      setMajorName([]);
+      setMajorIds([]);
+      setSelectedFiles([]);
+      dispatch(resetNewsSuccess());
+      setFormData({
+        title: '',
+        content: '',
+        imageNews: [],
+        hashtag: '',
+      });
+    }
 
-    setFormData({
-      title: '',
-      content: '',
-      imageNews: [],
-      hashtag: '',
-    });
-    setMajorName([]);
-    setMajorIds([]);
-    setSelectedFiles([]);
-    dispatch(resetNewsSuccess());
     handleClose();
   };
 

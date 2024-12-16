@@ -35,7 +35,9 @@ export const addConsultant = (data) => async (dispatch) => {
         }
     } catch (error) {
         console.log(error);
-        message.error('Thêm mới thất bại');
+        const errorMessage = error?.response?.data?.message || "Đã xảy ra lỗi không xác định";
+        message.error(errorMessage);
+        // message.error('Thêm mới thất bại');
     }
 }
 

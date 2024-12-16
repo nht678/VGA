@@ -51,9 +51,13 @@ export const validateFormData = (formData, rules) => {
 };
 
 
-// Rule: Required
+// // Rule: Required
+// export const isRequired = (fieldName) => (value) =>
+//   !value ? `${fieldName} không được để trống` : '';
+
 export const isRequired = (fieldName) => (value) =>
-  !value ? `${fieldName} không được để trống` : '';
+  value === null || value === undefined || value === '' ? `${fieldName} không được để trống` : '';
+
 
 // Rule: Email
 export const isEmail = (value) =>

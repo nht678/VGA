@@ -13,7 +13,7 @@ const highschoolService = {
             },
 
         });
-        return response.data;
+        return response;
     },
     addHighSchool: (data) =>
         BASE_API.post(`/high-school`, data,
