@@ -70,7 +70,6 @@ const getStatusColor = (status) => {
 
 export default function UserTableRow({
   name,
-  avatarUrl,
   email,
   phone,
   id,  // Đổi tên id props thành userId
@@ -82,14 +81,13 @@ export default function UserTableRow({
   status,
   walletBalance,
   accountId,
-  nameUniversity,
   consultantLevelPrice,
   image_Url,
-  emailuniversity,
   consultantLevelDes,
   certifications,
-  universityDes,
+  consultantRelations
 }) {
+
   let userId = localStorage.getItem('userId');
 
   const [open, setOpen] = useState(null);
@@ -436,6 +434,20 @@ export default function UserTableRow({
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Trường đại học:
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                {consultantRelations?.map((item, index) => (
+                  <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                    {item?.universityName}
+                  </Typography>
+                ))}
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Lịch tư vấn:
                 </Typography>
               </Grid>
@@ -495,7 +507,6 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
   name: PropTypes.string,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,
@@ -508,11 +519,9 @@ UserTableRow.propTypes = {
   status: PropTypes.bool,
   walletBalance: PropTypes.number,
   accountId: PropTypes.string,
-  nameUniversity: PropTypes.string,
   consultantLevelPrice: PropTypes.number,
   image_Url: PropTypes.string,
-  emailuniversity: PropTypes.string,
   consultantLevelDes: PropTypes.string,
   certifications: PropTypes.array,
-  universityDes: PropTypes.string,
+  consultantRelations: PropTypes.array,
 };
