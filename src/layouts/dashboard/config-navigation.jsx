@@ -6,19 +6,27 @@ import { Stack } from '@mui/material';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import SvgColor from 'src/components/svg-color';
-// import NavItem from './nav';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import { alpha } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import ListItemButton from '@mui/material/ListItemButton';
-import { useSelector } from 'react-redux';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import SchoolIcon from '@mui/icons-material/School';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import PersonIcon from '@mui/icons-material/Person';
+import ReportIcon from '@mui/icons-material/Report';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import WorkIcon from '@mui/icons-material/Work';
+import BusinessIcon from '@mui/icons-material/Business';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import InfoIcon from '@mui/icons-material/Info';
+import ArticleIcon from '@mui/icons-material/Article';
+import LocationCityIcon from '@mui/icons-material/LocationCity';
+import QuizIcon from '@mui/icons-material/Quiz';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import CategoryIcon from '@mui/icons-material/Category';
+import BuildIcon from '@mui/icons-material/Build';
 
-import { usePathname } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
+
+
 
 
 // ----------------------------------------------------------------------
@@ -31,8 +39,6 @@ const NavConfigComponent = () => {
   );
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
-  // const role = localStorage.getItem('role');
-  const { isAuthenticated } = useSelector((state) => state.accountReducer);
 
 
   //     const config =
@@ -163,71 +169,54 @@ const NavConfigComponent = () => {
       role === '1' ? [
         {
           title: 'Thông tin thống kê', path: '#', children: [
-            { title: 'Thống kê', path: '/dashboard' },
-            { title: 'Giao dịch', path: '/transactionsAdmin' },
-            { title: 'Yêu cầu rút tiền', path: '/withdrawalRequest' }
-
+            { title: 'Thống kê', path: '/dashboard', icon: <DashboardIcon /> },
+            { title: 'Giao dịch', path: '/transactionsAdmin', icon: <AccountBalanceIcon /> },
           ]
         },
         {
           title: 'Tài khoản', path: '#1', children: [
-            { title: 'Trường đại học', path: '/universityAccount' },
-            { title: 'Trường cấp 3', path: '/highschoolAccount' },
-            { title: 'Tư vấn viên', path: '/consultants' },
-            { title: 'Học sinh', path: '/userAccount' },
+            { title: 'Trường đại học', path: '/universityAccount', icon: <SchoolIcon /> },
+            { title: 'Trường cấp 3', path: '/highschoolAccount', icon: <LocationCityIcon /> },
+            { title: 'Tư vấn viên', path: '/consultants', icon: <SupervisorAccountIcon /> },
+            { title: 'Học sinh', path: '/userAccount', icon: <PersonIcon /> },
+          ]
+        },
+        {
+          title: 'Xử lý yêu cầu', path: '#5', children: [
+            { title: 'Tố cáo', path: '/report', icon: <ReportIcon /> },
+            { title: 'Yêu cầu rút tiền', path: '/withdrawalRequest', icon: <MonetizationOnIcon /> }
           ]
         },
         {
           title: 'Quản lý cấp độ tư vấn viên', path: '#2', children: [
-            { title: 'Tố cáo', path: '/report' },
-            { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
+            { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel', icon: <SupervisorAccountIcon /> },
           ]
         },
         {
           title: 'Quản lý bài kiểm tra', path: '#3', children: [
-            { title: 'Bài kiểm tra', path: '/testlesson' },
+            { title: 'Bài kiểm tra', path: '/testlesson', icon: <QuizIcon /> },
           ]
         },
-        // {
-        //   title: 'Quản lý tư vấn viên', path: '#2', children: [
-        //     { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
-        //     { title: 'Tư vấn viên', path: '/consultants' },
-        //   ]
-        // },
         {
           title: 'Quản lý ngành nghề', path: '#4', children: [
-            { title: 'Ngành học', path: '/major' },
-            { title: 'Nghề nghiệp', path: '/occupation' },
-            { title: 'Phương thức tuyển sinh', path: '/admissionMedthod' },
-            { title: 'Trình độ học vấn đầu vào', path: '/entryLevelEducation' },
-            { title: 'Nhóm ngành chính', path: '/MajorCategory' },
-            { title: 'Nhóm nghề nghiệp', path: '/occupationgroup' },
-            { title: 'Kĩ năng Công việc', path: '/workSkill' },
+            { title: 'Ngành học', path: '/major', icon: <SchoolIcon /> },
+            { title: 'Nghề nghiệp', path: '/occupation', icon: <WorkIcon /> },
+            { title: 'Phương thức tuyển sinh', path: '/admissionMedthod', icon: <HowToRegIcon /> },
+            { title: 'Trình độ học vấn đầu vào', path: '/entryLevelEducation', icon: <AccountTreeIcon /> },
+            { title: 'Nhóm ngành chính', path: '/MajorCategory', icon: <CategoryIcon /> },
+            { title: 'Nhóm nghề nghiệp', path: '/occupationgroup', icon: <BusinessIcon /> },
+            { title: 'Kĩ năng Công việc', path: '/workSkill', icon: <BuildIcon /> },
           ]
         },
-
-        // { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
-        // { title: 'Ngành học', path: '/major' },
-        // { title: 'Nghề nghiệp', path: '/occupation' },
-        // { title: 'Phương thức tuyển sinh', path: '/admissionMedthod' },
-        // { title: 'Trình độ học vấn đầu vào', path: '/entryLevelEducation' },
-        // { title: 'Nhóm ngành chính', path: '/MajorCategory' },
-        // { title: 'Nhóm nghề nghiệp', path: '/occupationgroup' },
-        // { title: 'Kĩ năng Công việc', path: '/workSkill' },
       ] : role === '3' ? [
-        { title: 'Học sinh', path: '/students' },
-        { title: 'Giao dịch', path: '/transactions' },
+        { title: 'Học sinh', path: '/students', icon: <PersonIcon /> },
+        { title: 'Giao dịch', path: '/transactions', icon: <AccountBalanceIcon /> },
       ] : role === '5' ? [
-        { title: 'Thống kê', path: '/dashboarduni' },
-        {
-          title: 'Quản lý tư vấn viên', path: '#2', children: [
-            // { title: 'Cấp độ tư vấn viên', path: '/consultantsLevel' },
-            { title: 'Tư vấn viên', path: '/consultantAccount' },
-          ]
-        },
-        { title: 'Thông tin tuyển sinh', path: '/admissionInformations' },
-        { title: 'Tin tức', path: '/newsuni' },
-        { title: 'Giao dịch', path: '/transactionsuniversity' },
+        { title: 'Thống kê', path: '/dashboarduni', icon: <DashboardIcon /> },
+        { title: 'Tư vấn viên', path: '/consultantAccount', icon: <SupervisorAccountIcon /> },
+        { title: 'Thông tin tuyển sinh', path: '/admissionInformations', icon: <InfoIcon /> },
+        { title: 'Tin tức', path: '/newsuni', icon: <ArticleIcon /> },
+        { title: 'Giao dịch', path: '/transactionsuniversity', icon: <MonetizationOnIcon /> },
       ] : [];
 
     setNavConfig(config);
@@ -238,8 +227,13 @@ const NavConfigComponent = () => {
       <TreeItem
         itemId={node.path || `item-${index}`}
         key={node.title}
-        // nodeId={node.title}
-        label={node.title}
+        // label={node.title}
+        label={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {node.icon && node.icon} {/* Render icon nếu tồn tại */}
+            <span>{node.title}</span>
+          </div>
+        }
         onClick={() => node.path && navigate(node.path)}
         style={{
           minHeight: 44,

@@ -38,7 +38,7 @@ export function signinUser(data, navigate) {
             localStorage.setItem('imageUrl', response.data.imageUrl);
         }
         catch (error) {
-            message.error('Lỗi đăng nhập');
+            message.error('Sai tên đăng nhập hoặc mật khẩu');
         }
     }
 }

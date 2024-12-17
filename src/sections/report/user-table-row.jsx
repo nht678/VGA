@@ -151,7 +151,11 @@ export default function UserTableRow({
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid size={{ md: 12 }}>
                 <Typography variant="h6">Hình ảnh</Typography>
-                {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px' }} />}
+                {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px', objectFit: 'contain' }} />}
+              </Grid>
+              <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h6">Mô tả tố cáo</Typography>
+                {comment}
               </Grid>
               <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                 <Typography variant="h6">Nhập nội dung</Typography>
@@ -186,7 +190,11 @@ export default function UserTableRow({
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid size={{ md: 6 }}>
                 <Typography variant="h6">Hình ảnh</Typography>
-                {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px' }} />}
+                {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px', objectFit: 'contain' }} />}
+              </Grid>
+              <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h6">Mô tả tố cáo</Typography>
+                {comment}
               </Grid>
               <Grid size={{ md: 12 }} sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                 <Typography variant="h6">Nhập nội dung</Typography>
@@ -274,6 +282,16 @@ export default function UserTableRow({
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+              <Grid size={{ md: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                  Hình ảnh
+                </Typography>
+              </Grid>
+              <Grid size={{ md: 9 }}>
+                <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
+                  {image && <Image alt='Lỗi hình ảnh' src={image} style={{ zIndex: 2, width: '100px', height: '100px', objectFit: 'contain' }} />}
+                </Typography>
+              </Grid>
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Mô tả:

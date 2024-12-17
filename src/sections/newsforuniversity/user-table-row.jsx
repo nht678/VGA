@@ -33,8 +33,6 @@ import { actUpdateNewsContentAsync, actCreateNewsImageAsync, actDeleteNewsImageA
 import { UploadOutlined } from '@ant-design/icons';
 import { Button as ButtonAnt, message, Upload, Image } from 'antd';
 import InfoIcon from '@mui/icons-material/Info';
-import { has } from 'lodash';
-import { display } from '@mui/system';
 
 
 export default function UserTableRow({
@@ -92,7 +90,7 @@ export default function UserTableRow({
   const handleClose = () => {
     setDialog('');
   };
-  // const [imageNews, setImageNews] = useState([]); // Lưu thông tin hình ảnh
+
   const [fileList, setFileList] = useState([]); // Lưu danh sách file cho upload component
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -112,38 +110,6 @@ export default function UserTableRow({
     setFileList(fileList1);
   };
 
-
-  //   const storageRef = ref(storage, `images/${file.name}`);
-  //   await uploadBytes(storageRef, file);
-  //   return getDownloadURL(storageRef);
-  // };
-
-  // const initiateUpdate = (url) => {
-  //   setImageToUpdate(url);
-  // };
-
-  // const handleUpdateImage = async (e) => {
-  //   const newFile = e.target.files[0];
-  //   if (newFile && imageToUpdate) {
-  //     // Xóa ảnh cũ
-  //     const oldRef = ref(storage, imageToUpdate);
-  //     await deleteObject(oldRef);
-
-  //     // Upload ảnh mới
-  //     const updatedUrl = await uploadImage(newFile);
-
-  //     // Cập nhật lại state với URL mới
-  //     setImageNews(prevImageNews =>
-  //       prevImageNews.map(item =>
-  //         item.imageUrl === imageToUpdate
-  //           ? { ...item, imageUrl: updatedUrl }
-  //           : item
-  //       )
-  //     );
-  //     setImageToUpdate(null); // Reset imageToUpdate
-  //   }
-  // };
-  // Các props cho component Upload
   // Hàm upload từng ảnh và gửi dữ liệu về backend
   const handleUploadSingle = async (file) => {
     const storageRef = ref(storage, `images/${file.name}`);
@@ -160,29 +126,31 @@ export default function UserTableRow({
       ...prevData,
       imageNews: [...prevData.imageNews, imageData],
     }));
+    dispatch(resetNewsSuccess());
   };
 
   const uploadProps = {
     name: 'file',
     multiple: true,
     beforeUpload(file) {
-      setSelectedFiles((prevFiles) => [...prevFiles, file]);
-      setFileList((prevList) => [
-        ...prevList,
-        {
-          uid: file.uid,
-          name: file.name,
-          status: 'done',
-          url: URL.createObjectURL(file),
-        },
-      ]);
+      // setSelectedFiles((prevFiles) => [...prevFiles, file]);
+      // setFileList((prevList) => [
+      //   ...prevList,
+      //   {
+      //     uid: file.uid,
+      //     name: file.name,
+      //     status: 'done',
+      //     url: URL.createObjectURL(file),
+      //   },
+      // ]);
       handleUploadSingle(file); // Gọi hàm upload ngay khi file được chọn
+
       return false;
     },
     onRemove(file) {
       // Loại bỏ file khỏi selectedFiles và fileList
-      setSelectedFiles((prevFiles) => prevFiles.filter((f) => f.uid !== file.uid));
-      setFileList((prevList) => prevList.filter((item) => item.uid !== file.uid));
+      // setSelectedFiles((prevFiles) => prevFiles.filter((f) => f.uid !== file.uid));
+      // setFileList((prevList) => prevList.filter((item) => item.uid !== file.uid));
 
       // Gọi API xóa hình ảnh khỏi backend dựa trên ID hoặc URL
       handleDeleteImage(file.uid);
@@ -215,6 +183,7 @@ export default function UserTableRow({
     const updatedContent = {
       title: formData.title,
       content: formData.content,
+      hashtag: formData.hashtag,
     };
 
     console.log("Dữ liệu cập nhật nội dung:", updatedContent);
@@ -241,10 +210,10 @@ export default function UserTableRow({
 
 
   const [formData, setFormData] = useState({
-    title: title,
-    content: content,
+    title: title || '',
+    content: content || '',
     imageNews: [],
-    hashtag: hashTagKeyFormat,
+    hashtag: hashTagKeyFormat || '',
   });
 
   console.log("formData", formData);
@@ -350,7 +319,7 @@ export default function UserTableRow({
                   fileList={fileList} // Sử dụng fileList từ state
                   {...uploadProps}
                   accept='image/*'
-                  onChange={(info) => handleFileChange(info.fileList)} // Đồng bộ fileList nếu cần
+                // onChange={(info) => handleFileChange(info.fileList)} // Đồng bộ fileList nếu cần
                 >
                   <ButtonAnt type="primary" icon={<UploadOutlined />}>
                     Upload
@@ -367,10 +336,6 @@ export default function UserTableRow({
                       id="demo-multiple-chip"
                       multiple
                       value={majorName} // Giữ majorName là giá trị chính của Select
-                      // defaultValue={majors
-                      //   .filter((major) => hashtagKeys.includes(major.id))
-                      //   .map((major) => major.name)}
-
                       onChange={handleChange}
                       input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
                       renderValue={(selected) => (

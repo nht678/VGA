@@ -31,9 +31,9 @@ import { validateFormData, isRequired } from '../formValidation';
 const getStatusLabel = (status) => {
   switch (status) {
     case true:
-      return 'Active';
+      return 'Hoạt động';
     case false:
-      return 'Blocked';
+      return 'Không hoạt động';
     default:
       return 'Unknown';
   }

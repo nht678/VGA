@@ -37,11 +37,11 @@ import { validateFormData, isRequired, validateArray } from '../formValidation';
 const getStatusLabel = (status) => {
   switch (status) {
     case true:
-      return 'Active';
+      return 'Hoạt động';
     case false:
-      return 'Blocked';
+      return 'Không hoạt động';
     default:
-      return 'Unknown';
+      return 'Không hoạt động';
   }
 };
 
@@ -53,7 +53,7 @@ const getStatusColor = (status) => {
     case false:
       return 'error';   // Đỏ
     default:
-      return 'default';
+      return 'error';
   }
 };
 
@@ -320,23 +320,14 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>
           {occupationalGroup?.length > 150 ? `${occupationalGroup.slice(0, 150)}...` : occupationalGroup}
         </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
-          {education?.length > 150 ? `${education.slice(0, 150)}...` : education}
-        </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
-          {howToWork?.length > 150 ? `${howToWork.slice(0, 150)}...` : howToWork}
-        </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
-          {jobOutlook?.length > 150 ? `${jobOutlook.slice(0, 150)}...` : jobOutlook}
-        </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
-          {payScale?.length > 150 ? `${payScale.slice(0, 150)}...` : payScale}
-        </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
-          {workEnvironment?.length > 150 ? `${workEnvironment.slice(0, 150)}...` : workEnvironment}
-        </TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>
-          {description?.length > 150 ? `${description.slice(0, 150)}...` : description}
+        <TableCell sx={{
+          textAlign: 'center',
+          width: '200px',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+        }}>
+          {description}
         </TableCell>
         <TableCell align="center">
           <Chip
@@ -351,7 +342,7 @@ export default function UserTableRow({
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
-      </TableRow>
+      </TableRow >
 
       <Dialog
         open={dialog === 'edit'}

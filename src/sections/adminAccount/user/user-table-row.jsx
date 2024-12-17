@@ -32,22 +32,17 @@ import { actUserUpdateAsync, actUserDelete, resetUserSuccess, actUserDeleteAsync
 
 
 const options = [
-  { name: '2017', value: 2017 },
-  { name: '2018', value: 2018 },
-  { name: '2019', value: 2019 },
-  { name: '2020', value: 2020 },
-  { name: '2021', value: 2021 },
-  { name: '2022', value: 2022 },
   { name: '2023', value: 2023 },
   { name: '2024', value: 2024 },
+  { name: '2025', value: 2025 },
 ];
 
 const getStatusLabel = (status) => {
   switch (status) {
     case 1:
-      return 'Active';
+      return 'Hoạt động';
     case 2:
-      return 'Inactive';
+      return 'Không hoạt động';
     case 3:
       return 'Blocked';
     default:
@@ -61,7 +56,7 @@ const getStatusColor = (status) => {
     case 1:
       return 'success'; // Xanh lá
     case 2:
-      return 'default'; // Xám
+      return 'error'; // Xám
     case 3:
       return 'error';   // Đỏ
     default:

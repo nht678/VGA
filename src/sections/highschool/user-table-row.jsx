@@ -32,9 +32,9 @@ import { Image } from 'antd';
 const getStatusLabel = (status) => {
   switch (status) {
     case 1:
-      return 'Active';
+      return 'Hoạt động';
     case 2:
-      return 'Inactive';
+      return 'Không hoạt động';
     case 3:
       return 'Blocked';
     default:
@@ -48,7 +48,7 @@ const getStatusColor = (status) => {
     case 1:
       return 'success'; // Xanh lá
     case 2:
-      return 'default'; // Xám
+      return 'error'; // Xám
     case 3:
       return 'error';   // Đỏ
     default:

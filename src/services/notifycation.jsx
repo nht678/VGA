@@ -13,6 +13,17 @@ const notificationService = {
             return null; // Trả về null khi có lỗi
         }
     },
+    changeStatusNotification: async (id) => {
+        try {
+            const response = await BASE_API.put(`https://vgacareerguidance.id.vn/api/Notification?id=${id}&status=1`);
+            if (response.status === 200) {
+                return response.data; // Trả về dữ liệu khi thành công
+            }
+            return null; // Trả về null nếu response không thành công
+        } catch (error) {
+            return null; // Trả về null khi có lỗi
+        }
+    },
 };
 
 export default notificationService;

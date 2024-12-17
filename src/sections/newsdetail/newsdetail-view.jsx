@@ -46,10 +46,10 @@ export default function NewsDetailView() {
                     : 'Chưa có nội dung'}
             </Typography>
             {newsById?.imageNews?.map((image, index) => (
-                <Box key={index} sx={{ m: 10 }}>
+                <Box key={index} sx={{ m: 10, textAlign: 'center' }}>
                     <Image
-                        style={{ margin: 'auto' }}
-                        width={'90%'}
+                        style={{ margin: 'auto', objectFit: 'contain' }}
+                        width={'100%'}
                         height={500}
                         src={image?.imageUrl}
                         alt={image?.descriptionTitle || 'Ảnh tin tức'}

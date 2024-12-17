@@ -135,11 +135,6 @@ export default function ConsultantView() {
       consultantLevelId: '',
       image_Url: '',
       certifications: [
-        {
-          description: "",
-          imageUrl: "",
-          majorId: ""
-        }
       ]
     });
 

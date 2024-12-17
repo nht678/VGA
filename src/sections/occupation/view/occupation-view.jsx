@@ -471,17 +471,12 @@ export default function OccupationView() {
             <Table stickyHeader sx={{ minWidth: 800, tableLayout: 'fixed' }}>
               <UserTableHead
                 headLabel={[
-                  { id: 'name', label: 'Tên', width: '300px' },
-                  { id: 'entryLevelEducation', label: 'Trình độ học vấn', align: 'center', width: '300px' },
-                  { id: 'occupationalGroup', label: 'Nhóm nghề nghiệp', align: 'center', width: '300px' },
-                  { id: 'education', label: 'Học vấn', align: 'center', width: '300px' },
-                  { id: 'howToWork', label: 'Cách thức làm việc', align: 'center', width: '300px' },
-                  { id: 'jobOutlook', label: 'Triển vọng nghề nghiệp', align: 'center', width: '300px' },
-                  { id: 'payScale', label: 'Mức lương', align: 'center', width: '300px' },
-                  { id: 'workEnvironment', label: 'Môi trường làm việc', align: 'center', width: '300px' },
-                  { id: 'description', label: 'Mô tả', align: 'center', width: '300px' },
-                  { id: 'status', label: 'Tình trạng', align: 'center', width: '300px' },
-                  { id: '', width: '50px' },
+                  { id: 'name', label: 'Tên', },
+                  { id: 'entryLevelEducation', label: 'Trình độ học vấn', align: 'center', },
+                  { id: 'occupationalGroup', label: 'Nhóm nghề nghiệp', align: 'center', },
+                  { id: 'description', label: 'Mô tả', align: 'center', width: '200px' },
+                  { id: 'status', label: 'Tình trạng', align: 'center', },
+                  { id: '', },
                 ]}
               />
               <TableBody>

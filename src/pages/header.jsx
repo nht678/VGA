@@ -35,12 +35,12 @@ export default function Header() {
     let role = localStorage.getItem('role');
     let token = localStorage.getItem('token');
     let imageUrl = localStorage.getItem('imageUrl');
+    console.log('imageUrl', imageUrl);
 
     const user = {
         name: 'Tom Cook',
         email: 'tom@example.com',
-        imageUrl: role ? (imageUrl != null ? 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain' : imageUrl) : 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
-
+        imageUrl: role ? (imageUrl === 'null' ? 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain' : imageUrl) : 'https://th.bing.com/th/id/OIP.xyVi_Y3F3YwEIKzQm_j_jQHaHa?rs=1&pid=ImgDetMain',
     }
 
     const userNavigation = role === '3' || role === '5'
@@ -82,8 +82,27 @@ export default function Header() {
     // Xử lý danh sách thông báo dựa vào trạng thái showAll
 
     const [notification, setNotification] = useState([]);
+    console.log('notification', notification);
     const visibleNotifications = showAll ? notification : notification.slice(0, 5);
     const listRef = useRef(null);
+
+    // Hàm để xử lý khi click vào thông báo
+    const handleNotificationClick = async (id) => {
+        debugger
+        // Gửi PUT request để thay đổi status của thông báo thành đã đọc
+        const response = await notificationService.changeStatusNotification(id);
+        if (response) {
+            // Cập nhật trạng thái của thông báo
+            setNotification((prevNotifications) =>
+                prevNotifications.map((item) =>
+                    item.id === id ? { ...item, status: 1 } : item
+                )
+            );
+            // Chuyển hướng đến trang chi tiết thông báo
+        } else {
+            message.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
+        }
+    };
 
 
     useEffect(() => {
@@ -98,8 +117,7 @@ export default function Header() {
     const [status, setStatus] = useState('');
 
     const accessToken = token;  // Token JWT của bạn
-    // https://vgacareerguidance.id.vn/notification_hub
-    // https://vgasystem-emf5a7bqfec2fjh9.southeastasia-01.azurewebsites.net/
+
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(`https://vgacareerguidance.id.vn/notification_hub`, {
@@ -198,12 +216,17 @@ export default function Header() {
                                         className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                     >
                                         <span className="absolute -inset-1.5" />
-                                        <span className="sr-only">View notifications</span>
+                                        <span className="sr-only">Xem thông báo</span>
                                         <BellIcon
                                             aria-hidden="true"
                                             className="h-6 w-6 cursor-pointer"
                                         />
-
+                                        {/* Badge thông báo */}
+                                        {notification.filter(item => item.status === 0).length > 0 && (
+                                            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-semibold text-white">
+                                                {notification.filter(item => item.status === 0).length}
+                                            </span>
+                                        )}
                                     </button>
 
                                     {/* Profile dropdown */}
@@ -237,52 +260,55 @@ export default function Header() {
                                     <div ref={listRef} className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
                                         <List sx={{ width: "460px", maxWidth: 460, bgcolor: "background.paper", maxHeight: '600px', overflowY: 'auto' }}>
                                             {visibleNotifications.map((item, index) => (
-                                                <div
-                                                    key={index}
+                                                <div key={index}
                                                     style={{
-
                                                         backgroundColor: item.status === 0 ? "#f0f8ff" : "white", // Màu nền khi chưa đọc
                                                         transition: "background-color 0.3s", // Hiệu ứng hover
-                                                    }}
-                                                >
-                                                    <ListItem
-                                                        alignItems="flex-start"
-                                                        sx={{
-                                                            "&:hover": {
-                                                                backgroundColor: "#e0e0e0", // Màu nền khi hover
-                                                                cursor: "pointer",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <ListItemAvatar>
-                                                            <Avatar
-                                                                alt={item.name}
-                                                                src={item.avatar}
-                                                            />
-                                                        </ListItemAvatar>
-                                                        <ListItemText
-                                                            primary={item?.title}
-                                                            secondary={
-                                                                <>
-                                                                    <Typography
-                                                                        component="span"
-                                                                        variant="body2"
-                                                                        sx={{
-                                                                            color: "text.primary",
-                                                                            display: "inline",
-                                                                            fontWeight: item.status === 0 ? "bold" : "normal", // Chữ đậm nếu chưa đọc
-                                                                        }}
-                                                                    >
-                                                                        {item?.message}
-                                                                    </Typography>
-                                                                </>
-                                                            }
-                                                        />
+                                                    }}>
+                                                    <button
+                                                        type='submit'
 
-                                                    </ListItem>
-                                                    {index < notification.length - 1 && (
-                                                        <Divider variant="inset" component="li" />
-                                                    )}
+                                                        onClick={() => handleNotificationClick(item.id)} // Gọi hàm khi click
+                                                    >
+                                                        <ListItem
+                                                            alignItems="flex-start"
+                                                            sx={{
+                                                                "&:hover": {
+                                                                    backgroundColor: "#e0e0e0", // Màu nền khi hover
+                                                                    cursor: "pointer",
+                                                                },
+                                                            }}
+                                                        >
+                                                            <ListItemAvatar>
+                                                                <Avatar
+                                                                    alt={item.name}
+                                                                    src={item.avatar}
+                                                                />
+                                                            </ListItemAvatar>
+                                                            <ListItemText
+                                                                primary={item?.title}
+                                                                secondary={
+                                                                    <>
+                                                                        <Typography
+                                                                            component="span"
+                                                                            variant="body2"
+                                                                            sx={{
+                                                                                color: "text.primary",
+                                                                                display: "inline",
+                                                                                fontWeight: item.status === 0 ? "bold" : "normal", // Chữ đậm nếu chưa đọc
+                                                                            }}
+                                                                        >
+                                                                            {item?.message}
+                                                                        </Typography>
+                                                                    </>
+                                                                }
+                                                            />
+
+                                                        </ListItem>
+                                                        {index < notification.length - 1 && (
+                                                            <Divider variant="inset" component="li" />
+                                                        )}
+                                                    </button>
                                                 </div>
                                             ))}
                                             {/* Nút Xem thêm */}

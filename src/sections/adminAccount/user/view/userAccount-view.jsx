@@ -3,39 +3,15 @@ import { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// import { users } from 'src/_mock/user';
-
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Autocomplete from '@mui/material/Autocomplete';
-import Grid from '@mui/system/Grid';
-import { Calendar, theme, Button as AntButton, message, Upload } from 'antd';
-
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { actUserGetAsync, actAddUserAsync, resetUserSuccess } from 'src/store/users/action';
-
-import { UploadOutlined } from '@ant-design/icons';
-import * as XLSX from 'xlsx';
-import { uploadFileAsync } from 'src/store/uploadfile/action';
-import LoadingPage from 'src/pages/loading';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
@@ -49,14 +25,9 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // create option các năm học có value là năm học
 const options = [
-  { name: '2017', value: 2017 },
-  { name: '2018', value: 2018 },
-  { name: '2019', value: 2019 },
-  { name: '2020', value: 2020 },
-  { name: '2021', value: 2021 },
-  { name: '2022', value: 2022 },
   { name: '2023', value: 2023 },
   { name: '2024', value: 2024 },
+  { name: '2025', value: 2025 },
 ];
 
 // ----------------------------------------------------------------------
@@ -173,7 +144,7 @@ export default function UserAccountView() {
     <>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} sx={{ justifyContent: 'center' }}>
-        <Typography sx={{ mt: 5, mb: 5, }} variant="h4">Danh sách học sinh năm:{filterYear}</Typography>
+        <Typography sx={{ mt: 5, mb: 5, }} variant="h4">Danh sách học sinh năm: {filterYear}</Typography>
       </Stack>
 
       <Card>
