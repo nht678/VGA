@@ -23,7 +23,7 @@ const reportService = {
         return response;
     },
     handleReport: async (id, data) => {
-        const response = await BASE_API.put(`/booking/process-report//${id}`, data);
+        const response = await BASE_API.put(`/booking/process-report/${id}`, data);
         return response;
     }
 };
