@@ -278,6 +278,7 @@ export default function TransactionAdminView() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:"
         />
 
 

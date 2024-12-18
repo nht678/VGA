@@ -149,9 +149,9 @@ export default function UserTableRow({
     dispatch(actHighSchoolUpdateAsync({ formData, id }));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
-      setFormData((prevData) => ({
-        ...prevData,
-      }));
+      // setFormData((prevData) => ({
+      //   ...prevData,
+      // }));
     }
     handleCloseDialog();
   }

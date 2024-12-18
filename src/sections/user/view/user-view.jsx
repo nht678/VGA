@@ -494,7 +494,8 @@ export default function UserView() {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:"
         />
 
 

@@ -202,6 +202,7 @@ export default function UserAccountView() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:"
         />
 
 

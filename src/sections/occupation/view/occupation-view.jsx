@@ -468,15 +468,15 @@ export default function OccupationView() {
 
         <Scrollbar>
           <TableContainer sx={{ height: 500 }}>
-            <Table stickyHeader sx={{ minWidth: 800, tableLayout: 'fixed' }}>
+            <Table stickyHeader sx={{ width: '100%', tableLayout: 'fixed' }}>
               <UserTableHead
                 headLabel={[
                   { id: 'name', label: 'Tên', },
                   { id: 'entryLevelEducation', label: 'Trình độ học vấn', align: 'center', },
                   { id: 'occupationalGroup', label: 'Nhóm nghề nghiệp', align: 'center', },
-                  { id: 'description', label: 'Mô tả', align: 'center', width: '200px' },
+                  { id: 'description', label: 'Mô tả', align: 'center' },
                   { id: 'status', label: 'Tình trạng', align: 'center', },
-                  { id: '', },
+                  { id: '', width: '5%' },
                 ]}
               />
               <TableBody>
@@ -514,6 +514,7 @@ export default function OccupationView() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:" // Đổi sang tiếng Việt
         />
 
 

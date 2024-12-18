@@ -135,6 +135,7 @@ export default function UserTableRow({
     name: name,
     email: email,
     phone: phone,
+    image_Url: image_Url,
     description: description,
     establishedYear: establishedYear,
     type: typeUniversity,
@@ -229,7 +230,7 @@ export default function UserTableRow({
 
         setFormData((prevData) => ({
           ...prevData,
-          image: url, // Lưu URL vào formData.image
+          image_Url: url, // Lưu URL vào formData.image
         }));
 
         return false; // Ngăn upload mặc định
@@ -248,7 +249,7 @@ export default function UserTableRow({
 
         setFormData((prevData) => ({
           ...prevData,
-          image: "", // Xóa URL trong formData
+          image_Url: "", // Xóa URL trong formData
         }));
       } catch (error2) {
         console.error("Failed to remove image:", error2);

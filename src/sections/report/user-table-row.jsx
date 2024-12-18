@@ -122,7 +122,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>{studentName}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{`${startTime}-${endTime}`}</TableCell>
         <TableCell sx={{ textAlign: 'center' }}>{consultationDay}</TableCell>
-        <TableCell sx={{ textAlign: 'center' }}>{comment}</TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{comment?.length > 50 ? comment.slice(0, 50) : comment}</TableCell>
 
 
 

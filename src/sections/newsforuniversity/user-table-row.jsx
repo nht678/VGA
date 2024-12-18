@@ -79,13 +79,6 @@ export default function UserTableRow({
   const handleCloseDialog = () => {
     setDialog('');
   };
-  const handlechange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-
-    });
-  }
 
   const handleClose = () => {
     setDialog('');
@@ -105,6 +98,11 @@ export default function UserTableRow({
       setFileList(initialFileList);
     }
   }, [imageNews]);
+
+  // useEffect(() => {
+  //   // cap nhat khi formdata thay doi
+  //   console.log("formData", formData);
+  // }, [formData]);
 
   const handleFileChange = (fileList1) => {
     setFileList(fileList1);
@@ -175,6 +173,9 @@ export default function UserTableRow({
     // Gọi API xóa hình ảnh tại backend dựa trên imageId
     console.log("Đang xóa ảnh với ID:", imageId);
     dispatch(actDeleteNewsImageAsync(imageId));
+    if (success) {
+      dispatch(resetNewsSuccess());
+    }
     // await api.deleteImage(imageId);
   };
 

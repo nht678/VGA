@@ -302,11 +302,11 @@ export default function UserTableRow({
 
   return (
     <>
+
       <TableRow hover >
         <TableCell >
           {rowKey}
         </TableCell>
-
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
@@ -320,15 +320,7 @@ export default function UserTableRow({
         <TableCell sx={{ textAlign: 'center' }}>
           {occupationalGroup?.length > 150 ? `${occupationalGroup.slice(0, 150)}...` : occupationalGroup}
         </TableCell>
-        <TableCell sx={{
-          textAlign: 'center',
-          width: '200px',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          textOverflow: 'ellipsis',
-        }}>
-          {description}
-        </TableCell>
+        <TableCell sx={{ textAlign: 'center' }}>{description.length > 100 ? `${description.slice(0, 100)} ...` : description}</TableCell>
         <TableCell align="center">
           <Chip
             label={getStatusLabel(status)}
@@ -336,13 +328,13 @@ export default function UserTableRow({
             variant="outlined"
           />
         </TableCell>
-
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
-      </TableRow >
+      </TableRow>
+
 
       <Dialog
         open={dialog === 'edit'}

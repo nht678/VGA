@@ -85,7 +85,6 @@ const getStatusColor = (status) => {
 
 export default function UserTableRow({
   name,
-  avatarUrl,
   email,
   phone,
   id,  // Đổi tên id props thành userId
@@ -122,13 +121,16 @@ export default function UserTableRow({
     ];
 
   const consultantRelationsName = consultantRelations?.map((consultantRelation) => consultantRelation?.universityName);
-  const consultantRelationUniversityId = consultantRelations?.map((consultantRelation) => consultantRelation?.universityId);
+  const consultantRelationUniversityId = consultantRelations?.map((consultantRelation) => ({
+    universityId: consultantRelation?.universityId
+  }));
 
   const [formData, setFormData] = useState({
     name: name,
     email: email,
     phone: phone,
     status: true,
+    image_Url: image_Url,
     doB: dateOfBirth,
     gender: gender,
     description: description,
@@ -264,20 +266,21 @@ export default function UserTableRow({
     },
   });
 
-  const [imageUrl1, setImageUrl1] = useState(avatarUrl || ""); // Lưu URL ảnh (có thể là ảnh cũ nếu có avatarUrl)
+  const [imageUrl1, setImageUrl1] = useState(image_Url); // Lưu URL ảnh \
+  console.log(imageUrl1);
   const [fileList2, setFileList2] = useState([]); // Danh sách file của Upload
 
   useEffect(() => {
     if (image_Url) {
-      setImageUrl1(image_Url); // Cập nhật imageUrl với avatarUrl nếu có
+      setImageUrl1(image_Url);
       setFileList2([{
         uid: '-1', // Đảm bảo có một uid cho ảnh hiện tại
-        name: 'image.jpg', // Đặt tên file phù hợp (có thể lấy tên ảnh từ avatarUrl)
+        name: 'image.jpg', // Đặt tên file phù hợp
         status: 'done', // Đảm bảo file đã được tải lên
         url: image_Url, // URL ảnh cũ từ Firebase
       }]);
     }
-  }, [image_Url]); // Cập nhật fileList khi avatarUrl thay đổi
+  }, [image_Url]); // Cập nhật fileList khi 
 
   const uploadProps2 = {
     name: "file",
@@ -663,9 +666,6 @@ export default function UserTableRow({
                 </Upload>
                 {errors.image_Url && <Typography variant='caption' color="error" >{errors.image_Url}</Typography>}
               </Grid>
-
-
-
               <Grid item xs={12}>
                 <Typography variant="h6">Ngày sinh</Typography>
                 <Calendar
@@ -730,6 +730,7 @@ export default function UserTableRow({
                     <Button
                       variant="outlined"
                       color="error"
+                      sx={{ mb: 1 }}
                       onClick={() => removeCertification(certification?.id, index)}
                     >
                       Xóa
@@ -794,6 +795,8 @@ export default function UserTableRow({
         onClose={handleClose1}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="sm"
       >
         <DialogTitle id="alert-dialog-title" sx={{ marginLeft: 1, textAlign: 'center' }}>
           Thêm chứng chỉ
@@ -949,11 +952,14 @@ export default function UserTableRow({
                   Mô tả:
                 </Typography>
               </Grid>
-              <Grid size={{ md: 3 }}>
+              <Grid size={{ md: 9 }}>
                 <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
                   {description}
                 </Typography>
               </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Cấp độ:
@@ -1034,13 +1040,13 @@ export default function UserTableRow({
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
-              <Grid size={{ md: 3 }}>
+              <Grid size={{ md: 12 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Chứng chỉ:
                 </Typography>
               </Grid>
               {certifications?.map((item, index) => (
-                <Grid key={index} size={{ md: 3 }}>
+                <Grid key={index} size={{ md: 12 }} >
                   <Image
                     width={100}
                     height={100}
@@ -1089,7 +1095,6 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
   name: PropTypes.string,
   id: PropTypes.string,
   dateOfBirth: PropTypes.string,

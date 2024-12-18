@@ -360,6 +360,7 @@ export default function QuestionView() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:"
         />
 
 

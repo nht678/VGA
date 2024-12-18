@@ -1,19 +1,3 @@
-// formValidation.js
-
-// export const validateFormData = (formData, rules) => {
-//   const errors = {};
-//   Object.keys(rules).forEach((field) => {
-//     const fieldRules = rules[field];
-//     console.log(`Rules for ${field}:`, fieldRules);
-//     fieldRules.forEach((rule) => {
-//       const error = rule(formData[field]);
-//       if (error) {
-//         errors[field] = error;
-//       }
-//     });
-//   });
-//   return errors;
-// };
 
 export const validateFormData = (formData, rules) => {
   const errors = Array.isArray(formData) ? [] : {};

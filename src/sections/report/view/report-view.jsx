@@ -130,6 +130,7 @@ export default function ReportView() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:"
         />
 
 

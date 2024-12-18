@@ -372,11 +372,14 @@ export default function UserTableRow({
                   Mô tả:
                 </Typography>
               </Grid>
-              <Grid size={{ md: 3 }}>
+              <Grid size={{ md: 9 }}>
                 <Typography variant="body2" sx={{ ml: 2, color: '#616161' }}>
                   {description}
                 </Typography>
               </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
+
               <Grid size={{ md: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Cấp độ:
@@ -460,13 +463,13 @@ export default function UserTableRow({
               </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ border: '1px solid #e0e0e0', padding: 1, borderRadius: '4px', mt: 2, px: 3 }}>
-              <Grid size={{ md: 3 }}>
+              <Grid size={{ md: 12 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                   Chứng chỉ:
                 </Typography>
               </Grid>
               {certifications?.map((item, index) => (
-                <Grid size={{ md: 9 }}>
+                <Grid size={{ md: 12 }}>
                   <Image
                     width={100}
                     height={100}

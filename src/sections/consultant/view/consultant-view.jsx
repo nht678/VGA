@@ -555,7 +555,6 @@ export default function ConsultantView() {
                     name={row.name || ''}
                     email={row?.email || ''}
                     phone={row?.phone || ''}
-                    avatarUrl={row.avatarUrl || ''}
                     description={row.description || ''}
                     consultantLevelId={row?.consultantLevel?.id || ''}
                     gender={row?.gender ?? ''} // undefined or null 
@@ -565,7 +564,7 @@ export default function ConsultantView() {
                     walletBalance={row?.walletBalance || 0}
                     nameUniversity={row?.university?.account?.name || ''}
                     consultantLevelPrice={row?.consultantLevel?.priceOnSlot || 0}
-                    image_Url={row?.account?.image_Url}
+                    image_Url={row?.image_Url}
                     emailuniversity={row?.university?.account?.email || ''}
                     consultantLevelDes={row?.consultantLevel?.description || ''}
                     certifications={row?.certifications}
@@ -585,6 +584,7 @@ export default function ConsultantView() {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[10, 25]}
+          labelRowsPerPage="Số hàng mỗi trang:"
         />
 
 
