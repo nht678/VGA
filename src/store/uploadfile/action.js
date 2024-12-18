@@ -22,7 +22,12 @@ export function uploadFileAsync(data) {
             }
         } catch (error) {
             console.log(error);
-            message.error('Thêm mới thất bại');
+            const messageError = error?.response?.data?.message;
+            if (messageError) {
+                message.error(messageError);
+            } else {
+                message.error('Thêm mới thất bại');
+            }
         }
     };
 }

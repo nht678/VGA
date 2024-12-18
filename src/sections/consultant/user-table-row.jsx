@@ -267,7 +267,6 @@ export default function UserTableRow({
   });
 
   const [imageUrl1, setImageUrl1] = useState(image_Url); // Lưu URL ảnh \
-  console.log(imageUrl1);
   const [fileList2, setFileList2] = useState([]); // Danh sách file của Upload
 
   useEffect(() => {

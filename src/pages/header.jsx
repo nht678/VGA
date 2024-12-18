@@ -35,7 +35,6 @@ export default function Header() {
     let role = localStorage.getItem('role');
     let token = localStorage.getItem('token');
     let imageUrl = localStorage.getItem('imageUrl');
-    console.log('imageUrl', imageUrl);
 
     const user = {
         name: 'Tom Cook',
@@ -82,13 +81,11 @@ export default function Header() {
     // Xử lý danh sách thông báo dựa vào trạng thái showAll
 
     const [notification, setNotification] = useState([]);
-    console.log('notification', notification);
     const visibleNotifications = showAll ? notification : notification.slice(0, 5);
     const listRef = useRef(null);
 
     // Hàm để xử lý khi click vào thông báo
     const handleNotificationClick = async (id) => {
-        debugger
         // Gửi PUT request để thay đổi status của thông báo thành đã đọc
         const response = await notificationService.changeStatusNotification(id);
         if (response) {

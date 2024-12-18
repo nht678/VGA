@@ -12,9 +12,6 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
-// import { users } from 'src/_mock/user';
-
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -30,7 +27,6 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
-import * as XLSX from 'xlsx';
 import { actHighSchoolGetAsync, actAddHighSchoolAsync, resetHighSchoolSuccess } from 'src/store/highschool/action';
 import { actGetRegionAsync } from 'src/store/region/action';
 
@@ -65,7 +61,6 @@ export default function HighSchoolAccountView() {
   const dispatch = useDispatch();
 
   const { highschools, total = 0, successHighSchool } = useSelector((state) => state.highschoolReducer);
-  console.log('highschools', highschools);
   const { regions } = useSelector((state) => state.regionReducer);
 
   const handleAddHighSchool = () => {
@@ -85,6 +80,7 @@ export default function HighSchoolAccountView() {
         regionId: '',
         image_Url: '',
       });
+      setImageUrl('');
     }
     handleClose();
   };

@@ -113,6 +113,7 @@ export default function UniversityAccountView() {
         description: '',
         establishedYear: '',
         type: '',
+        image_Url: '',
       });
     }
 

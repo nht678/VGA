@@ -133,8 +133,6 @@ export default function UserTableRow({
   });
 
 
-  console.log("image_Url", image_Url);
-
   const handlechange = (event) => {
     setFormData({
       ...formData,

@@ -146,7 +146,6 @@ export default function ConsultantView() {
     dispatch(getConsultants({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, level: filterLevel })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
-    debugger
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
@@ -239,7 +238,6 @@ export default function ConsultantView() {
     : []; // Nếu chưa có ảnh thì danh sách trống
 
   const [imageUrl1, setImageUrl1] = useState(""); // Lưu URL ảnh
-  console.log('imageUrl1', imageUrl1);
 
   const uploadProps1 = {
     name: "file",

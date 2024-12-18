@@ -95,13 +95,13 @@ export default function NewsForUniversityView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actGetNewsAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actGetNewsAsync({ page: newPage + 1, pageSize: rowsPerPage, universityid: userId })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actGetNewsAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actGetNewsAsync({ page: 1, pageSize: newRowsPerPage, universityid: userId })); // Gọi API với `pageSize` mới
   };
 
   const [open, setOpen] = useState('');
@@ -119,10 +119,10 @@ export default function NewsForUniversityView() {
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
 
     if (filterValue.trim()) {
-      dispatch(actGetNewsAsync({ page: 1, pageSize: rowsPerPage, search: filterValue }));
+      dispatch(actGetNewsAsync({ page: 1, pageSize: rowsPerPage, search: filterValue, universityid: userId }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actGetNewsAsync({ page: 1, pageSize: rowsPerPage }));
+      dispatch(actGetNewsAsync({ page: 1, pageSize: rowsPerPage, universityid: userId }));
     }
   };
 
@@ -192,7 +192,6 @@ export default function NewsForUniversityView() {
       imageNews: uploadedUrls,
       hashtag: formData?.hashtag,
     };
-    console.log("newsData", newsData);
     dispatch(actAddNewsAsync(newsData));
     if (success) {
       setMajorName([]);
@@ -223,15 +222,12 @@ export default function NewsForUniversityView() {
   const theme = useTheme();
   const [majorName, setMajorName] = useState([]);
   const [majorIds, setMajorIds] = useState([]); // Lưu trữ danh sách majorId
-  console.log("majorIds", majorIds);
-  console.log("majorName", majorName);
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
 
     const selectedNames = typeof value === 'string' ? value.split(',') : value;
-    console.log("selectedNames", selectedNames);
     setMajorName(selectedNames);
 
     // Ánh xạ từ name sang majorId
@@ -241,7 +237,6 @@ export default function NewsForUniversityView() {
     setMajorIds(selectedIds);
     // Lấy chuỗi từ majorIds
     const majorIdString = selectedIds.join(',');
-    console.log("majorIdString", majorIdString);
     setFormData({
       ...formData,
       hashtag: majorIdString,

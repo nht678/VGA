@@ -29,17 +29,12 @@ export default function ProfileUniversityView() {
         if (response.status === 200) {
             closeDialog();
         }
-
-
     };
 
     const dispatch = useDispatch();
     const { regions = [] } = useSelector((state) => state.regionReducer);
-    console.log(regions);
 
     let userId = localStorage.getItem('userId');
-
-    console.log('profileUniversity', profileUniversity);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -51,7 +46,6 @@ export default function ProfileUniversityView() {
         description: "",
     });
     const [formDataLocation, setFormDataLocation] = useState([]);
-    console.log('formDataLocation', formDataLocation);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

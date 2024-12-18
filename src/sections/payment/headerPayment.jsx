@@ -21,8 +21,6 @@ const user = {
 export default function HeaderPayment() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { isAuthenticated } = useSelector((state) => state.accountReducer);
-    console.log('isAuthenticated1', isAuthenticated);
 
     const accountId = localStorage.getItem('accountId');
 

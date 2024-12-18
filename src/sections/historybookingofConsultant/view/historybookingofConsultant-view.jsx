@@ -37,7 +37,6 @@ export default function HistoryBookingOfConsultantView() {
   const dispatch = useDispatch();
 
   const { reports = [], success, total = 0 } = useSelector((state) => state.reportReducer);
-  console.log('reports', reports);
   // use useparam
   const { id } = useParams();
 

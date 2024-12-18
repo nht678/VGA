@@ -96,13 +96,24 @@ export default function UserTableRow({
         url: item.imageUrl, // Lấy URL của ảnh
       }));
       setFileList(initialFileList);
+    } else {
+      setFileList([]); // Đảm bảo xóa fileList khi imageNews là mảng rỗng
     }
   }, [imageNews]);
 
-  // useEffect(() => {
-  //   // cap nhat khi formdata thay doi
-  //   console.log("formData", formData);
-  // }, [formData]);
+  useEffect(() => {
+    if (_HashTag) {
+      const hashtagvalue = _HashTag.map(item => item.values) || [];
+      const hashtagKey = _HashTag.map(item => item.keys) || [];
+      const hashTagKeyFormat = hashtagKey.join(',');
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        hashtag: hashTagKeyFormat,
+      }));
+      setMajorName(hashtagvalue);
+    }
+  }, [_HashTag]);
+
 
   const handleFileChange = (fileList1) => {
     setFileList(fileList1);
@@ -204,22 +215,21 @@ export default function UserTableRow({
     };
   }
   const theme = useTheme();
-  const hashtagvalue = _HashTag?.map(item => item.values) || [];
-  console.log("hashtagvalue", hashtagvalue);
-  const hashtagKey = _HashTag?.map(item => item.keys) || [];
-  const hashTagKeyFormat = hashtagKey.join(',');
+  // const hashtagvalue = _HashTag?.map(item => item.values) || [];
+  // const hashtagKey = _HashTag?.map(item => item.keys) || [];
+  // const hashTagKeyFormat = hashtagKey.join(',');
 
 
   const [formData, setFormData] = useState({
     title: title || '',
     content: content || '',
     imageNews: [],
-    hashtag: hashTagKeyFormat || '',
+    hashtag: '',
   });
 
   console.log("formData", formData);
 
-  const [majorName, setMajorName] = useState(hashtagvalue);
+  const [majorName, setMajorName] = useState([]); // Lưu trữ danh sách majorName
   const [majorIds, setMajorIds] = useState([]); // Lưu trữ danh sách majorId
   const handleChange = (event) => {
     const {

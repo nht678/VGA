@@ -62,8 +62,12 @@ export function actAddUserAsync(data) {
                 message.error('Thêm mới thất bại');
             }
         } catch (error) {
-            console.log(error);
-            message.error('Lỗi gì đó');
+            const messageError = error?.response?.data;
+            if (messageError) {
+                message.error(messageError);
+            } else {
+                message.error('Thêm mới thất bại');
+            }
         }
     };
 }

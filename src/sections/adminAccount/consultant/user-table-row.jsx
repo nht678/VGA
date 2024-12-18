@@ -219,7 +219,6 @@ export default function UserTableRow({
     setDialog(null);
   };
 
-  console.log('walletBalance', walletBalance);
 
 
   return (

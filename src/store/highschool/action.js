@@ -59,7 +59,10 @@ export const actAddHighSchoolAsync = (data) => async (dispatch) => {
         }
     } catch (error) {
         console.error(error);
-        message.error('Thêm mới thất bại');
+        const errorMessage = error?.response?.data || 'Thêm mới thất bại';
+        message.error(errorMessage);
+
+
     }
 };
 
