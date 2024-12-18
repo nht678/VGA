@@ -381,7 +381,7 @@ export default function NewsForUniversityView() {
               <TableBody>
                 {news.map((row, index) => (
                   <UserTableRow
-                    key={index}
+                    key={row?.id}
                     id={row?.id}
                     rowKey={index + 1}
                     title={row?.title}

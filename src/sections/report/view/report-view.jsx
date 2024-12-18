@@ -106,7 +106,7 @@ export default function ReportView() {
               <TableBody>
                 {reports?.map((row, index) => (
                   <UserTableRow
-                    key={index}
+                    key={row?.id}
                     id={row?.id}
                     rowKey={index + 1}
                     consultantName={row?.consultantName}
@@ -132,8 +132,6 @@ export default function ReportView() {
           rowsPerPageOptions={[10, 25]}
           labelRowsPerPage="Số hàng mỗi trang:"
         />
-
-
       </Card>
     </>
   );

@@ -98,7 +98,7 @@ export default function HistoryBookingOfConsultantView() {
               <TableBody>
                 {reports?.map((row, index) => (
                   <UserTableRow
-                    key={index}
+                    key={row?.id}
                     id={row?.id}
                     rowKey={index + 1}
                     consultantName={row?.consultantName}

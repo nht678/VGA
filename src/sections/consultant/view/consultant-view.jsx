@@ -64,10 +64,7 @@ export default function ConsultantView() {
     consultantLevelId: '',
     image_Url: '',
     certifications: [
-      // {
-      //   description: "",
-      //   imageUrl: ""
-      // }
+
     ]
   });
 
@@ -539,7 +536,7 @@ export default function ConsultantView() {
                   { id: 'decription', label: 'Mô tả', align: 'center' },
                   { id: 'gender', label: 'Giới tính' },
                   { id: 'consultantLevelId', label: 'Level', align: 'center' },
-                  { id: 'dateOfBirth', label: 'Ngày sinh' },
+                  { id: 'point', label: 'Số điểm' },
                   { id: 'status', label: 'Trạng thái', align: 'center' },
                   { id: '' },
                 ]}
@@ -547,10 +544,10 @@ export default function ConsultantView() {
               <TableBody>
                 {consultants.map((row, index) => (
                   <UserTableRow
-                    key={index}
+                    key={row?.id}
                     id={row?.id || ''}
                     rowKey={index + 1}
-                    name={row.name || ''}
+                    name={row?.name || ''}
                     email={row?.email || ''}
                     phone={row?.phone || ''}
                     description={row.description || ''}

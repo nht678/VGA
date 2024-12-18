@@ -88,6 +88,7 @@ export default function UserTableRow({
   consultantRelations
 }) {
 
+
   let userId = localStorage.getItem('userId');
 
   const [open, setOpen] = useState(null);

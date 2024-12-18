@@ -124,20 +124,65 @@ export default function UserTableRow({
   const consultantRelationUniversityId = consultantRelations?.map((consultantRelation) => ({
     universityId: consultantRelation?.universityId
   }));
-
+  // Khởi tạo state formData
   const [formData, setFormData] = useState({
-    name: name,
-    email: email,
-    phone: phone,
-    status: true,
-    image_Url: image_Url,
+    name,
+    email,
+    phone,
+    image_Url,
     doB: dateOfBirth,
-    gender: gender,
-    description: description,
-    consultantLevelId: consultantLevelId,
+    gender,
+    description,
+    consultantLevelId,
     certifications: cleanedCertifications,
-    consultantRelations: consultantRelationUniversityId
+    consultantRelations: consultantRelationUniversityId,
   });
+
+  // Lắng nghe sự thay đổi của props và cập nhật formData
+  useEffect(() => {
+    const updatedCertifications = certifications?.map((item) => ({
+      id: item.id,
+      description: item.description,
+      imageUrl: item.imageUrl,
+      majorId: item.majorId,
+    })) || [
+        {
+          id: "",
+          description: "",
+          imageUrl: "",
+          majorId: "",
+        },
+      ];
+
+    const updatedConsultantRelations = consultantRelations?.map((consultantRelation) => ({
+      universityId: consultantRelation?.universityId,
+    }));
+
+    setFormData({
+      name,
+      email,
+      phone,
+      image_Url,
+      doB: dateOfBirth,
+      gender,
+      description,
+      consultantLevelId,
+      certifications: updatedCertifications,
+      consultantRelations: updatedConsultantRelations,
+    });
+  }, [
+    name,
+    email,
+    phone,
+    dateOfBirth,
+    description,
+    consultantLevelId,
+    gender,
+    image_Url,
+    certifications,
+    consultantRelations,
+  ]);
+
 
   const { consultantLevels } = useSelector((state) => state.levelReducer);
   const { successConsultant } = useSelector((state) => state.consultantReducer);
@@ -328,7 +373,6 @@ export default function UserTableRow({
       }
     },
   };
-
 
 
   // Hàm xóa ảnh từ Firebase
@@ -524,12 +568,12 @@ export default function UserTableRow({
 
 
 
-  useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      certifications: cleanedCertifications,
-    }));
-  }, [certifications]);
+  // useEffect(() => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     certifications: cleanedCertifications,
+  //   }));
+  // }, [certifications]);
 
 
   return (
@@ -562,8 +606,8 @@ export default function UserTableRow({
         >
           {`Level ${consultantLevelId}`}
         </TableCell>
-        <TableCell>
-          {dateOfBirth}
+        <TableCell sx={{ textAlign: 'center' }}>
+          {walletBalance}
         </TableCell>
         <TableCell align="center">
           <Chip

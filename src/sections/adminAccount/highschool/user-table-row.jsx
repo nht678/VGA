@@ -129,8 +129,9 @@ export default function UserTableRow({
     address: address,
     regionId: regionId,
     image_Url: image_Url,
-
   });
+
+  console.log('formData', formData);
 
 
   const handlechange = (event) => {
@@ -147,9 +148,6 @@ export default function UserTableRow({
     dispatch(actHighSchoolUpdateAsync({ formData, id }));
     if (successHighSchool) {
       dispatch(resetHighSchoolSuccess());
-      // setFormData((prevData) => ({
-      //   ...prevData,
-      // }));
     }
     handleCloseDialog();
   }
