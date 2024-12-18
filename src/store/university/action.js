@@ -77,11 +77,14 @@ export const actUniversityUpdateAsync = (data) => async (dispatch) => {
             message.error('Cập nhật thất bại');
         }
     } catch (error) {
-        // if (error.response.data) {
-        // message.error(error.response.data);
+        // const errorMessage = error?.response?.data?.message;
+        // if (typeof errorMessage === 'string' && errorMessage.trim()) {
+        //     message.error(errorMessage);
         // } else {
-        message.error('Cập nhật thất bại');
+        //     message.error('Cập nhật thất bại');
         // }
+        message.error('Cập nhật thất bại');
+
     }
 }
 

@@ -58,7 +58,7 @@ export default function AppViewUni() {
       <Grid container spacing={2}>
         <Grid size={{ sx: 12, sm: 6, md: 3 }}>
           <AppWidgetSummary
-            title="Số lượng tư vấn viên"
+            title="Số lượng tư vấn viên của trường đại học"
             total={data?.numberConsultant}
             color="success"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" style={{ width: 50, height: 50 }} />}
