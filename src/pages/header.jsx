@@ -81,6 +81,7 @@ export default function Header() {
     // Xử lý danh sách thông báo dựa vào trạng thái showAll
 
     const [notification, setNotification] = useState([]);
+    console.log("notification", notification);
     const visibleNotifications = showAll ? notification : notification.slice(0, 5);
     const listRef = useRef(null);
 
@@ -88,18 +89,18 @@ export default function Header() {
     const handleNotificationClick = async (id) => {
         // Gửi PUT request để thay đổi status của thông báo thành đã đọc
         const response = await notificationService.changeStatusNotification(id);
-        // if (response) {
-        //     // Cập nhật trạng thái của thông báo
-        //     // setNotification((prevNotifications) =>
-        //     //     prevNotifications.map((item) =>
-        //     //         item.id === id ? { ...item, status: 1 } : item
-        //     //     )
-        //     // );
-        //     message.success('Đã đọc thông báo');
-        //     // Chuyển hướng đến trang chi tiết thông báo
-        // } else {
-        //     message.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
-        // }
+        if (response) {
+            // Cập nhật trạng thái của thông báo
+            setNotification((prevNotifications) =>
+                prevNotifications.map((item) =>
+                    item.id === id ? { ...item, status: 1 } : item
+                )
+            );
+            //     message.success('Đã đọc thông báo');
+            //     // Chuyển hướng đến trang chi tiết thông báo
+            // } else {
+            //     message.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
+        }
     };
 
 
@@ -133,7 +134,17 @@ export default function Header() {
                 // Nhận thông báo từ server
                 connection.on('ReceiveNotification', (notitfycation) => {
                     console.log('Received notification:', notitfycation);
-                    setNotification(prevMessages => [...prevMessages, notitfycation]);
+                    // setNotification(prevMessages => [...prevMessages, notitfycation]);
+                    setNotification((prevMessages) => {
+                        // Kiểm tra nếu thông báo mới không trùng `createdAt` với thông báo cũ
+                        const isDuplicate = prevMessages.some(
+                            (message1) =>
+                                new Date(message1.createdAt).getTime() === new Date(notitfycation.createdAt).getTime()
+                        );
+
+                        // Chỉ thêm vào nếu không trùng
+                        return isDuplicate ? prevMessages : [...prevMessages, notitfycation];
+                    });
                 });
             })
             .catch(err => {
@@ -146,7 +157,7 @@ export default function Header() {
             connection.stop();
             console.log('connection stop');
         };
-    }, [accessToken, role]);
+    }, [accessToken]);
 
     // Đóng thông báo khi click bên ngoài
     useEffect(() => {

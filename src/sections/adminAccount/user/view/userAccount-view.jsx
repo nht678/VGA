@@ -85,13 +85,13 @@ export default function UserAccountView() {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    dispatch(actUserGetAsync({ page: newPage + 1, pageSize: rowsPerPage })); // Cập nhật trang và gọi API
+    dispatch(actUserGetAsync({ page: newPage + 1, pageSize: rowsPerPage, search: filterName, schoolYears: filterYear })); // Cập nhật trang và gọi API
   };
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset về trang đầu tiên khi thay đổi số lượng
-    dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage })); // Gọi API với `pageSize` mới
+    dispatch(actUserGetAsync({ page: 1, pageSize: newRowsPerPage, search: filterName, schoolYears: filterYear })); // Gọi API với `pageSize` mới
   };
 
 
@@ -120,12 +120,11 @@ export default function UserAccountView() {
   const handleFilterByName = async (event) => {
     const filterValue = event.target.value;
     setFilterName(filterValue);  // Cập nhật tạm thời giá trị tìm kiếm cho input
-
     if (filterValue.trim()) {
       dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterValue, schoolYears: filterYear }));
     } else {
       // Gọi lại API khi không có từ khóa tìm kiếm
-      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, search: filterValue, schoolYears: filterYear }));
+      dispatch(actUserGetAsync({ page: page + 1, pageSize: rowsPerPage, schoolYears: filterYear }));
     }
   };
 
