@@ -17,10 +17,11 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
+const currentYear = new Date().getFullYear();
 const options = [
-  '2023',
-  '2024',
-  '2025',
+  `${currentYear - 1}`,
+  `${currentYear}`,
+  `${currentYear + 1}`,
 ];
 
 const ITEM_HEIGHT = 48;

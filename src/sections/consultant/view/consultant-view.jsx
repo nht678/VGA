@@ -209,9 +209,9 @@ export default function ConsultantView() {
         return false;
       }
     },
-    onRemove: async () => {
+    onRemove: () => {
       try {
-        await deleteImageFromFirebase(formData.certifications[index]?.imageUrl);
+        // await deleteImageFromFirebase(formData.certifications[index]?.imageUrl);
         setFormData((prevData) => {
           const updatedCertifications = [...prevData.certifications];
           updatedCertifications[index].imageUrl = ""; // Xóa URL từ chứng chỉ cụ thể
@@ -256,9 +256,9 @@ export default function ConsultantView() {
         return false;
       }
     },
-    onRemove: async (file) => {
+    onRemove: (file) => {
       try {
-        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        // await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
         setImageUrl1(""); // Xóa URL trong state
         setFormData((prevData) => ({
           ...prevData,
@@ -281,16 +281,16 @@ export default function ConsultantView() {
     ]
     : []; // Nếu chưa có ảnh thì danh sách trống
 
-  // Hàm xóa ảnh từ Firebase
-  const deleteImageFromFirebase = async (imageUrl2) => {
-    try {
-      const imageRef = ref(storage, imageUrl2); // Tạo reference từ URL
-      await deleteObject(imageRef); // Xóa ảnh
-      console.log("Ảnh đã được xóa thành công");
-    } catch (error1) {
-      console.error("Lỗi khi xóa ảnh:", error1);
-    }
-  };
+  // // Hàm xóa ảnh từ Firebase
+  // const deleteImageFromFirebase = async (imageUrl2) => {
+  //   try {
+  //     const imageRef = ref(storage, imageUrl2); // Tạo reference từ URL
+  //     await deleteObject(imageRef); // Xóa ảnh
+  //     console.log("Ảnh đã được xóa thành công");
+  //   } catch (error1) {
+  //     console.error("Lỗi khi xóa ảnh:", error1);
+  //   }
+  // };
 
 
 

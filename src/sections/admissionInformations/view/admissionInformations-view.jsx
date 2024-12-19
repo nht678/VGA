@@ -131,9 +131,11 @@ export default function AdmissionInformationsView() {
     }
   }
 
+  const currentYear = new Date().getFullYear();
   const options = [
-    { name: '2023', value: 2023 },
-    { name: '2024', value: 2024 },
+    { name: `${currentYear - 1}`, value: currentYear - 1 },
+    { name: `${currentYear}`, value: currentYear },
+    { name: `${currentYear + 1}`, value: currentYear + 1 },
   ];
 
   useEffect(() => {

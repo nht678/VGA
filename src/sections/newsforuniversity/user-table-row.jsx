@@ -163,21 +163,22 @@ export default function UserTableRow({
 
       // Gọi API xóa hình ảnh khỏi backend dựa trên ID hoặc URL
       handleDeleteImage(file.uid);
-      deleteImageFireBase(file.path || `images/${file.name}`); // Adjust path if necessary
+      console.log("file.path:", file.path);
+      // deleteImageFireBase(file.path || `images/${file.name}`); // Adjust path if necessary
     },
   };
-  const deleteImageFireBase = async (filePath) => {
-    try {
-      // Create a reference to the file to delete based on its path
-      const imageRef = ref(storage, filePath);
-      await deleteObject(imageRef); // Delete image from Firebase Storage
+  // const deleteImageFireBase = async (filePath) => {
+  //   try {
+  //     // Create a reference to the file to delete based on its path
+  //     const imageRef = ref(storage, filePath);
+  //     await deleteObject(imageRef); // Delete image from Firebase Storage
 
-      // Remove the image from the fileList in state
-      setFileList((prevList) => prevList.filter((item) => item.url !== filePath));
-    } catch (error) {
-      console.error("Error deleting image from Firebase:", error);
-    }
-  };
+  //     // Remove the image from the fileList in state
+  //     setFileList((prevList) => prevList.filter((item) => item.url !== filePath));
+  //   } catch (error) {
+  //     console.error("Error deleting image from Firebase:", error);
+  //   }
+  // };
 
   // Hàm xóa ảnh qua API
   const handleDeleteImage = async (imageId) => {

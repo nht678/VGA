@@ -139,22 +139,22 @@ export default function NewsForUniversityView() {
     },
     onRemove(file) {
       setSelectedFiles((prevFiles) => prevFiles.filter((f) => f.uid !== file.uid));
-      if (file.url) {
-        deleteImageFireBase(file.url); // Chỉ xóa nếu URL tồn tại
-      }
+      // if (file.url) {
+      //   deleteImageFireBase(file.url); // Chỉ xóa nếu URL tồn tại
+      // }
     },
   }
 
-  const deleteImageFireBase = async (filePath) => {
-    if (!filePath) return; // Kiểm tra nếu filePath không hợp lệ
-    try {
-      const imageRef = ref(storage, filePath);
-      await deleteObject(imageRef);
-      console.log("Deleted from Firebase:", filePath);
-    } catch (error1) {
-      console.error("Error deleting image from Firebase:", error1);
-    }
-  };
+  // const deleteImageFireBase = async (filePath) => {
+  //   if (!filePath) return; // Kiểm tra nếu filePath không hợp lệ
+  //   try {
+  //     const imageRef = ref(storage, filePath);
+  //     await deleteObject(imageRef);
+  //     console.log("Deleted from Firebase:", filePath);
+  //   } catch (error1) {
+  //     console.error("Error deleting image from Firebase:", error1);
+  //   }
+  // };
 
   // Hàm upload tất cả ảnh đã chọn lên Firebase và lấy URL
   const handleUpload = async () => {

@@ -169,9 +169,9 @@ export default function UniversityAccountView() {
         return false;
       }
     },
-    onRemove: async (file) => {
+    onRemove: (file) => {
       try {
-        await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
+        // await deleteImageFromFirebase(imageUrl); // Xóa ảnh từ Firebase
         setSelectedFile(null); // Xóa file trong state
         setImageUrl(""); // Xóa URL trong state
         setFormData((prevData) => ({
@@ -184,16 +184,16 @@ export default function UniversityAccountView() {
     },
   };
 
-  // Hàm xóa ảnh từ Firebase
-  const deleteImageFromFirebase = async (imageUrl1) => {
-    try {
-      const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
-      await deleteObject(imageRef); // Xóa ảnh
-      console.log("Ảnh đã được xóa thành công");
-    } catch (error1) {
-      console.error("Lỗi khi xóa ảnh:", error1);
-    }
-  };
+  // // Hàm xóa ảnh từ Firebase
+  // const deleteImageFromFirebase = async (imageUrl1) => {
+  //   try {
+  //     const imageRef = ref(storage, imageUrl1); // Tạo reference từ URL
+  //     await deleteObject(imageRef); // Xóa ảnh
+  //     console.log("Ảnh đã được xóa thành công");
+  //   } catch (error1) {
+  //     console.error("Lỗi khi xóa ảnh:", error1);
+  //   }
+  // };
 
   const fileList = imageUrl
     ? [
