@@ -227,7 +227,6 @@ export default function UserTableRow({
     hashtag: '',
   });
 
-  console.log("formData", formData);
 
   const [majorName, setMajorName] = useState([]); // Lưu trữ danh sách majorName
   const [majorIds, setMajorIds] = useState([]); // Lưu trữ danh sách majorId
