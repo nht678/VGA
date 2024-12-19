@@ -18,10 +18,6 @@ import Avatar from '@mui/material/Avatar';
 import { signoutUser } from '../store/account/action';
 import notificationService from '../services/notifycation';
 
-
-
-
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
@@ -84,6 +80,9 @@ export default function Header() {
     console.log("notification", notification);
     const visibleNotifications = showAll ? notification : notification.slice(0, 5);
     const listRef = useRef(null);
+    const [status, setStatus] = useState('');
+    const [messages, setMessages] = useState([]);
+    const [changeStatus, setChangeStatus] = useState(false);
 
     // Hàm để xử lý khi click vào thông báo
     const handleNotificationClick = async (id) => {
@@ -104,16 +103,18 @@ export default function Header() {
     };
 
 
+    const fetchNotification = async () => {
+        const response = await notificationService.getNotificationById(accountId);
+        setNotification(response || []); // Đặt giá trị mặc định là mảng rỗng nếu không có dữ liệu
+    };
     useEffect(() => {
-        const fetchNotification = async () => {
-            const response = await notificationService.getNotificationById(accountId);
-            setNotification(response || []); // Đặt giá trị mặc định là mảng rỗng nếu không có dữ liệu
-        };
+        debugger
         fetchNotification();
-    }, [accountId]);
+    }, [accountId, changeStatus]);
 
-    const [messages, setMessages] = useState([]);
-    const [status, setStatus] = useState('');
+
+
+
 
     const accessToken = token;  // Token JWT của bạn
 
@@ -134,6 +135,7 @@ export default function Header() {
                 // Nhận thông báo từ server
                 connection.on('ReceiveNotification', (notitfycation) => {
                     console.log('Received notification:', notitfycation);
+                    debugger
                     // setNotification(prevMessages => [...prevMessages, notitfycation]);
                     setNotification((prevMessages) => {
                         // Kiểm tra nếu thông báo mới không trùng `createdAt` với thông báo cũ
@@ -141,6 +143,9 @@ export default function Header() {
                             (message1) =>
                                 new Date(message1.createdAt).getTime() === new Date(notitfycation.createdAt).getTime()
                         );
+                        if (!isDuplicate) {
+                            setChangeStatus((prev) => !prev);
+                        }
 
                         // Chỉ thêm vào nếu không trùng
                         return isDuplicate ? prevMessages : [...prevMessages, notitfycation];
