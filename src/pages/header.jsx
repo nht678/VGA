@@ -108,7 +108,6 @@ export default function Header() {
         setNotification(response || []); // Đặt giá trị mặc định là mảng rỗng nếu không có dữ liệu
     };
     useEffect(() => {
-        debugger
         fetchNotification();
     }, [accountId, changeStatus]);
 
@@ -135,7 +134,6 @@ export default function Header() {
                 // Nhận thông báo từ server
                 connection.on('ReceiveNotification', (notitfycation) => {
                     console.log('Received notification:', notitfycation);
-                    debugger
                     // setNotification(prevMessages => [...prevMessages, notitfycation]);
                     setNotification((prevMessages) => {
                         // Kiểm tra nếu thông báo mới không trùng `createdAt` với thông báo cũ
