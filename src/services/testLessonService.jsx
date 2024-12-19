@@ -67,6 +67,10 @@ const testLessonService = {
         const response = await BASE_API.post(`/questions-for-personal-test`, data);
         return response;
     },
+    changePointTypeTest: async (data) => {
+        const response = await BASE_API.put(`/test-type-point/${data?.id}?point=${data?.point}`);
+        return response;
+    }
 
 };
 

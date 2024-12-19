@@ -88,17 +88,18 @@ export default function Header() {
     const handleNotificationClick = async (id) => {
         // Gửi PUT request để thay đổi status của thông báo thành đã đọc
         const response = await notificationService.changeStatusNotification(id);
-        if (response) {
-            // Cập nhật trạng thái của thông báo
-            setNotification((prevNotifications) =>
-                prevNotifications.map((item) =>
-                    item.id === id ? { ...item, status: 1 } : item
-                )
-            );
-            // Chuyển hướng đến trang chi tiết thông báo
-        } else {
-            message.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
-        }
+        // if (response) {
+        //     // Cập nhật trạng thái của thông báo
+        //     // setNotification((prevNotifications) =>
+        //     //     prevNotifications.map((item) =>
+        //     //         item.id === id ? { ...item, status: 1 } : item
+        //     //     )
+        //     // );
+        //     message.success('Đã đọc thông báo');
+        //     // Chuyển hướng đến trang chi tiết thông báo
+        // } else {
+        //     message.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.');
+        // }
     };
 
 

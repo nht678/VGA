@@ -46,6 +46,7 @@ export default function UserTableRow({
   description,
   id,
   rowKey,
+  point
 }) {
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -248,6 +249,16 @@ export default function UserTableRow({
                       {description}
                     </Typography>
                   </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                      Điểm số:
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <Typography variant="body2">
+                      {point}
+                    </Typography>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -310,4 +321,5 @@ UserTableRow.propTypes = {
   rowKey: PropTypes.number,
   description: PropTypes.string,
   testTypeId: PropTypes.string,
+  point: PropTypes.number,
 };

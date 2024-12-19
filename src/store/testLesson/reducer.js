@@ -1,5 +1,5 @@
 import { success } from 'src/theme/palette';
-import { GET_TEST_LESSONS, CREATE_TEST_LESSON, UPDATE_TEST_LESSON, DELETE_TEST_LESSON, GET_TYPES_TEST_LESSON, UPLOAD_FILE_TEST, GET_QUESTION_BY_TEST_ID, CREATE_QUESTION, DELETE_QUESTION, UPDATE_QUESTION } from './action';
+import { CHANGE_POINT_TYPE_TEST, GET_TEST_LESSONS, CREATE_TEST_LESSON, UPDATE_TEST_LESSON, DELETE_TEST_LESSON, GET_TYPES_TEST_LESSON, UPLOAD_FILE_TEST, GET_QUESTION_BY_TEST_ID, CREATE_QUESTION, DELETE_QUESTION, UPDATE_QUESTION } from './action';
 
 const initialState = {
     testLessons: [],
@@ -86,6 +86,11 @@ const testLessonReducer = (state = initialState, action) => {
                 }),
                 successQuestion: true,
             };
+        // case CHANGE_POINT_TYPE_TEST:
+        // return {
+        //     ...state,
+        //     success: true,
+        // };
 
         case 'RESET_SUCCESS_QUESTION':
             return {

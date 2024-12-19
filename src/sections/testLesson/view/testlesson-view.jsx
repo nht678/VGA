@@ -30,7 +30,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { actGetTestLessonsAsync, actResetSuccess, actGetTypesTestLessonAsync, actUploadFileTestAsync, actDeleteQuestionAsync } from 'src/store/testLesson/action';
+import { actGetTestLessonsAsync, actResetSuccess, actGetTypesTestLessonAsync, actUploadFileTestAsync, actChangePointTypeTestAsync } from 'src/store/testLesson/action';
 
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
@@ -69,6 +69,23 @@ export default function TestLessonView() {
     Description: '',
     TestTypeId: '',
   });
+
+  const [formDataTestTypePoint, setformDataTestTypePoint] = useState({
+    id: '',
+    point: '',
+  });
+
+  const handleChangePoint = (e) => {
+    dispatch(actChangePointTypeTestAsync(formDataTestTypePoint));
+    setformDataTestTypePoint({
+      id: '',
+      point: '',
+    });
+    if (success) {
+      dispatch(actResetSuccess());
+    }
+    handleClose();
+  };
 
   // Hàm validate form
 
@@ -268,6 +285,10 @@ export default function TestLessonView() {
             </Button>
           </a>
 
+          <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('TestTypePoint')} >
+            Điểm loại bài kiểm tra
+          </Button>
+
           <Button sx={{ marginRight: 2 }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => handleClickOpen('CreateUpload')}>
             Tạo bài kiểm tra từ file
           </Button>
@@ -334,6 +355,49 @@ export default function TestLessonView() {
               </Button>
             </DialogActions>
           </Dialog>
+          <Dialog
+            open={open === 'TestTypePoint'}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle sx={{ display: 'flex', justifyContent: 'center' }} id="alert-dialog-title">
+              Đổi điểm loại bài kiểm tra
+            </DialogTitle>
+            <DialogContent>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid size={{ md: 12 }}>
+                  <Autocomplete
+                    id="controllable-states-demo"
+                    options={typestest}
+                    onChange={(e, newValue) => {
+                      setformDataTestTypePoint((prev) => ({ ...prev, id: newValue?.id }));
+                    }}
+                    getOptionLabel={(option) => option?.name || ''}
+                    renderInput={(params) => <TextField {...params} label="Chọn loại kiểm tra" />}
+                  />
+                  {/* {errors.TestTypeId && <Typography variant='caption' color="error">{errors.TestTypeId}</Typography>} */}
+                </Grid>
+                <Grid size={{ md: 12 }}>
+                  <TextField
+                    id="outlined-basic"
+                    label="Điểm"
+                    variant="outlined"
+                    fullWidth
+                    onChange={(e) => setformDataTestTypePoint((prev) => ({ ...prev, point: e.target.value }))}
+                  // error={errors.Name}
+                  // helperText={errors.Name}
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Hủy bỏ</Button>
+              <Button onClick={handleChangePoint} autoFocus>
+                Tạo mới
+              </Button>
+            </DialogActions>
+          </Dialog>
 
         </Box>
 
@@ -368,6 +432,7 @@ export default function TestLessonView() {
                     id={row?.id || ''} // Kiểm tra row.id
                     description={row?.description || ''} // Kiểm tra row.description
                     testTypeId={row?.testTypeId || ''} // Kiểm tra row.testTypeId
+                    point={row?.point || ''} // Kiểm tra row.point
                   />
                 ))}
               </TableBody>

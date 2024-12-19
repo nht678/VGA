@@ -13,6 +13,7 @@ export const GET_QUESTION_BY_TEST_ID = "GET_QUESTION_BY_TEST_ID";
 export const UPDATE_QUESTION = "UPDATE_QUESTION";
 export const DELETE_QUESTION = "DELETE_QUESTION";
 export const CREATE_QUESTION = "CREATE_QUESTION";
+export const CHANGE_POINT_TYPE_TEST = "CHANGE_POINT_TYPE_TEST";
 
 export function actGetTestLessons(data) {
     return {
@@ -97,6 +98,13 @@ export function actCreateQuestion(data) {
     };
 }
 
+export function actChangePointTypeTest(data) {
+    return {
+        type: CHANGE_POINT_TYPE_TEST,
+        payload: data,
+    };
+}
+
 
 export const actGetTestLessonsAsync = ({ page, pageSize, search }) => async (dispatch) => {
     try {
@@ -106,6 +114,22 @@ export const actGetTestLessonsAsync = ({ page, pageSize, search }) => async (dis
         console.error(error);
     }
 };
+
+export const actChangePointTypeTestAsync = (data) => async (dispatch) => {
+    try {
+        const response = await testLessonService.changePointTypeTest(data);
+        if (response.status === 200 || response.status === 201) {
+            // dispatch(actChangePointTypeTest(response.data));
+            message.success('Thay đổi thành công');
+        } else {
+            message.error('Thay đổi thất bại');
+        }
+    }
+    catch (error) {
+        console.error(error);
+        message.error('Thay đổi thất bại');
+    }
+}
 
 export const actCreateTestLessonAsync = (data) => async (dispatch) => {
     try {
